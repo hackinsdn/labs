@@ -2,7 +2,7 @@
 
 Neste laboratório vamos simular um cenário típico de ataques de varredura de portas (scan), ataques para quebra do mecanismo de autenticação (brute-force) e ataques de negação de serviço simples (DoS). Os ataques ocorrerão em um topologia conforme ilustrado na Figura 1.
 
-![Topology](./images/topology.png)
+![Topology](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/topology.png)
 *Figura 1: Topologia de Rede do Laboratório*
 
 ## Atividade 1 - Acesso aos nós e teste de conectividade
