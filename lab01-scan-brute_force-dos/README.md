@@ -110,18 +110,8 @@ ping -c 4 172.16.50.1
 ping -c 4 192.168.20.254
 ```
 
-O comportamento espero agora indica o sucesso na conectividade do secflood no AS200, conforme ilustrado abaixo:
+O comportamento espero agora indica o sucesso na conectividade do secflood, conforme ilustrado abaixo nos testes entre o secflood e o fw201 e entre o secflood e srv501:
 ```
-root@mnsec-secflood1-14bbabbf330b44:/# ping -c 4 172.16.50.1
-PING 172.16.50.1 (172.16.50.1) 56(84) bytes of data.
-64 bytes from 172.16.50.1: icmp_seq=1 ttl=58 time=3.55 ms
-64 bytes from 172.16.50.1: icmp_seq=2 ttl=58 time=3.54 ms
-64 bytes from 172.16.50.1: icmp_seq=3 ttl=58 time=3.46 ms
-64 bytes from 172.16.50.1: icmp_seq=4 ttl=58 time=3.44 ms
-
---- 172.16.50.1 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3005ms
-rtt min/avg/max/mdev = 3.444/3.497/3.546/0.044 ms
 root@mnsec-secflood1-14bbabbf330b44:/# ping -c 4 192.168.20.254
 PING 192.168.20.254 (192.168.20.254) 56(84) bytes of data.
 64 bytes from 192.168.20.254: icmp_seq=1 ttl=64 time=3.35 ms
@@ -132,11 +122,58 @@ PING 192.168.20.254 (192.168.20.254) 56(84) bytes of data.
 --- 192.168.20.254 ping statistics ---
 4 packets transmitted, 4 received, 0% packet loss, time 3005ms
 rtt min/avg/max/mdev = 3.345/3.357/3.382/0.014 ms
+
+root@mnsec-secflood1-14bbabbf330b44:/# ping -c 4 172.16.50.1
+PING 172.16.50.1 (172.16.50.1) 56(84) bytes of data.
+64 bytes from 172.16.50.1: icmp_seq=1 ttl=58 time=3.55 ms
+64 bytes from 172.16.50.1: icmp_seq=2 ttl=58 time=3.54 ms
+64 bytes from 172.16.50.1: icmp_seq=3 ttl=58 time=3.46 ms
+64 bytes from 172.16.50.1: icmp_seq=4 ttl=58 time=3.44 ms
+
+--- 172.16.50.1 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3005ms
+rtt min/avg/max/mdev = 3.444/3.497/3.546/0.044 ms
 ```
 
 ## Atividade 2 - Ataques de varredura de porta
 
-TODO
+Os ataques de varredura de porta, também conhecidos como *port scanning*, visam levantar informações sobre um ambiente alvo, incluindo os computadores que estão online, serviços de rede em execução no computador (i.e, portas abertas) e informações sobre o software que recebendo pacotes em determinada porta. A varredura de portas faz parte da fase de reconhecimento de rede e levantamento de informações em um ataque ou exercício de auditoria. Nesta atividade vamos explorar alguns cenários de varredura de porta utilizando a ferramenta **nmap**.
+
+### 2.1 Executando nmap através da interface web do secflood
+
+Na interface web do Dashbaord, clique no link do Serviço "https-secflood" conforme ilustrado abaixo para abrir a interface web do Secflood:
+
+![Abrir Secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-secflood.png)
+
+Ao clicar no link do serviço, você deve receber um alerta sobre o certificado SSL auto-assinado. Neste ambiente restrito de teste, é seguro ignorar o alerta e processeguir:
+
+![Erro SSL](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/erro-ssl.png)
+
+
+Você será direcionado ao portal web do secflood, que provê uma interface de usuário para facilitar a utilização das ferramentas de segurança. A tela inicial do Secflood irá solicitar usuário e senha, conforme mostrado abaixo (você pode fornecer os valores hostname = `127.0.0.1`, usuário = `root` e senha = `hackinsdn`)
+
+![Login Secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/login-secflood.png)
+
+Após logar no Secflood, navegue pelo menu à esquerda e clique em "Tools List" e então escolha a ferramenta "nmap".
+
+Na tela de utilização do NMAP existem várias opções que podem ser exploradas. A figura abaixo ilustra algumas destas opções. Você pode clicar no botão "Commands" (número 1 na figura) pra visualizar as opções disponíveis e sintaxe da ferramenta. No botão "+ Options" (número 2 na figura) você pode de fato habilitar parâmetros que customizam o funcionamento do nmap. Por fim, o alvo da varredura de portas pode ser especificado no campo de entrada principal (número 3 na figura). Preencha o alvo do ataque como 172.16.10.1 (número 3 na figura, sinalizado com a seta):
+
+![Secflood NMAP](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-nmap.png)
+
+Após executar o teste de NMAP acima, você deverá obter o seguinte resultado:
+
+![Secflood NMAP Resultado](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-nmap-result.png)
+
+Este resultado acima mostra que o SCAN obteve resultados interessantes para o reconhecimento do ambiente, listando duas portas TCP abertas: 80 e 443. O Secflood pode ajudar no processo de eventuais correções para portas indevidamente abertas, bem como é possível salvar o relatório para futura análise.
+
+TODO: falar sobre o scan na linha de comando, abrir o tcpdump no alvo e mostrar os acessos
+
+TODO: falar sobre scan UDP (resolver https://github.com/hackinsdn/secflood/issues/9)
+ -  aproveitar pra falar de levantamento de serviços aqui
+
+TODO: falar sobre scan horizontal
+
+TODO: falar sobre scan com NSE
 
 ## Atividade 3 - Ataques de brute-force
 
