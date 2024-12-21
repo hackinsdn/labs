@@ -152,7 +152,7 @@ Ao clicar no link do serviço, você deve receber um alerta sobre o certificado 
 
 Você será direcionado ao portal web do secflood, que provê uma interface de usuário para facilitar a utilização das ferramentas de segurança. A tela inicial do Secflood irá solicitar usuário e senha, conforme mostrado abaixo (você pode fornecer os valores hostname = `127.0.0.1`, usuário = `root` e senha = `hackinsdn`)
 
-![Login Secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/login-secflood.png)
+![Login Secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-login.png)
 
 Após logar no Secflood, navegue pelo menu à esquerda e clique em "Tools List" e então escolha a ferramenta "nmap".
 
