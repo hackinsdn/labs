@@ -156,7 +156,7 @@ Você será direcionado ao portal web do secflood, que provê uma interface de u
 
 Após logar no Secflood, navegue pelo menu à esquerda e clique em "Tools List" e então escolha a ferramenta "nmap".
 
-Na tela de utilização do NMAP existem várias opções que podem ser exploradas. A figura abaixo ilustra algumas destas opções. Você pode clicar no botão "Commands" (número 1 na figura) pra visualizar as opções disponíveis e sintaxe da ferramenta. No botão "+ Options" (número 2 na figura) você pode de fato habilitar parâmetros que customizam o funcionamento do nmap. Por fim, o alvo da varredura de portas pode ser especificado no campo de entrada principal (número 3 na figura). Preencha o alvo do ataque como 172.16.10.1 (número 3 na figura, sinalizado com a seta):
+Na tela de utilização do NMAP existem várias opções que podem ser exploradas. A figura abaixo ilustra algumas destas opções. Você pode clicar no botão "Commands" (número 1 na figura) pra visualizar as opções disponíveis e sintaxe da ferramenta. No botão "+ Options" (número 2 na figura) você pode de fato habilitar parâmetros que customizam o funcionamento do nmap. Por fim, o alvo da varredura de portas pode ser especificado no campo de entrada principal (número 3 na figura). Preencha o alvo do ataque como sendo o IP do srv101 cujo valor deve ser **172.16.10.1** (número 3 na figura, sinalizado com a seta):
 
 ![Secflood NMAP](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-nmap.png)
 
@@ -166,14 +166,291 @@ Após executar o teste de NMAP acima, você deverá obter o seguinte resultado:
 
 Este resultado acima mostra que o SCAN obteve resultados interessantes para o reconhecimento do ambiente, listando duas portas TCP abertas: 80 e 443. O Secflood pode ajudar no processo de eventuais correções para portas indevidamente abertas, bem como é possível salvar o relatório para futura análise.
 
-TODO: falar sobre o scan na linha de comando, abrir o tcpdump no alvo e mostrar os acessos
+### 2.2 Executando nmap através da linha de comando
 
-TODO: falar sobre scan UDP (resolver https://github.com/hackinsdn/secflood/issues/9)
- -  aproveitar pra falar de levantamento de serviços aqui
+Na execução anterior, foi possível observar que o nmap executado a partir do secflood e tendo como alvo o srv101 retornou apenas duas portas TCP abertas, 80 e 443. Vamos repetir o testes a partir da CLI do host h101 e comparar os resultados.
 
-TODO: falar sobre scan horizontal
+Antes de iniciar o ataque propriamente dito, abra o terminal do alvo da varredura, o host srv101 na visualização do Mininet-Sec:
 
-TODO: falar sobre scan com NSE
+![Abrir srv101](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-srv101.png)
+
+Na visualização da topologia no Mininet-Sec, escolha o host h101 e abra seu terminal.
+
+![Abrir h101](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-h101.png)
+
+Em seguida vamos utilizar uma ferramenta de *sniffing de rede*  para realizar a captura e visualização de pacotes na interface de rede. No terminal do srv101, inicie o tcpdump com o comando abaixo:
+```
+tcpdump -i srv101-eth0 -n
+```
+
+Você deveria observar a seguinte saída:
+```
+root@srv101:~# tcpdump -i srv101-eth0 -n
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on srv101-eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+
+```
+
+Observe que o terminal fica ocupado na execução do TCPDUMP. Nenhum pacote é exibido até então pois não há tráfego de rede direcionado ao servidor. Vamos realizar a varredura no h101 e checar novamente o srv101.
+
+No terminal do h101, execute:
+```
+nmap 172.16.10.0/24
+```
+
+Você deve observar uma saída similar ao mostrado abaixo:
+```
+root@h101:~# nmap 172.16.10.0/24
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-23 18:51 UTC
+Nmap scan report for 172.16.10.1
+Host is up (0.000063s latency).
+Not shown: 996 closed tcp ports (reset)
+PORT    STATE SERVICE
+22/tcp  open  ssh
+53/tcp  open  domain
+80/tcp  open  http
+443/tcp open  https
+
+Nmap scan report for 172.16.10.2
+Host is up (0.000059s latency).
+Not shown: 996 closed tcp ports (reset)
+PORT    STATE SERVICE
+22/tcp  open  ssh
+25/tcp  open  smtp
+110/tcp open  pop3
+143/tcp open  imap
+
+Nmap scan report for 172.16.10.3
+Host is up (0.000047s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 172.16.10.254
+Host is up (0.000052s latency).
+All 1000 scanned ports on 172.16.10.254 are in ignored states.
+Not shown: 1000 filtered tcp ports (no-response)
+
+Nmap done: 256 IP addresses (4 hosts up) scanned in 20.73 seconds
+```
+
+Note que, diferente da execução anterior, desta vezes foi realizada uma varredura de toda a rede `172.16.10.0/24`. Além disso, se compararmos a saída apresentada para o host 172.16.10.1 nesta execução e na execução anterior, é possível observar que novas portas foram exibidas: 53/tcp (DNS) e 22/tcp (SSH).
+
+> [!IMPORTANT]  
+> Por que ocorre essa diferença entre as saídas quando realizada a partir do host secflood e do h101? Considerando a fase de reconhecimento de uma auditoria de segurança, ou mesmo o processo de levantamento de vulnerabilidades, quais as vantagens e desvantagens de ambas as execuções?
+<textarea name="resposta_nmap_secflood_h101" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+</textarea>
+
+Voltando ao terminal do srv101, digite CTRL+C a fim de parar a execução do tcpdump. Utilize a barra de rolagem do navegador web para visualizar a saída desde o início. Observe que parte da captura de tráfego contém requisições ARP feitas a partir do gateway para os demais IPs da rede 172.16.10.0/24:
+```
+root@srv101:~# tcpdump -i srv101-eth0 -n
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on srv101-eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+19:45:20.536840 IP 192.168.10.1 > 172.16.10.1: ICMP echo request, id 17118, seq 0, length 8
+19:45:20.536883 IP 192.168.10.1 > 172.16.10.1: ICMP echo request, id 17118, seq 0, length 8
+19:45:20.536912 IP 172.16.10.1 > 192.168.10.1: ICMP echo reply, id 17118, seq 0, length 8
+19:45:20.536970 IP 192.168.10.1 > 172.16.10.2: ICMP echo request, id 42350, seq 0, length 8
+19:45:20.537031 IP 192.168.10.1 > 172.16.10.3: ICMP echo request, id 55492, seq 0, length 8
+19:45:20.537095 ARP, Request who-has 172.16.10.4 tell 172.16.10.254, length 28
+19:45:20.537145 ARP, Request who-has 172.16.10.5 tell 172.16.10.254, length 28
+19:45:20.537181 ARP, Request who-has 172.16.10.6 tell 172.16.10.254, length 28
+19:45:20.537215 ARP, Request who-has 172.16.10.7 tell 172.16.10.254, length 28
+19:45:20.537249 ARP, Request who-has 172.16.10.8 tell 172.16.10.254, length 28
+19:45:20.537284 ARP, Request who-has 172.16.10.9 tell 172.16.10.254, length 28
+19:45:20.537319 ARP, Request who-has 172.16.10.10 tell 172.16.10.254, length 28
+...
+```
+
+Tal comportamento se dá devido a forma como a varredura de rede padrão do nmap ocorre: primeiro o nmap verificar os hosts que estão ativos (enviando os ICMP echo request) e em seguida faz a verificação de portas abertas. Você pode modificar esse comportamento utilizando a opçõa `-Pn` do nmap. De toda forma, ao continuar analisando a captura de pacotes, você vai observar os testes de portas abertas como mostrado abaixo:
+```
+19:45:37.520408 IP 192.168.10.1.37988 > 172.16.10.1.23: Flags [S], seq 1376385575, win 1024, options [mss 1460], length 0
+19:45:37.520428 IP 172.16.10.1.23 > 192.168.10.1.37988: Flags [R.], seq 0, ack 1376385576, win 0, length 0
+19:45:37.520647 IP 192.168.10.1.37988 > 172.16.10.1.110: Flags [S], seq 1376385575, win 1024, options [mss 1460], length 0
+19:45:37.520656 IP 172.16.10.1.110 > 192.168.10.1.37988: Flags [R.], seq 0, ack 1376385576, win 0, length 0
+19:45:37.523295 IP 192.168.10.1.37988 > 172.16.10.1.143: Flags [S], seq 1376385575, win 1024, options [mss 1460], length 0
+19:45:37.523308 IP 172.16.10.1.143 > 192.168.10.1.37988: Flags [R.], seq 0, ack 1376385576, win 0, length 0
+19:45:37.523487 IP 192.168.10.1.37988 > 172.16.10.1.443: Flags [S], seq 1376385575, win 1024, options [mss 1460], length 0
+19:45:37.523504 IP 172.16.10.1.443 > 192.168.10.1.37988: Flags [S.], seq 1374860696, ack 1376385576, win 64240, options [mss 1460], length 0
+19:45:37.523543 IP 192.168.10.1.37988 > 172.16.10.1.443: Flags [R], seq 1376385576, win 0, length 0
+```
+
+Observe que os pacotes seguem uma sequencia lógica: o host que executa o nmap (192.168.10.1) envia um pacote TCP-SYN na porta de interesse (observe, inclusive, que por padrão o NMAP começa com as portas mais comuns 23, 110, 143, 443, etc. uma estratégia mais eficience que fazer o levantamento sequencial), caso a porta não esteja aberta no host alvo (172.16.10.1 na saída acima) uma resposta TCP-RST (reset) é enviada. Este é o conhecido processo **three-way handshake** do TCP, porém invés de o cliente confirmar a abertura de conexão com o ACK final, ele envia o reset (RST). Isso ocorre para a porta 23, então 110, 143, mas o comportamento muda na porta 443. Para a porta 443 (https), o host srv101 responde com TCP-SYN-ACK `S.` e então o host que executa o scan envia o TCP-RST (reset). Esse comportamento é um indicativo de que a porta está aberta. Note que o nmap possui outros tipos de varredura (exemplo: Connect/ACK/Window/Maimon scans/TCP Null/FIN/Xmas), mas não as abordaremos neste laboratórios.
+
+### 2.3 Varredura UDP
+
+Como mencionamentos na atividade anterior, o scan padrão do nmap para TCP vale-se do processo **three-way handshake**. Para verreduras com UDP, entretanto, este processo ocorre de forma ligeiramente diferente. Nesta atividade vamos analisar a varredura UDP.
+
+Para verificar como a varredura UDP ocorre na perspectiva da rede, vamos iniciar o TCPUMP no host *fw101* e posteriormente analisar a captura de tráfego. Para isso, no terminal do host fw101 execute o seguinte comando:
+```
+tcpdump -i fw101-eth2 -n
+```
+
+De volta a interface web do Secflood, execute um scan UDP tendo como alvo novamente o IP 172.16.10.1, porém desta vez clique no botão *+ Options* e escolha a opção *Scan common UDP ports*. Por fim, clique em *Execute* para iniciar o scan. 
+
+![Secflood UDP scan](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-udp-scan.png)
+
+A saída esperada para a varredura executada é semelhante ao apresentado abaixo:
+```
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-24 08:28 UTC
+Nmap scan report for 172.16.10.1
+Host is up (0.00048s latency).
+
+PORT     STATE         SERVICE
+53/udp   open          domain
+68/udp   filtered      dhcpc
+69/udp   filtered      tftp
+123/udp  open|filtered ntp
+138/udp  filtered      netbios-dgm
+161/udp  filtered      snmp
+162/udp  filtered      snmptrap
+500/udp  closed        isakmp
+4500/udp filtered      nat-t-ike
+5600/udp filtered      esmmanager
+
+Nmap done: 1 IP address (1 host up) scanned in 16.67 seconds
+```
+
+Observe que, no geral, as portas retornam com valor "filtered", porém uma porta retornou "open", outra porta retornou "open|filtered" e por fim uma terceira porta retornou "closed". Volte ao terminal do host fw101, tecle CTRL+C para parar a captura e observe a captura de pacotes, conforme ilustrado abaixo (OBS: alguns pacotes foram omitidos e outros reordenados para simplificar a saída e facilitar o entendimento):
+```
+root@fw101:~# tcpdump -i fw101-eth2 -n
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on fw101-eth2, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+...
+08:31:20.728384 IP 192.168.20.10.59325 > 172.16.10.1.53: 0 stat [0q] (12)
+08:31:20.728487 IP 192.168.20.10.59325 > 172.16.10.1.53: 30583+ TXT CHAOS? version.bind. (30)
+08:31:20.729128 IP 172.16.10.1.53 > 192.168.20.10.59325: 0 stat [b2&3=0x1005] [0q] (12)
+08:31:20.729267 IP 192.168.20.10 > 172.16.10.1: ICMP 192.168.20.10 udp port 59325 unreachable, length 48
+
+08:31:20.728603 IP 192.168.20.10.59325 > 172.16.10.1.162:  [nothing to parse]
+08:31:20.728638 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 162 unreachable, length 36
+
+08:31:20.728915 IP 192.168.20.10.59325 > 172.16.10.1.138: UDP, length 0
+08:31:20.728933 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 138 unreachable, length 36
+
+08:31:20.729042 IP 192.168.20.10.59325 > 172.16.10.1.4500: UDP-encap: ESP(spi=0x3127fcb0,seq=0x38109e89), length 204
+08:31:20.729054 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 4500 unreachable, length 240
+
+08:31:20.729143 IP 192.168.20.10.59325 > 172.16.10.1.5600: UDP, length 0
+08:31:20.729155 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 5600 unreachable, length 36
+
+08:31:20.729349 IP 192.168.20.10.59325 > 172.16.10.1.500: isakmp: phase 1 I ident
+08:31:20.729391 IP 172.16.10.1 > 192.168.20.10: ICMP 172.16.10.1 udp port 500 unreachable, length 228
+08:31:20.729471 IP 192.168.20.10.59325 > 172.16.10.1.500: isakmp: phase 1 I ident
+08:31:20.729498 IP 172.16.10.1 > 192.168.20.10: ICMP 172.16.10.1 udp port 500 unreachable, length 240
+
+08:31:20.729586 IP 192.168.20.10.59325 > 172.16.10.1.123: NTPv4, Client, length 48
+08:31:20.729632 IP 192.168.20.10.59325 > 172.16.10.1.123: NTPv3, symmetric active, length 48
+
+08:31:20.729683 IP 192.168.20.10.59325 > 172.16.10.1.161:  F=r U="" E= C="" GetRequest(12) 
+08:31:20.729695 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 161 unreachable, length 96
+08:31:20.729772 IP 192.168.20.10.59325 > 172.16.10.1.161:  GetNextRequest(18)  .0.0
+08:31:20.729783 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 161 unreachable, length 69
+
+08:31:20.729867 IP 192.168.20.10.59325 > 172.16.10.1.69: TFTP, length 12, tftp-#0
+08:31:20.729915 IP 192.168.20.10.59325 > 172.16.10.1.69: TFTP, length 19, RRQ "r7tftp.txt" octet
+
+08:31:20.729973 IP 192.168.20.10.59325 > 172.16.10.1.68:  [|bootp]
+08:31:21.830087 IP 192.168.20.10.59327 > 172.16.10.1.68:  [|bootp]
+08:31:21.830123 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 68 unreachable, length 36
+
+08:31:21.830232 IP 192.168.20.10.59327 > 172.16.10.1.69: TFTP, length 12, tftp-#0
+08:31:21.830273 IP 192.168.20.10.59327 > 172.16.10.1.69: TFTP, length 19, RRQ "r7tftp.txt" octet
+
+08:31:21.830322 IP 192.168.20.10.59327 > 172.16.10.1.123: NTPv4, Client, length 48
+08:31:21.830358 IP 192.168.20.10.59327 > 172.16.10.1.123: NTPv3, symmetric active, length 48
+08:31:22.931596 IP 192.168.20.10.59329 > 172.16.10.1.123: NTPv4, Client, length 48
+08:31:22.931669 IP 192.168.20.10.59329 > 172.16.10.1.123: NTPv3, symmetric active, length 48
+
+08:31:22.931732 IP 192.168.20.10.59329 > 172.16.10.1.69: TFTP, length 12, tftp-#0
+08:31:22.931757 IP 10.10.0.254 > 192.168.20.10: ICMP 172.16.10.1 udp port 69 unreachable, length 48
+08:31:22.931867 IP 192.168.20.10.59329 > 172.16.10.1.69: TFTP, length 19, RRQ "r7tftp.txt" octet
+
+08:31:24.032864 IP 192.168.20.10.59331 > 172.16.10.1.123: NTPv4, Client, length 48
+08:31:24.032943 IP 192.168.20.10.59331 > 172.16.10.1.123: NTPv3, symmetric active, length 48
+^C
+59 packets captured
+59 packets received by filter
+0 packets dropped by kernel
+```
+
+> [!IMPORTANT]  
+> A partir da análise da captura de pacotes acima, como explicar a estratégia usada pelo NMAP para identificar a porta como aberta? De acordo com a captura, por que o NMAP identifica a porta 123/udp como "aberta" ou "filtrada" ? Por que a porta 500/udp foi listada pelo NMAP como "closed", ao passo que a maioria das portas estava listada como "filtered"?
+<textarea name="resposta_nmap_udp" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+</textarea>
+
+Repita o scan com NMAP, porém agora marque também a opção **Service detection (Lighter)**. A varredura deve ser um pouco mais longa, pois agora o NMAP executará algumas checagens adicionais para tentar identificar o serviço. A saída esperada deve ser similar ao mostrado abaixo:
+```
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-24 08:49 UTC
+Nmap scan report for 172.16.10.1
+Host is up (0.00042s latency).
+
+PORT     STATE         SERVICE     VERSION
+53/udp   open          domain?
+68/udp   filtered      dhcpc
+69/udp   filtered      tftp
+123/udp  open|filtered ntp
+138/udp  filtered      netbios-dgm
+161/udp  filtered      snmp
+162/udp  filtered      snmptrap
+500/udp  closed        isakmp
+4500/udp filtered      nat-t-ike
+5600/udp filtered      esmmanager
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port53-UDP:V=7.93%I=0%D=12/24%Time=676A759B%P=x86_64-pc-linux-gnu%r(DNS
+SF:StatusRequest,C,"\0\0\x10\x05\0\0\0\0\0\0\0\0");
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 27.11 seconds
+```
+
+Observe que o NMAP continua listado como "open|filtered". Execute um scan agressivo com detecção de serviço direcionado para a porta 123/udp utilizando as seguintes opções:
+
+![Secflood UDP scan agressivo](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-udp-scan-agressivo.png)
+
+É possível afirmar com certeza o estado da porta? Podemos afirmar que muito provavelmente a porta está fechada?
+
+### 2.4 Scan horizontal e Engine de scripts do NMAP
+
+Nesta atividade vamos testar o scan do tipo horizontal, onde você varre múltiplos endereços IPs porém em uma porta ou conjunto de portas específico. Adicionalmente, é possível fazer uso da engine de scripts do NMAP, que contém checagens adicionais muito úteis para detecção de serviços, teste de vulnerabilidades, inventariado ou levantamento de informações adicionais do serviço, dentre outros. A combinação das duas técnicas pode ser interessante para identificar vulnerabilidades que atingem uma grande escala de dispositivos e podem ser exploradas pela rede. Um exemplo de tal cenário é a CVE-2014-0160 (https://nvd.nist.gov/vuln/detail/cve-2014-0160), popularmente conhecida como OpenSSL Heartbleed, uma vulnerabilidade de alto impacto identificada em 2014 que permitia ao atacante ler a memória do processo remoto em resposta a pacotes especificamente formatados. Tal vulnerailidade ganhou um grau de proporção grande pois muitos software de diferentes fabricantes utilizavam de alguma maneira a biblioteca openssl em uma das versões afetadas, e portanto também foram afetados. Nesse cenário, o uso do scan horizontal em conjunto com NSE podem ser bastante úteis para levantamento da superfice da vulnerabilidade na instituição.
+
+Abra o terminal do host *secflood* e execute o comando abaixo:
+```
+nmap -p T:443,25,465,587,143,110,993,995,8443 --script ssl-heartbleed 172.16.10.0/24 172.16.20.0/24 172.16.30.0/24 172.16.40.0/24 172.16.50.0/24
+```
+
+O comando acima irá varrer diversas redes e diversas portas - portas que potencialmente executam alguma aplicação que faz uso de SSL (exemplo: 443 que provavelmente executa HTTPS, ou ainda porta 587 que roda o cliente SMTP e pode fazer uso de SSL quando o cliente submete o comando STARTTLS) - checando pela vulnerabilidade SSL Heartbleed através do script `ssl-heartbleed.nse` (que por padrão fica localizado em /usr/share/nmap/scripts). A saída esperada é ilustrada abaixo (a execução será um pouco mais longa que o habitual devido a quantidade de hosts para escanear):
+```
+root@mnsec-secflood1-637b0d4f77fb4f:/# nmap -p T:443,25,465,587,143,110,993,995,8443 --script ssl-heartbleed 172.16.10.0/24 172.16.20.0/24 172.16.30.0/24 172.16.40.0/24 172.16.50.0/24
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-24 09:22 UTC
+...
+Nmap scan report for 172.16.40.1
+Host is up (0.00047s latency).
+
+PORT     STATE  SERVICE
+25/tcp   closed smtp
+110/tcp  closed pop3
+143/tcp  closed imap
+443/tcp  open   https
+| ssl-heartbleed: 
+|   VULNERABLE:
+|   The Heartbleed Bug is a serious vulnerability in the popular OpenSSL cryptographic software library. It allows for stealing information intended to be protected by SSL/TLS encryption.
+|     State: VULNERABLE
+|     Risk factor: High
+|       OpenSSL versions 1.0.1 and 1.0.2-beta releases (including 1.0.1f and 1.0.2-beta1) of OpenSSL are affected by the Heartbleed bug. The bug allows for reading memory of systems protected by the vulnerable OpenSSL versions and could allow for disclosure of otherwise encrypted confidential information as well as the encryption keys themselves.
+|           
+|     References:
+|       http://www.openssl.org/news/secadv_20140407.txt 
+|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-0160
+|_      http://cvedetails.com/cve/2014-0160/
+465/tcp  closed smtps
+587/tcp  closed submission
+993/tcp  closed imaps
+995/tcp  closed pop3s
+8443/tcp closed https-alt
+...
+```
+
+Observe que o host 172.16.40.1 é listado como vulnerável ao ataque. De fato, esse host foi incluido propositalmente na topologia e sua execução é baseada no repositório de vulnerabildiades do projeto HackInSDN.
 
 ## Atividade 3 - Ataques de brute-force
 
