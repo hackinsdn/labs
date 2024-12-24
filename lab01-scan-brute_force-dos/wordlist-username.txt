@@ -1,0 +1,15 @@
+root
+admin
+test
+teste
+guest
+convidado
+adm
+usuario
+user
+administrator
+administrador
+ftp
+ansible
+vagrant
+backup
