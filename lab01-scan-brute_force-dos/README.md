@@ -644,12 +644,30 @@ service-mnsec-apach2.sh srv103 --start --login admin --pass adm123
 
 O comando acima inicializará o Apache2 para prover o serviço web nos protocolos HTTP e HTTPS com um site que possui URLs protegidas por autenticação HTTP Basic e outras URLs protegidas por autenticação baseada em formulários HTML (muito comum em sites na Internet). Observe que a senha que configuramos acima (`adm123`), apesar de simples, não consta no dicionário que utilizamos anteriormente.
 
-Vamos inicialmente utilizar o hydra para tentar quebrar a senha utilizando o método de geração de senhas a partir de um conjunto de caracteres. No terminal do host h401 execute o seguinte comando:
+Antes de realizar o ataque de força bruta em si, vamos testar manualmente o acesso à página utilizando a ferramenta curl. No terminal do host h401, execute o seguinte comando:
+```
+curl http://172.16.10.3/admin/
+```
+
+Observe que a saída do comando acima retorna uma página HTML com mensagem de erro de acesso não autorizado (`401 Unauthorized`).
+
+Vamos repetir o teste porém agora fornecendo as credenciais de acesso:
+```
+curl -u admin:adm123 http://172.16.10.3/admin/
+```
+
+A saída esperada demonstra o uso correto das credenciais:
+```
+root@h401:~# curl -u admin:adm123 http://172.16.10.3/admin/
+<h1>Welcome to admin page (http basic)</h1>
+```
+
+Executaremos agora o ataque de força bruta. Vamos inicialmente utilizar o hydra para tentar quebrar a senha utilizando o método de geração de senhas a partir de um conjunto de caracteres. No terminal do host h401 execute o seguinte comando:
 ```
 hydra -I -V -l admin -x 6:6:aA1 https-get://172.16.10.3/admin/
 ```
 
-Ao executar o comando acima, o Hydra retorna um erro (_definition for password bruteforce (-x) generates more than 4 billion passwords, it is just not feasible to try so many attempts_) informando que o conjunto de caracteres escolhido gera muitas combinações, tornando o ataque computacionalmente infactível de realizar. No comando acima combinamos letras minúsculas, maiúsculas e números (!). Vamos reduzir o conjutno de caracteres para combinar apenas letras minúsculas e números. Repita o comando acima porém agora com uma modificação:
+Ao executar o comando acima, o Hydra retorna um erro (_definition for password bruteforce (-x) generates more than 4 billion passwords, it is just not feasible to try so many attempts_) informando que o conjunto de caracteres escolhido gera muitas combinações, tornando o ataque computacionalmente infactível de realizar. No comando acima combinamos letras minúsculas (`a`), maiúsculas (`A`) e números (`1`). Vamos reduzir o conjutno de caracteres para combinar apenas letras minúsculas e números. Repita o comando acima porém agora com uma modificação:
 ```
 hydra -I -V -l admin -x 6:6:a1 https-get://172.16.10.3/admin/
 ```
@@ -682,16 +700,63 @@ root@srv103:~# tail apache2/error.log
 
 Aguarde alguns minutos e verifique se o Hydra conseguiu identificar alguma credencial válida. No terminal do host h401, pare a execução do Hydra com o comando CTRL+C. Observe que diversas tentativas foram enviadas para o servidor porém nenhuma com sucesso, e diversas outras tentativas ainda estão pendentes. Esse tipo de ataque pode gerar muito ruído na rede (exemplo: logs de falha) e facilmente ser bloqueado.
 
+Vamos realizar um novo ataque de força bruta em uma página web, porém agora contra um site cujo login ocorre através de formulários HTML (cenário bastante comum). Como fizemos anteriormente, primeio vamos fazer o acesso manualmente e em seguida executar o ataque.
 
-TODO: iniciar o serviço HTTP (Basic e Form)
+A partir do host h401, faça uma requisição ao site protegido por autenticação baseada em formulário HTML:
+```
+curl -k https://172.16.10.3/auth/
+```
 
-TODO: mostrar o ataque com senha gerada a partir de conjunto de caractere
+Observe na saída HTML que a página requer autenticação através de um formulário HTML, cujas credenciais devem ser fornecidas pelo usuário através dos campos `username` e `password`. Vamos simular um usuário fornecendo as credenciais corretas através do curl.
 
-TODO: mostrar ataque com hashcat e regras de geracao
+No terminal do h401, execute:
+```
+curl -k https://172.16.10.3/auth/ -X POST -d "username=admin&password=adm123"
+```
+
+A mensagem de saída indica o sucesso na autenticação (`Welcome admin!`).
+
+Vamos repetir o ataque de força-bruta anterior, porém agora contra o mecanismo de autenticação baseado em formulário HTML. No terminal do h401, execute:
+```
+hydra -I -V -l admin -P /tmp/wordlist-password.txt "https-form-post://172.16.10.1/auth/:username=^USER^&password=^PASS^:Invalid"
+```
+
+Observe que o alvo do ataque no comando acima é composto por 4 partes relacionadas, a saber: 1) o método do ataque (`https-form-post`), ou seja, o protocolo a ser utilizado será https e o método de ataque será formulário html através de uma requisição HTTP POST; 2) a URL de login na qual o formulário html será submetido (`//172.16.10.1/auth/`); 3) o nome dos campos de entrada do formulário relacionados ao login e senha (`:username=^USER^&password=^PASS^` onde `^USER^` e `^PASS^` serão substituídos pelos valores informados no Hydra nos parâmetros `-l/-L` e `-p/-P` respectivamente); 4) finalmente uma string que identifica uma situação de falha de login (`Invalid`) -- permitindo ao Hydra identificar quando a tentativa teve sucesso ou falha.
+
+Em todos os casos acima, bem como no ataque de força bruta contra o serviço de IMAP, o Hydra falhou para identificar credenciais válidas, pois ou os dicionários utilizados não continham a senha de interesse, ou o método de geração de senha mostrou-se computacionalmente infactível. Em seguida, vamos estudar um outro mecanismo de ataque de brute-force que pode ajudar nesses casos. Trata-se dos esquemas de mutação de dicionário, que visam expandir a lista de palavras com modificações tipicamente adotadas pelos usuários (exemplo: a partir de uma palavra base, transformar certos caracteres em maiúsculo ou adicionar números ou adicionar caracteres especiais, enfim).
+
+Para essa atividade utilizaremos regras de mutação apresentadas no seguinte artigo: https://www.notsosecure.com/one-rule-to-rule-them-all/. A ferramenta `hashcat` permite utilizar regras dese tipo para expandir um dicionário de senhas, bem como outros mecanismos de mutação (exemplo: combinar as próprias palavras do dicionário entre si -- ou de múltiplos dicionários, combinar as palavras do dicionário com máscaras de substring aleatórias, entre outras). 
+
+Utilizando as regras do blog citado anteriormente (cujo download já realizamos no passo 3.1), execute o seguinte comando no host h401:
+```
+hashcat -r /tmp/OneRuleToRuleThemAll.rule --stdout /tmp/wordlist-password.txt > /tmp/mutated
+```
+
+> [!TIP]  
+> A instalação padrão do hashcat já inclui algumas regras de mutação de dicionários no diretório `/usr/share/hashcat/rules`.
+
+Em seguida, vamos checar se as senhas que buscamos estão no dicionário expandido:
+```
+grep -w -n "Hackinsdn123!" /tmp/mutated
+grep -w -n "adm123" /tmp/mutated
+```
+
+Como pode observar, ambas as senhas estão no dicionário expandido. O parâmetro `-n` no grep mostra o número da linha na qual a string foi encontrada, o que ajuda a entender quantas tentativas seriam mais ou menos necessárias para o Hydra obter sucesso. No entanto, você pode utilizar também técnicas de reordenação aleatória do arquivo para aumentar a chances de encontrar as credenciais válidas mais cedo.
+
+> [!IMPORTANT]  
+> Como previnir tais ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
+<textarea name="resposta_brute_force" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+</textarea>
 
 ## Atividade 4 - Ataques de negação de serviço
 
-TODO
+Nesta atividade mostraremos dois tipos de ataque de negação de serviço: exaustão de recursos por consumo de banda e ataques do tipo Slow HTTP. Os ataques de negação de serviço por consumo de banda são os mais comuns atualmente, tipicamente ocorrendo de forma distribuída e alcançando volumetria de tráfego cada vez mais impressionantes. Por outro lado, os ataques do tipo Slow HTTP são ataques mais especializados e "silenciosos", que visam gerar requisições bem lentamente para o servidor web, mantendo-o ocupado e impossibilitado de tratar requisições legítimas (afetando servidores web que tratam requisições a partir de um pool de threads, por exemplo).
+
+No cenário deste laboratório, o ataque volumétrico afetará o servidor web srv501, que possui um link de apenas 10Mb - sujeito a exaustão de recursos. Já o ataque de Slow HTTP terá como alvo o servidor srv101 - que executa o Apache e pode ser alvo do ataque.
+
+### 4.1 Negação de serviço por consumo de banda
+
+### 4.2 Negação de serviço do tipo Slow HTTP
 
 ## Atividade 5 - Detecção e contenção de ataques de varredura
 
