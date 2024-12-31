@@ -766,6 +766,77 @@ Volte ao gráfico do host h101 e observe que imediatamente o tempo de resposta s
 
 Feche o gráfico do "ali", pressionando a tecla "q". 
 
-## Atividade 5 - Detecção e contenção de ataques de varredura
+## Atividade 5 - Execução, Detecção e Contenção de ataques de varredura
 
-TODO
+Nesta última atividade, vamos ilustrar um fluxo completo de execução, detecção e contenção de ataques, precisamente ataque de varredura de portas.
+
+O primeiro passo é ativar a execução do ataque na interface web do Secflood. Neste ataque, vamos utilizar a ferramenta nmap e configurá-la de forma a executar de forma periódica para fazer a varredura de portas a cada 30 segundos.
+
+Na interface web do Secflood, selecione o menu _Tool List_ e depois _NMAP_. Forneça os dados abaixo:
+- No campo "Enter the target's address" informe: --min-rate 300 172.16.50.1
+- Na parte +Options, selecionamos "Scan all 65535 ports", com o fim de gerar uma grande quantidade de tráfego, além disso escolha também a opção de "Scan using UDP";
+- Na parte Execution parameters, deve-se definir as seguintes opções;
+ - Repeat this command: -1;
+ - Delay strategy: Fixed;
+ - Delay to start: 30.
+- Após isso, selecionamos Add for bulk execute later;
+
+Abaixo uma ilustração da configuração acima:
+![secflood nmap repeat](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-nmap-repeat.png)
+
+Em Bulk Execution, é possível visualizar que o ataque foi configurado. Em seguida, clicamos em Execute tasks.
+![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec.png)
+
+Com a execução desses comandos, o ataque será configurado e executado. Na aba Dashboard da interface web do sec-flood, pode-se observar a grande quantidade de tráfego gerado. 
+![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec.png)
+
+Agora podemos acessar o terminal do srv501 e rodar o comando abaixo para visualizar o ataque de scan sendo recebido no servidor:
+```
+tcpdump -i srv501-eth0 -n
+```
+
+O próximo passo é configurar mecanismos para detectar o ataque. Para isso, vamos configurar um Sistema de Detecção de Intrusão (IDS) baseado no Suricata, com regras customizadas para detecção de ataques de varredura de portas. O funcionamento de qualquer IDS pressupõe ou um modelo de implantação em que o tráfego é transportado através do IDS (modo _inline_) ou o tráfego é espelhado para o IDS para análise. Nesta atividade vamos utilizar o modelo espelhado. Assim, precisaremos espelhar o tráfego de rede gerado pelo Secflood para o IDS que executa no host **ids201**. Note que neste cenário da atividade o IDS detecta os ataques na rede de origem, potencialmente identificando máquinas comprometidas efetuando ataques externos. Em ambiente reais, além da detecção na origem, este tipo de ataque pode ser identificado também no destino ou em provedores intermediários, casos em que tipicamente resulta em uma notificação de incidente de segurança que deverá ser tratado pelo time de segurança da organização que originou o ataque.
+
+Para espelhar o tráfego para o ids201, vamos utilizar o controlador SDN Kytos com uma aplicação de espelhamento de tráfego. Para isso, a partir do Dashboard HackInSDN, abra o terminal do Kytos e digite os comandos a seguir para obter o ID do circuito criado:
+```
+EVC_ID=$(curl -s http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ | jq -r '.[].id')
+echo $EVC_ID
+```
+
+A saída esperada é o ID do circuito, no formato "08e9526bee7e40".
+
+A partir do ID do circuit, ainda no terminal do Kytos, execute o comando a segurir para habilitar o espelhamento de tráfego no circuito em questão:
+```
+curl -s -X POST -H 'Content-type: application/json' http://127.0.0.1:8181/api/hackinsdn/mirror/v1/ -d '{"circuit_id": "'$EVC_ID'", "switch": "00:00:00:00:00:00:00:cb", "target_port": "00:00:00:00:00:00:00:cb:5", "name": "mirror for EVC '$EVC_ID'"}'
+```
+
+Saída esperada: `{"mirror_id":"d01deb36c2d345"}`
+
+Com os comandos acima, habilitamos o espelhamento do tráfego do switch s203 (que possui o ID indicado no comando) para a interface s203-eth5 (Indicada no comando somente pelo número 5), a qual conecta o s203 ao host ids201, o qual possui uma instanciação do Suricata.
+
+No terminal do ids201, execute o seguinte comando para observar os pacotes do secflood direcionados ao srv501 sendo espelhados para o IDS:
+tcpdump -i srv501-eth0 -n
+
+No terminal do ids201, pode ser executado o seguinte comando para observar os logs do suricata sobre o ataque:
+tail -f /var/log/suricata/fast.log
+
+Depois disso, podemos executar o script que promoverá a contenção do ataque. Para isso, digite CTRL+C para parar o comando anterior (tail) e execute os seguintes comandos para iniciar o bloqueio automático:
+export KYTOS_URL=http://<ip_do_seu_pod_kytos>:8181
+echo > /var/log/suricata/eve.json && python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 300
+
+De modo que a aplicação hackinsdn-guardian irá analisar o arquivo eve.json que contém informações sobre os ataques e as VLANs dos hosts e, se for detectado um ataque, promove um bloqueio de 300 segundos. 
+Após deixar o comando rodando em background (ctrl + z), podemos abrir de novo o fast.log usando o comando anterior e observar que os logs deixam de ser gerados. Na interface web do sec-flood, na aba Dashboard, é possível observar o tráfego sendo gerado, porém, na aba terminal, ao se tentar fazer um ping para o IP do srv501, possivelmente não haverá retorno, indicando sucesso no bloqueio.
+OBS: Delete regras de contenção ao terminar de utilizar a topologia. Em um momento futuro, as regras de contenção podem ser removidas automaticamente se ficarem muito tempo ociosas, por exemplo.
+O bloqueio feito pelo Kytos pode ser verificado a partir do seguinte comando a ser executado no console do Mininet-Sec:
+sh  curl -X GET -H 'Content-type: application/json' http://<ip_do_seu_pod_kytos>:8181/api/hackinsdn/containment/v1/
+
+A partir disso, pode ser obtido o ID do bloqueio, e ser feita a exclusão da regra de bloqueio, a partir do seguinte comando a ser executado no console do Mininet-Sec:
+sh curl -s -X DELETE http://<ip_do_seu_pod_kytos>:8181/api/hackinsdn/containment/v1/<id_do_bloqueio>
+
+
+Além disso, o circuito criado para conexão entre os hosts pode ser excluído através do seguinte comando a ser executado no console do Mininet-Sec:
+sh curl -X DELETE http://10.50.124.139:8181/api/kytos/mef_eline/v2/evc/<id_do_circuito>
+
+
+
+
