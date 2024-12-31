@@ -571,45 +571,9 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 08:35:
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 21 login tries (l:1/p:21), ~2 tries per task
 [DATA] attacking imap://172.16.10.2:143/PLAIN
 [ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
 [ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
+...
 [ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
-[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
-
 [ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
 
 1 of 1 target completed, 0 valid password found
@@ -756,7 +720,33 @@ No cenário deste laboratório, o ataque volumétrico afetará o servidor web sr
 
 ### 4.1 Negação de serviço por consumo de banda
 
+Para monitorar os impactos do ataque, vamos iniciar um cliente legítimo e monitorar pelo tempo de resposta da página (consideraremos um timeout de 1s antes de considerar a página inacessível). Para isso, no terminal do host h101, execute:
+```
+ali -t 1s -d 0 http://172.16.50.1
+```
+
+Após abrir a ferramenta "ali", pressione ENTER para iniciar o monitoramento, conforme ilustrado abaixo:
+
+![ali on h101](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/ali-h101.png)
+
+Observe que todas as requisições estão retornando código 200, e o tempo de resposta médio gira em torno de 1.6ms com valor máximo de pouco mais de 3 milisegundos.
+
+Em seguida, a partir do terminal do Secflood1 execute o seguinte ataque de negação de serviço:
+```
+hping3 --udp -p 53 -d 1000 --flood 172.16.50.1
+```
+
+Volte ao gráfico do host h101 e observe que imediatamente o tempo de resposta subiu para 1s (valor máximo de timeout configurado) e muitas requisições agora retornam erro de tempo máximo de resposta estourado. O gráfico abaixo ilustra tal comportamento:
+
+![hping secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/flood-http.png)
+
+Para o ataque pressionando CTRL+C no terminal do Secflood1. Volte ao gráfico do host h101 e observe imediatamente o tempo de resposta é normalizado.
+
 ### 4.2 Negação de serviço do tipo Slow HTTP
+
+Os ataques do tipo Slow HTTP consistem no envio de requisições HTTP bem lentamente para manter o servidor ocupado e inapto a tratar requisições legítimas. O ataque de _Slowloris_ possui exatamente este modus operandi, consistindo basicamente em um cliente que sobrecarrega um servidor alvo com requisições simultâneas de abertura e manutenção da conexão.
+
+TODO: instalar slowloris
 
 ## Atividade 5 - Detecção e contenção de ataques de varredura
 
