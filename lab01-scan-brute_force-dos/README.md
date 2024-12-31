@@ -740,13 +740,31 @@ Volte ao gráfico do host h101 e observe que imediatamente o tempo de resposta s
 
 ![hping secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/flood-http.png)
 
-Para o ataque pressionando CTRL+C no terminal do Secflood1. Volte ao gráfico do host h101 e observe imediatamente o tempo de resposta é normalizado.
+Pare o ataque pressionando CTRL+C no terminal do Secflood1. Volte ao gráfico do host h101 e observe imediatamente o tempo de resposta é normalizado.
+
+No host h101, pare o "ali" pressionando a tecla "q". 
 
 ### 4.2 Negação de serviço do tipo Slow HTTP
 
-Os ataques do tipo Slow HTTP consistem no envio de requisições HTTP bem lentamente para manter o servidor ocupado e inapto a tratar requisições legítimas. O ataque de _Slowloris_ possui exatamente este modus operandi, consistindo basicamente em um cliente que sobrecarrega um servidor alvo com requisições simultâneas de abertura e manutenção da conexão.
+Os ataques do tipo Slow HTTP consistem no envio de requisições HTTP bem lentamente para manter o servidor ocupado e inapto a tratar requisições legítimas. O ataque de _Slowloris_ possui exatamente este modus operandi, consistindo basicamente em um cliente que sobrecarrega um servidor alvo com requisições simultâneas de abertura e manutenção da conexão. Nesta atividade, utilizaremos como alvo o servidor srv103 (lembre-se que iniciamos o Apache2 no host srv103 na Atividade 3.3).
 
-TODO: instalar slowloris
+Novamente vamos executar o aplicativo "ali" para monitorar os impactos do ataque, simulando um usuário legítimo. Para isso, execute o seguinte comando no host srv101:
+```
+ali -t 1s -d 0 http://172.16.10.3
+```
+
+Após abrir a ferramenta "ali", pressione ENTER para iniciar o monitoramento.
+
+Em seguida, a partir do terminal do Secflood1 execute o seguinte ataque de negação de serviço:
+```
+slowloris -p 80 -s 300 172.16.10.3
+```
+
+Volte ao gráfico do host h101 e observe que imediatamente o tempo de resposta subiu para 1s (valor máximo de timeout configurado) e muitas requisições agora retornam erro de tempo máximo de resposta estourado. O gráfico abaixo ilustra tal comportamento:
+
+![slowloris](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/slowloris.png)
+
+Feche o gráfico do "ali", pressionando a tecla "q". 
 
 ## Atividade 5 - Detecção e contenção de ataques de varredura
 
