@@ -639,27 +639,27 @@ hydra -I -V -l admin -x 6:6:a1 https-get://172.16.10.3/admin/
 Você pode acompanhar o ataque no host srv103 através dos logs `apache2/access.log` e `apache2/error.log`, conforme ilustrado abaixo:
 ```
 root@srv103:~# tail apache2/access.log 
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
-192.168.40.1 - admin [29/Dec/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
+192.168.40.1 - admin [29/Sep/2024:09:10:27 +0000] "GET /admin/ HTTP/1.1" 401 693 "-" "Mozilla/4.0 (Hydra)"
 root@srv103:~# tail apache2/error.log 
-[Sun Dec 29 09:10:27.745656 2024] [auth_basic:error] [pid 46417:tid 46441] [client 192.168.40.1:53960] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.756304 2024] [auth_basic:error] [pid 46416:tid 46419] [client 192.168.40.1:53962] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.765881 2024] [auth_basic:error] [pid 46417:tid 46426] [client 192.168.40.1:53976] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.765995 2024] [auth_basic:error] [pid 46416:tid 46440] [client 192.168.40.1:53980] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.766036 2024] [auth_basic:error] [pid 46417:tid 46469] [client 192.168.40.1:53978] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.776285 2024] [auth_basic:error] [pid 46417:tid 46458] [client 192.168.40.1:53984] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.776409 2024] [auth_basic:error] [pid 46416:tid 46449] [client 192.168.40.1:53996] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.786688 2024] [auth_basic:error] [pid 46416:tid 46468] [client 192.168.40.1:54008] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.796642 2024] [auth_basic:error] [pid 46416:tid 46455] [client 192.168.40.1:54010] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
-[Sun Dec 29 09:10:27.807040 2024] [auth_basic:error] [pid 46417:tid 46439] [client 192.168.40.1:54018] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.745656 2024] [auth_basic:error] [pid 46417:tid 46441] [client 192.168.40.1:53960] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.756304 2024] [auth_basic:error] [pid 46416:tid 46419] [client 192.168.40.1:53962] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.765881 2024] [auth_basic:error] [pid 46417:tid 46426] [client 192.168.40.1:53976] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.765995 2024] [auth_basic:error] [pid 46416:tid 46440] [client 192.168.40.1:53980] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.766036 2024] [auth_basic:error] [pid 46417:tid 46469] [client 192.168.40.1:53978] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.776285 2024] [auth_basic:error] [pid 46417:tid 46458] [client 192.168.40.1:53984] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.776409 2024] [auth_basic:error] [pid 46416:tid 46449] [client 192.168.40.1:53996] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.786688 2024] [auth_basic:error] [pid 46416:tid 46468] [client 192.168.40.1:54008] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.796642 2024] [auth_basic:error] [pid 46416:tid 46455] [client 192.168.40.1:54010] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
+[Sun Sep 29 09:10:27.807040 2024] [auth_basic:error] [pid 46417:tid 46439] [client 192.168.40.1:54018] AH01617: user admin: authentication failure for "/admin/": Password Mismatch
 ```
 
 Aguarde alguns minutos e verifique se o Hydra conseguiu identificar alguma credencial válida. No terminal do host h401, pare a execução do Hydra com o comando CTRL+C. Observe que diversas tentativas foram enviadas para o servidor porém nenhuma com sucesso, e diversas outras tentativas ainda estão pendentes. Esse tipo de ataque pode gerar muito ruído na rede (exemplo: logs de falha) e facilmente ser bloqueado.
@@ -815,14 +815,50 @@ Saída esperada: `{"mirror_id":"d01deb36c2d345"}`
 Com os comandos acima, habilitamos o espelhamento do tráfego do switch s203 (que possui o ID indicado no comando) para a interface s203-eth5 (Indicada no comando somente pelo número 5), a qual conecta o s203 ao host ids201, o qual possui uma instanciação do Suricata.
 
 No terminal do ids201, execute o seguinte comando para observar os pacotes do secflood direcionados ao srv501 sendo espelhados para o IDS:
-tcpdump -i srv501-eth0 -n
+```
+tcpdump -i ids201-eth0 -n
+```
 
-No terminal do ids201, pode ser executado o seguinte comando para observar os logs do suricata sobre o ataque:
-tail -f /var/log/suricata/fast.log
+Você deve observar pacotes de LLDP do Kytos e também os pacotes da varredura UDP realizada a partir do secflood (lembre-se que configuramos um intervalo de 30 segundos entra cada varredura no Secflood, então é possível que o tcpdump acima leve alguns segundos para exibir os pacotes da varredura).
 
-Depois disso, podemos executar o script que promoverá a contenção do ataque. Para isso, digite CTRL+C para parar o comando anterior (tail) e execute os seguintes comandos para iniciar o bloqueio automático:
+Ainda no terminal do ids201, pode ser executado o seguinte comando para observar os logs do suricata sobre o ataque:
+```
+tail /var/log/suricata/fast.log
+```
+
+A saída esperada para o comando acima pode ser ilustrada abaixo:
+```
+29/09/2024-14:36:47.216537  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60569 -> 172.16.50.1:238
+29/09/2024-14:36:47.249943  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60567 -> 172.16.50.1:590
+29/09/2024-14:36:47.283256  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60563 -> 172.16.50.1:518
+29/09/2024-14:36:47.316556  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60561 -> 172.16.50.1:428
+29/09/2024-14:36:47.349882  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60567 -> 172.16.50.1:176
+29/09/2024-14:36:47.383208  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60569 -> 172.16.50.1:765
+29/09/2024-14:36:47.451793  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60569 -> 172.16.50.1:176
+29/09/2024-14:36:47.488543  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60567 -> 172.16.50.1:518
+29/09/2024-14:36:47.598341  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60563 -> 172.16.50.1:434
+29/09/2024-14:36:47.793855  [Drop] [**] [1:1000010:6] POSSBL SCAN NMAP UDP (type -sU) [**] [Classification: Attempted Information Leak] [Priority: 2] {UDP} 192.168.20.10:60567 -> 172.16.50.1:322
+```
+
+Como pode ser visto acima, o tráfego está sendo espelhado para o IDS e o Suricata está identificando o ataque de varredura UDP, a partir das regras customizadas. Cada regra no Suricata possui um ID único, no caso dos alertas acima, o ID da regra é `1000010`. Você pode visualizar essa regra a partir do seguinte comando no terminal do host ids201:
+```
+grep -wR sid:1000010 /etc/suricata
+```
+
+Note, ainda, que os alertas gerados pelo IDS possuem uma tag de ação a ser tomada: `[DROP]`. Essa ação, no entanto, não estava definida na regra, conforme pode ser visto na saída do comando grep anterior. Isso ocorre pois existe uma outra configuração do Suricata localizada no arquivo `/etc/suricata/drop.conf` que define quais regras terão como ação o bloqueio automático.
+
+
+O próximo, portanto, consiste em de fato habilitar o bloqueio automático. Conforme citado anteriormente, ao executar IDS em modo de espelhamento de tráfego, as ações de bloqueio valem-se de chamadas de APIs para sistemas externos (tipicamente Firewalls) para efetivar os bloqueios. Para efetuar o bloqueio externo vamos utilizar uma ferramenta chamada `hackinsdn-guardian` que faz o _parsing_ dos logs JSON do Suricata (i.e, `eve.log` -- que inclui informações importantes do tráfego, como a VLAN por exemplo)  e dispara chamadas de bloqueio externo, em particular bloqueios no controlador SDN Kytos.
+
+
+No terminal do host ids201, execute os seguintes comandos:
+```
 export KYTOS_URL=http://<ip_do_seu_pod_kytos>:8181
-echo > /var/log/suricata/eve.json && python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 300
+echo > /var/log/suricata/eve.json
+python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 300
+```
+
+TODO: mudar o IP do Kytos acima.
 
 De modo que a aplicação hackinsdn-guardian irá analisar o arquivo eve.json que contém informações sobre os ataques e as VLANs dos hosts e, se for detectado um ataque, promove um bloqueio de 300 segundos. 
 Após deixar o comando rodando em background (ctrl + z), podemos abrir de novo o fast.log usando o comando anterior e observar que os logs deixam de ser gerados. Na interface web do sec-flood, na aba Dashboard, é possível observar o tráfego sendo gerado, porém, na aba terminal, ao se tentar fazer um ping para o IP do srv501, possivelmente não haverá retorno, indicando sucesso no bloqueio.
