@@ -853,25 +853,31 @@ O próximo, portanto, consiste em de fato habilitar o bloqueio automático. Conf
 
 No terminal do host ids201, execute os seguintes comandos:
 ```
-export KYTOS_URL=http://<ip_do_seu_pod_kytos>:8181
+export KYTOS_URL=http://$KYTOS:8181
 echo > /var/log/suricata/eve.json
 python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 300
 ```
 
-TODO: mudar o IP do Kytos acima.
 
-De modo que a aplicação hackinsdn-guardian irá analisar o arquivo eve.json que contém informações sobre os ataques e as VLANs dos hosts e, se for detectado um ataque, promove um bloqueio de 300 segundos. 
-Após deixar o comando rodando em background (ctrl + z), podemos abrir de novo o fast.log usando o comando anterior e observar que os logs deixam de ser gerados. Na interface web do sec-flood, na aba Dashboard, é possível observar o tráfego sendo gerado, porém, na aba terminal, ao se tentar fazer um ping para o IP do srv501, possivelmente não haverá retorno, indicando sucesso no bloqueio.
-OBS: Delete regras de contenção ao terminar de utilizar a topologia. Em um momento futuro, as regras de contenção podem ser removidas automaticamente se ficarem muito tempo ociosas, por exemplo.
-O bloqueio feito pelo Kytos pode ser verificado a partir do seguinte comando a ser executado no console do Mininet-Sec:
-sh  curl -X GET -H 'Content-type: application/json' http://<ip_do_seu_pod_kytos>:8181/api/hackinsdn/containment/v1/
+A partir dos comandos acima, a aplicação hackinsdn-guardian irá analisar o arquivo `eve.json` que contém informações sobre os ataques conforme identificado pelo Suricata (incluindo as  VLANs dos hosts), se for detectado um ataque, promove um bloqueio do host com duração de 300 segundos. 
 
-A partir disso, pode ser obtido o ID do bloqueio, e ser feita a exclusão da regra de bloqueio, a partir do seguinte comando a ser executado no console do Mininet-Sec:
-sh curl -s -X DELETE http://<ip_do_seu_pod_kytos>:8181/api/hackinsdn/containment/v1/<id_do_bloqueio>
+Aguarde alguns segundos até que um novo ataque de varredura seja executado pelo Secflood e observe no terminal do host ids201 a mensagem de bloqueio sendo criado.
 
+Por fim, acesse novamente o terminal do srv501 e rode o comando abaixo para confirmar que o ataque não mais afeta o host srv501 (lembre-se de aguardar no mínimo 30 segundos que é o intervalo entre execuções configurado no Secflood):
+```
+tcpdump -i srv501-eth0 -n
+```
 
-Além disso, o circuito criado para conexão entre os hosts pode ser excluído através do seguinte comando a ser executado no console do Mininet-Sec:
-sh curl -X DELETE http://10.50.124.139:8181/api/kytos/mef_eline/v2/evc/<id_do_circuito>
+Opcionalmente, é possível remover manualmente o bloqueio acima. Para isso, no terminal do host ids201 pare a execução do `hackinsdn-guardian` com o comando CTRL+C. Em seguida, execute o comando abaixo no terminal do host ids201 para visualizar os bloqueios ativos:
+```
+curl -X GET -H 'Content-type: application/json' http://$KYTOS:8181/api/hackinsdn/containment/v1/ | jq -r
+```
+
+A partir da saída do comando acima, pode ser obtido o ID do bloqueio. Em seguida, pode-se excluir a regra de bloqueio, a partir do seguinte comando a ser executado também no terminal do host ids201 (Substitua o `ID_BLOQUEIO` com o valor obtido no passo anterior):
+```
+curl -s -X DELETE http://$KYTOS:8181/api/hackinsdn/containment/v1/ID_BLOQUEIO
+```
+
 
 
 
