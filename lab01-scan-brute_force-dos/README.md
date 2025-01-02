@@ -601,7 +601,7 @@ Nesta atividade vamos experimentar dois métodos que podem ser utilizados em ata
 
 No Mininet-Sec, abra o Terminal do host srv103. No terminal do host srv103, execute o seguinte comando para iniciar o serviço HTTP com apache2:
 ```
-service-mnsec-apach2.sh srv103 --start --login admin --pass adm123
+service-mnsec-apache2.sh srv103 --start --login admin --pass adm123
 ```
 
 O comando acima inicializará o Apache2 para prover o serviço web nos protocolos HTTP e HTTPS com um site que possui URLs protegidas por autenticação HTTP Basic e outras URLs protegidas por autenticação baseada em formulários HTML (muito comum em sites na Internet). Observe que a senha que configuramos acima (`adm123`), apesar de simples, não consta no dicionário que utilizamos anteriormente.
