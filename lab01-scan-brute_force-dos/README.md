@@ -157,7 +157,7 @@ Você será direcionado ao portal web do secflood, que provê uma interface de u
 
 Após logar no Secflood, navegue pelo menu à esquerda e clique em "Tools List" e então escolha a ferramenta "nmap".
 
-Na tela de utilização do NMAP existem várias opções que podem ser exploradas. A figura abaixo ilustra algumas destas opções. Você pode clicar no botão "Commands" (número 1 na figura) pra visualizar as opções disponíveis e sintaxe da ferramenta. No botão "+ Options" (número 2 na figura) você pode de fato habilitar parâmetros que customizam o funcionamento do nmap. Por fim, o alvo da varredura de portas pode ser especificado no campo de entrada principal (número 3 na figura). Preencha o alvo do ataque como sendo o IP do srv101 cujo valor deve ser **172.16.10.1** (número 3 na figura, sinalizado com a seta):
+Na tela de utilização do NMAP existem várias opções que podem ser exploradas. A figura abaixo ilustra algumas destas opções. Você pode clicar no botão "Commands" (número 1 na figura) pra visualizar as opções disponíveis e sintaxe da ferramenta. No botão "+ Options" (número 2 na figura) você pode de fato habilitar parâmetros que customizam o funcionamento do nmap. Por fim, o alvo da varredura de portas pode ser especificado no campo de entrada principal (número 3 na figura). Preencha o alvo do ataque como sendo o IP do srv101 cujo valor deve ser **172.16.10.1** (número 3 na figura, sinalizado com a seta) e então clique em "Execute":
 
 ![Secflood NMAP](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-nmap.png)
 
