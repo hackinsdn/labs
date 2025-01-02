@@ -202,9 +202,9 @@ nmap 172.16.10.0/24
 Você deve observar uma saída similar ao mostrado abaixo:
 ```
 root@h101:~# nmap 172.16.10.0/24
-Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-23 18:51 UTC
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-09-29 19:19 UTC
 Nmap scan report for 172.16.10.1
-Host is up (0.000063s latency).
+Host is up (0.00072s latency).
 Not shown: 996 closed tcp ports (reset)
 PORT    STATE SERVICE
 22/tcp  open  ssh
@@ -213,29 +213,26 @@ PORT    STATE SERVICE
 443/tcp open  https
 
 Nmap scan report for 172.16.10.2
-Host is up (0.000059s latency).
-Not shown: 996 closed tcp ports (reset)
-PORT    STATE SERVICE
-22/tcp  open  ssh
-25/tcp  open  smtp
-110/tcp open  pop3
-143/tcp open  imap
-
-Nmap scan report for 172.16.10.3
-Host is up (0.000047s latency).
-Not shown: 999 closed tcp ports (reset)
+Host is up (0.00071s latency).
+Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE
 22/tcp open  ssh
+25/tcp open  smtp
+
+Nmap scan report for 172.16.10.3
+Host is up (0.00012s latency).
+All 1000 scanned ports on 172.16.10.3 are in ignored states.
+Not shown: 1000 closed tcp ports (reset)
 
 Nmap scan report for 172.16.10.254
-Host is up (0.000052s latency).
+Host is up (0.000057s latency).
 All 1000 scanned ports on 172.16.10.254 are in ignored states.
 Not shown: 1000 filtered tcp ports (no-response)
 
-Nmap done: 256 IP addresses (4 hosts up) scanned in 20.73 seconds
+Nmap done: 256 IP addresses (4 hosts up) scanned in 20.72 seconds
 ```
 
-Note que, diferente da execução anterior, desta vezes foi realizada uma varredura de toda a rede `172.16.10.0/24`. Além disso, se compararmos a saída apresentada para o host 172.16.10.1 nesta execução e na execução anterior, é possível observar que novas portas foram exibidas: 53/tcp (DNS) e 22/tcp (SSH).
+Note que, diferente da execução anterior, desta vez foi realizada uma varredura de toda a rede `172.16.10.0/24`. Além disso, se compararmos a saída apresentada para o host 172.16.10.1 nesta execução e na execução anterior, é possível observar que novas portas foram exibidas: 53/tcp (DNS) e 22/tcp (SSH).
 
 > [!IMPORTANT]  
 > Por que ocorre essa diferença entre as saídas quando realizada a partir do host secflood e do h101? Considerando a fase de reconhecimento de uma auditoria de segurança, ou mesmo o processo de levantamento de vulnerabilidades, quais as vantagens e desvantagens de ambas as execuções?
