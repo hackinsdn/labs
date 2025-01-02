@@ -488,7 +488,7 @@ O comando acima irá exibir mensagens de log relacionadas a falhas de login.
 
 De volta ao terminal do Mininet-sec, vamos utilizar o aplicativo **mnsecx** (mininet-sec exec) para executar comandos em nós específicos da topologia. Por exemplo, para executar o ataque de brute-force a partir do host h401, execute o seguinte comando no Terminal do Mininet-Sec:
 ```
-mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/CLEAR
+mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/PLAIN
 ```
 
 O comando acima inicializará um ataque de força bruta contra o serviço IMAP que está em execução no srv102 (172.16.10.2). Após executar o ataque você deve visualizar uma saída como mostrado abaixo:
