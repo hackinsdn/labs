@@ -39,6 +39,7 @@ PING 172.16.50.1 (172.16.50.1) 56(84) bytes of data.
 --- 172.16.50.1 ping statistics ---
 4 packets transmitted, 4 received, 0% packet loss, time 3051ms
 rtt min/avg/max/mdev = 0.152/0.220/0.395/0.100 ms
+
 root@h301:~# traceroute -n 172.16.50.1
 traceroute to 172.16.50.1 (172.16.50.1), 30 hops max, 60 byte packets
  1  192.168.30.254  0.112 ms  0.029 ms  0.026 ms
