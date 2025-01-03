@@ -716,6 +716,15 @@ Nesta atividade mostraremos dois tipos de ataque de negação de serviço: exaus
 
 No cenário deste laboratório, o ataque volumétrico afetará o servidor web srv501, que possui um link de apenas 10Mb - sujeito a exaustão de recursos. Já o ataque de Slow HTTP terá como alvo o servidor srv101 - que executa o Apache e pode ser alvo do ataque.
 
+Antes de iniciar ambos os ataques, vamos habilitar o monitoramento de estatísticas de rede na porta do host secflood1 para compararmos a volumetria de tráfego em ambos os ataques. Para isso, a partir da interface do Dashboard abra o terminal do Mininet-sec e execute o seguinte comando:
+```
+ifstat -t -b -i s201-eth2
+```
+
+A saída esperada é ilustrada abaixo:
+![ifstat on mininet-sec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/ifstat-mnsec.png)
+
+
 ### 4.1 Negação de serviço por consumo de banda
 
 Para monitorar os impactos do ataque, vamos iniciar um cliente legítimo e monitorar pelo tempo de resposta da página (consideraremos um timeout de 1s antes de considerar a página inacessível). Para isso, no terminal do host h101, execute:
@@ -764,7 +773,17 @@ Volte ao gráfico do host h101 e observe que imediatamente o tempo de resposta s
 
 ![slowloris](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/slowloris.png)
 
-Feche o gráfico do "ali", pressionando a tecla "q". 
+Em seguida, navegue novamente para o terminal do secflood1 e pressione CTRL+C para encerrar o ataque. Acesse novamente o gráfico do "ali" no host h101 e observe que alguns segundos depois o acesso é normalizado.
+
+No terminal do host h101, feche o gráfico do "ali", pressionando a tecla "q".
+
+No terminal do Mininet-sec, pare a coleta de estatísticas de rede do ifstat pressionando CTRL+C. Observe as estatísticas coletadas do ataque com hping3 e slowloris, conforme ilustrado na figura abaixo:
+![ifstat mnsec attacks](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/ifstat-mnsec-attacks.png)
+
+> [!IMPORTANT]  
+> Comparando a volumetria de tráfego entre os dois ataques, explique quais mecanismos poderiam ser utilizados para detectar cada um deles e quais mitigações poderiam ser aplicados para reduzir os danos.
+<textarea name="resposta_ataques_dos_hping_slowloris" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+</textarea>
 
 ## Atividade 5 - Execução, Detecção e Contenção de ataques de varredura
 
