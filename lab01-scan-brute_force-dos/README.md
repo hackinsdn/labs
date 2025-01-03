@@ -805,7 +805,7 @@ Abaixo uma ilustração da configuração acima:
 ![secflood nmap repeat](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-nmap-repeat.png)
 
 Em Bulk Execution, é possível visualizar que o ataque foi configurado. Em seguida, clicamos em Execute tasks.
-![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec.png)
+![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec-1.png)
 
 Com a execução desses comandos, o ataque será configurado e executado. Na aba Dashboard da interface web do sec-flood, pode-se observar a grande quantidade de tráfego gerado. 
 ![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec.png)
