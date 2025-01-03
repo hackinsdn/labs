@@ -792,8 +792,9 @@ Nesta última atividade, vamos ilustrar um fluxo completo de execução, detecç
 O primeiro passo é ativar a execução do ataque na interface web do Secflood. Neste ataque, vamos utilizar a ferramenta nmap e configurá-la de forma a executar de forma periódica para fazer a varredura de portas a cada 30 segundos.
 
 Na interface web do Secflood, selecione o menu _Tool List_ e depois _NMAP_. Forneça os dados abaixo:
-- No campo "Enter the target's address" informe: --min-rate 300 172.16.50.1
-- Na parte +Options, selecionamos "Scan all 65535 ports", com o fim de gerar uma grande quantidade de tráfego, além disso escolha também a opção de "Scan using UDP";
+- No campo "Enter the target's address" informe: `--min-rate 300 172.16.50.1`
+- Na parte +Options, preencha o campo "Scan specific ports" com: `1-1024`
+- Ainda nas opções adicionais, marque a opção de "Scan using UDP";
 - Na parte Execution parameters, deve-se definir as seguintes opções;
  - Repeat this command: -1;
  - Delay strategy: Fixed;
