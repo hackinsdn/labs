@@ -742,11 +742,13 @@ Pare o ataque pressionando CTRL+C no terminal do Secflood1. Volte ao gráfico do
 
 No host h101, pare o "ali" pressionando a tecla "q". 
 
+Observe que o cliente legítimo (neste cenário representado pela ferramenta "ali" no host h101) foi totalmente impactado pelo ataque contra o servidor srv501, ou seja, todos os recursos disponíveis no servidor srv501 foram exauridos pelo ataque, indisponibilizando o serviço.
+
 ### 4.2 Negação de serviço do tipo Slow HTTP
 
 Os ataques do tipo Slow HTTP consistem no envio de requisições HTTP bem lentamente para manter o servidor ocupado e inapto a tratar requisições legítimas. O ataque de _Slowloris_ possui exatamente este modus operandi, consistindo basicamente em um cliente que sobrecarrega um servidor alvo com requisições simultâneas de abertura e manutenção da conexão. Nesta atividade, utilizaremos como alvo o servidor srv103 (lembre-se que iniciamos o Apache2 no host srv103 na Atividade 3.3).
 
-Novamente vamos executar o aplicativo "ali" para monitorar os impactos do ataque, simulando um usuário legítimo. Para isso, execute o seguinte comando no host srv101:
+Novamente vamos executar o aplicativo "ali" para monitorar os impactos do ataque, simulando um usuário legítimo. Para isso, execute o seguinte comando no host h101:
 ```
 ali -t 1s -d 0 http://172.16.10.3
 ```
