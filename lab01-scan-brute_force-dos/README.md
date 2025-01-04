@@ -805,7 +805,7 @@ Abaixo uma ilustração da configuração acima:
 ![secflood nmap repeat](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-nmap-repeat.png)
 
 Em Bulk Execution, é possível visualizar que o ataque foi configurado. Em seguida, clicamos em Execute tasks.
-![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec.png)
+![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec-1.png)
 
 Com a execução desses comandos, o ataque será configurado e executado. Na aba Dashboard da interface web do sec-flood, pode-se observar a grande quantidade de tráfego gerado. 
 ![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec.png)
@@ -815,7 +815,7 @@ Agora podemos acessar o terminal do srv501 e rodar o comando abaixo para visuali
 tcpdump -i srv501-eth0 -n
 ```
 
-O próximo passo é configurar mecanismos para detectar o ataque. Para isso, vamos configurar um Sistema de Detecção de Intrusão (IDS) baseado no Suricata, com regras customizadas para detecção de ataques de varredura de portas. O funcionamento de qualquer IDS pressupõe ou um modelo de implantação em que o tráfego é transportado através do IDS (modo _inline_) ou o tráfego é espelhado para o IDS para análise. Nesta atividade vamos utilizar o modelo espelhado. Assim, precisaremos espelhar o tráfego de rede gerado pelo Secflood para o IDS que executa no host **ids201**. Note que neste cenário da atividade o IDS detecta os ataques na rede de origem, potencialmente identificando máquinas comprometidas efetuando ataques externos. Em ambiente reais, além da detecção na origem, este tipo de ataque pode ser identificado também no destino ou em provedores intermediários, casos em que tipicamente resulta em uma notificação de incidente de segurança que deverá ser tratado pelo time de segurança da organização que originou o ataque.
+O próximo passo é configurar mecanismos para detectar o ataque. Para isso, vamos configurar um Sistema de Detecção de Intrusão (IDS) baseado no Suricata, com regras customizadas para detecção de ataques de varredura de portas. O funcionamento de qualquer IDS pressupõe ou um modelo de implantação em que o tráfego é transportado através do IDS (modo _inline_) ou o tráfego é espelhado para o IDS para análise. Nesta atividade vamos utilizar o modelo espelhado. Assim, precisaremos espelhar o tráfego de rede gerado pelo Secflood para o IDS que executa no host **ids201**. Note que neste cenário da atividade o IDS detecta os ataques na rede de origem, potencialmente identificando máquinas comprometidas efetuando ataques externos. Em ambiente reais, além da detecção na origem, este tipo de ataque pode ser identificado também no destino ou em provedores intermediários, casos que tipicamente resultam em notificações de incidente de segurança que deverão ser tratadas pelo time de segurança da organização que originou o ataque.
 
 Para espelhar o tráfego para o ids201, vamos utilizar o controlador SDN Kytos com uma aplicação de espelhamento de tráfego. Para isso, a partir do Dashboard HackInSDN, abra o terminal do Kytos e digite os comandos a seguir para obter o ID do circuito criado:
 ```
