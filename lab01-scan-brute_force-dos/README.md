@@ -3,6 +3,7 @@
 Neste laboratório vamos simular um cenário típico de ataques de varredura de portas (scan), ataques para quebra do mecanismo de autenticação (brute-force) e ataques de negação de serviço simples (DoS). Os ataques ocorrerão em um topologia conforme ilustrado na Figura 1.
 
 ![Topology](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/topology.png)
+
 *Figura 1: Topologia de Rede do Laboratório*
 
 ## Atividade 1 - Acesso aos nós e teste de conectividade
@@ -778,6 +779,7 @@ Em seguida, navegue novamente para o terminal do secflood1 e pressione CTRL+C pa
 No terminal do host h101, feche o gráfico do "ali", pressionando a tecla "q".
 
 No terminal do Mininet-sec, pare a coleta de estatísticas de rede do ifstat pressionando CTRL+C. Observe as estatísticas coletadas do ataque com hping3 e slowloris, conforme ilustrado na figura abaixo:
+
 ![ifstat mnsec attacks](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/ifstat-mnsec-attacks.png)
 
 > [!IMPORTANT]  
