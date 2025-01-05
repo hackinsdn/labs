@@ -7,7 +7,7 @@ Neste laboratório vamos simular um cenário típico de ataques de varredura de 
 
 ## Atividade 1 - Acesso aos nós e teste de conectividade
 
-Após a criação do laboratório, você terá a disposição dois servidores virtuais no Kubernetes (chamados de Pods): Kytos e Mininet-Sec. O Mininet-Sec é um emulador de redes responsável pela criação da topologia apresentada na Figura 1. Naquela topologia, parte dos nós são *namespaces de rede do Linux*, outros são switches virtuais do tipo OpenVSwitch e Linux Bridge, e dois deles são também Pods no Kubernetes. Já o Kytos é o orquestrador de redes, responsável pelo gerenciamento de alguns nós da topologia. Nesta atividade, vamos testar o acesso aos nós citados acima e testar a conectividade entre eles.
+Após a criação do laboratório, você terá a disposição um servidor do tipo container virtual no Kubernetes (chamados de Pod): o Mininet-Sec. O Mininet-Sec é um emulador de redes responsável pela criação da topologia apresentada na Figura 1. Naquela topologia, parte dos nós são *namespaces de rede do Linux*, outros são switches virtuais do tipo OpenVSwitch e Linux Bridge, e dois deles são também Pods no Kubernetes. Nesta atividade, vamos testar o acesso aos recursos criados para o lab e testar a conectividade entre eles.
 
 Clique no link do Serviço "http-mininet-sec" conforme ilustrado abaixo para abrir a interface web do Mininet-Sec:
 
@@ -86,11 +86,11 @@ pipe 4
 
 O comportamento acima é esperado e se dá pelo fato de que o AS200 ainda não foi configurado para prover conectividade entre os nós. O AS 200 possui switches programáveis e uma rede SDN (Rede Definida por Software), cujo controlador é o Kytos (leia mais sobre o Kytos em https://github.com/kytos-ng/). Vamos, portanto, configurar o Kytos para estabelecer a conectividade no AS 200.
 
-Para isso, vamos abrir o console do Kytos através do seguinte link na interface do Dashboard HackInSDN:
+Para isso, vamos abrir o terminal do Kytos através do Mininet-sec:
 
 ![Abrir Kytos](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-kytos.png)
 
-Ao acessar o terminal do Kytos, vamos utilizar a API REST do Kytos para criar uma VPN L2 que interconecta o secflood ao firewall fw201. Para isso, na aba com o terminal do Kytos, execute o seguinte comando:
+No terminal do Kytos, vamos utilizar o comando curl para enviar requisições para a API REST do Kytos para criar uma VPN L2 que interconecta o secflood ao firewall fw201. Para isso, na aba com o terminal do Kytos, execute o seguinte comando:
 ```
 curl -s -H 'Content-type: application/json' -X POST http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ -d '{"name": "l2vpn-secflood-to-fw", "dynamic_backup_path": true, "uni_z": {"interface_id": "00:00:00:00:00:00:00:cb:1", "tag": {"tag_type": "vlan", "value": "untagged"}}, "uni_a": {"interface_id": "00:00:00:00:00:00:00:c9:2", "tag": {"tag_type": "vlan", "value": "untagged"}}}' | jq
 ```
@@ -171,11 +171,11 @@ Este resultado acima mostra que o SCAN obteve resultados interessantes para o re
 
 Na execução anterior, foi possível observar que o nmap executado a partir do secflood e tendo como alvo o srv101 retornou apenas duas portas TCP abertas, 80 e 443. Vamos repetir o testes a partir da CLI do host h101 e comparar os resultados.
 
-Antes de iniciar o ataque propriamente dito, abra o terminal do alvo da varredura, o host srv101 na visualização do Mininet-Sec:
+Antes de iniciar o ataque propriamente dito, abra o terminal do alvo da varredura -- o host srv101 -- na visualização do Mininet-Sec:
 
 ![Abrir srv101](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-srv101.png)
 
-Na visualização da topologia no Mininet-Sec, escolha o host h101 e abra seu terminal.
+Ainda na visualização da topologia no Mininet-Sec, escolha o host h101 e abra também o terminal dele.
 
 ![Abrir h101](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-h101.png)
 
@@ -817,7 +817,7 @@ tcpdump -i srv501-eth0 -n
 
 O próximo passo é configurar mecanismos para detectar o ataque. Para isso, vamos configurar um Sistema de Detecção de Intrusão (IDS) baseado no Suricata, com regras customizadas para detecção de ataques de varredura de portas. O funcionamento de qualquer IDS pressupõe ou um modelo de implantação em que o tráfego é transportado através do IDS (modo _inline_) ou o tráfego é espelhado para o IDS para análise. Nesta atividade vamos utilizar o modelo espelhado. Assim, precisaremos espelhar o tráfego de rede gerado pelo Secflood para o IDS que executa no host **ids201**. Note que neste cenário da atividade o IDS detecta os ataques na rede de origem, potencialmente identificando máquinas comprometidas efetuando ataques externos. Em ambiente reais, além da detecção na origem, este tipo de ataque pode ser identificado também no destino ou em provedores intermediários, casos que tipicamente resultam em notificações de incidente de segurança que deverão ser tratadas pelo time de segurança da organização que originou o ataque.
 
-Para espelhar o tráfego para o ids201, vamos utilizar o controlador SDN Kytos com uma aplicação de espelhamento de tráfego. Para isso, a partir do Dashboard HackInSDN, abra o terminal do Kytos e digite os comandos a seguir para obter o ID do circuito criado:
+Para espelhar o tráfego para o ids201, vamos utilizar o controlador SDN Kytos com uma aplicação de espelhamento de tráfego. Para isso, a partir da topologia no Mininet-Sec, abra o terminal do Kytos e digite os comandos a seguir para obter o ID do circuito criado:
 ```
 EVC_ID=$(curl -s http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ | jq -r '.[].id')
 echo $EVC_ID
@@ -827,7 +827,7 @@ A saída esperada é o ID do circuito, no formato "08e9526bee7e40".
 
 A partir do ID do circuit, ainda no terminal do Kytos, execute o comando a segurir para habilitar o espelhamento de tráfego no circuito em questão:
 ```
-curl -s -X POST -H 'Content-type: application/json' http://127.0.0.1:8181/api/hackinsdn/mirror/v1/ -d '{"circuit_id": "'$EVC_ID'", "switch": "00:00:00:00:00:00:00:cb", "target_port": "00:00:00:00:00:00:00:cb:5", "name": "mirror for EVC '$EVC_ID'"}'
+curl -s -X POST -H 'Content-type: application/json' http://127.0.0.1:8181/api/hackinsdn/mirror/v1/ -d '{"circuit_id": "'$EVC_ID'", "switch": "00:00:00:00:00:00:00:cb", "target_port": "00:00:00:00:00:00:00:cb:5", "name": "mirror for EVC '$EVC_ID'"}' | jq -r
 ```
 
 Saída esperada: `{"mirror_id":"d01deb36c2d345"}`
@@ -873,7 +873,7 @@ O próximo, portanto, consiste em de fato habilitar o bloqueio automático. Conf
 
 No terminal do host ids201, execute os seguintes comandos:
 ```
-export KYTOS_URL=http://$KYTOS:8181
+export KYTOS_URL=http://10.20.1.3:8181
 echo > /var/log/suricata/eve.json
 python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 300
 ```
