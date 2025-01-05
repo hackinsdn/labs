@@ -1,14 +1,12 @@
 # Roteiro de Laboratório - Execução, detecção e contenção de ataques de varredura de portas, brute-force e negação de serviço
 
-Neste laboratório vamos simular um cenário típico de ataques de varredura de portas (scan), ataques para quebra do mecanismo de autenticação (brute-force) e ataques de negação de serviço simples (DoS). Os ataques ocorrerão em um topologia conforme ilustrado na Figura 1.
+Neste laboratório vamos simular um cenário típico de ataques de varredura de portas (scan), ataques para quebra do mecanismo de autenticação (brute-force) e ataques de negação de serviço simples (DoS). Os ataques ocorrerão em um topologia conforme ilustrado na figura abaixo:
 
 ![Topology](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/topology.png)
 
-*Figura 1: Topologia de Rede do Laboratório*
-
 ## Atividade 1 - Acesso aos nós e teste de conectividade
 
-Após a criação do laboratório, você terá a disposição um servidor do tipo container virtual no Kubernetes (chamados de Pod): o Mininet-Sec. O Mininet-Sec é um emulador de redes responsável pela criação da topologia apresentada na Figura 1. Naquela topologia, parte dos nós são *namespaces de rede do Linux*, outros são switches virtuais do tipo OpenVSwitch e Linux Bridge, e dois deles são também Pods no Kubernetes. Nesta atividade, vamos testar o acesso aos recursos criados para o lab e testar a conectividade entre eles.
+Após a criação do laboratório, você terá a disposição um servidor do tipo container virtual no Kubernetes (chamados de Pod): o Mininet-Sec. O Mininet-Sec é um emulador de redes responsável pela criação da topologia apresentada na figura anterior. Naquela topologia, parte dos nós são *namespaces de rede do Linux*, outros são switches virtuais do tipo OpenVSwitch e Linux Bridge, e dois deles são também Pods no Kubernetes. Nesta atividade, vamos testar o acesso aos recursos criados para o lab e testar a conectividade entre eles.
 
 Clique no link do Serviço "http-mininet-sec" conforme ilustrado abaixo para abrir a interface web do Mininet-Sec:
 
@@ -909,19 +907,3 @@ curl -s -X DELETE http://$KYTOS:8181/api/hackinsdn/containment/v1/ID_BLOQUEIO
 ```
 
 Com isso concluimos este laboratório!
-
-
-> [!NOTE]
-> Useful information that users should know, even when skimming content.
-
-> [!TIP]
-> Helpful advice for doing things better or more easily.
-
-> [!IMPORTANT]
-> Key information users need to know to achieve their goal.
-
-> [!WARNING]
-> Urgent info that needs immediate user attention to avoid problems.
-
-> [!CAUTION]
-> Advises about risks or negative outcomes of certain actions.
