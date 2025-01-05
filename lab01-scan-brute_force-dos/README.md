@@ -839,7 +839,7 @@ No terminal do ids201, execute o seguinte comando para observar os pacotes do se
 tcpdump -i ids201-eth0 -n
 ```
 
-Você deve observar pacotes de LLDP do Kytos e também os pacotes da varredura UDP realizada a partir do secflood (lembre-se que configuramos um intervalo de 30 segundos entra cada varredura no Secflood, então é possível que o tcpdump acima leve alguns segundos para exibir os pacotes da varredura).
+Você deve observar pacotes de LLDP do Kytos e também os pacotes da varredura UDP realizada a partir do secflood (lembre-se que configuramos um intervalo de 30 segundos entra cada varredura no Secflood, então é possível que o tcpdump acima leve alguns segundos para exibir os pacotes da varredura). Após confirmar que o IDS está recebendo o tráfego espelhado, pare a captura de pacotes digitando CTRL+C.
 
 Ainda no terminal do ids201, pode ser executado o seguinte comando para observar os logs do suricata sobre o ataque:
 ```
