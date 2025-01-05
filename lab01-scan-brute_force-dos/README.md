@@ -289,7 +289,7 @@ De volta a interface web do Secflood, execute um scan UDP tendo como alvo novame
 
 A saída esperada para a varredura executada é semelhante ao apresentado abaixo:
 ```
-Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-24 08:28 UTC
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-09-30 08:28 UTC
 Nmap scan report for 172.16.10.1
 Host is up (0.00048s latency).
 
@@ -378,7 +378,7 @@ listening on fw101-eth2, link-type EN10MB (Ethernet), snapshot length 262144 byt
 
 Repita o scan com NMAP, porém agora marque também a opção **Service detection (Lighter)**. A varredura deve ser um pouco mais longa, pois agora o NMAP executará algumas checagens adicionais para tentar identificar o serviço. A saída esperada deve ser similar ao mostrado abaixo:
 ```
-Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-24 08:49 UTC
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-09-30 08:49 UTC
 Nmap scan report for 172.16.10.1
 Host is up (0.00042s latency).
 
@@ -419,7 +419,7 @@ nmap -p T:443,25,465,587,143,110,993,995,8443 --script ssl-heartbleed 172.16.10.
 O comando acima irá varrer diversas redes e diversas portas - portas que potencialmente executam alguma aplicação que faz uso de SSL (exemplo: 443 que provavelmente executa HTTPS, ou ainda porta 587 que roda o cliente SMTP e pode fazer uso de SSL quando o cliente submete o comando STARTTLS) - checando pela vulnerabilidade SSL Heartbleed através do script `ssl-heartbleed.nse` (que por padrão fica localizado em /usr/share/nmap/scripts). A saída esperada é ilustrada abaixo (a execução será um pouco mais longa que o habitual devido a quantidade de hosts para escanear):
 ```
 root@mnsec-secflood1-637b0d4f77fb4f:/# nmap -p T:443,25,465,587,143,110,993,995,8443 --script ssl-heartbleed 172.16.10.0/24 172.16.20.0/24 172.16.30.0/24 172.16.40.0/24 172.16.50.0/24
-Starting Nmap 7.93 ( https://nmap.org ) at 2024-12-24 09:22 UTC
+Starting Nmap 7.93 ( https://nmap.org ) at 2024-09-30 09:22 UTC
 ...
 Nmap scan report for 172.16.40.1
 Host is up (0.00047s latency).
@@ -496,24 +496,24 @@ O comando acima inicializará um ataque de força bruta contra o serviço IMAP q
 root@mininet-sec-637b0d4f77fb4f-dc67c9b77-f2x6p:/src/mnsec# mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/PLAIN
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 07:52:15
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-09-29 07:52:15
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 315 login tries (l:15/p:21), ~20 tries per task
 [DATA] attacking smtp://172.16.10.2:25/PLAIN
 [25][smtp] host: 172.16.10.2   login: teste   password: hackinsdn
 1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-10-29 07:52:20
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-09-29 07:52:20
 ```
 
 No terminal do srv102, pare a execução do tail com o comando CTRL+C e visualize as tentativas de conexão:
 ```
 root@srv102:~# tail -f /tmp/mnsec/srv102/log/smtp.log
 ...
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "hackinsdn", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50540", "status": "success", "timestamp": "2024-10-29T07:52:17.149453", "username": "teste"}
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "password", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50598", "status": "failed", "timestamp": "2024-10-29T07:52:17.159672", "username": "guest"}
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "123456", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50568", "status": "failed", "timestamp": "2024-10-29T07:52:17.170760", "username": "guest"}
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "teste123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50588", "status": "failed", "timestamp": "2024-10-29T07:52:17.171292", "username": "guest"}
-{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "abc123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50592", "status": "failed", "timestamp": "2024-10-29T07:52:17.171531", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "hackinsdn", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50540", "status": "success", "timestamp": "2024-09-29T07:52:17.149453", "username": "teste"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "password", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50598", "status": "failed", "timestamp": "2024-09-29T07:52:17.159672", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "123456", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50568", "status": "failed", "timestamp": "2024-09-29T07:52:17.170760", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "teste123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50588", "status": "failed", "timestamp": "2024-09-29T07:52:17.171292", "username": "guest"}
+{"action": "login", "dest_ip": "0.0.0.0", "dest_port": "25", "password": "abc123", "server": "smtp_server", "src_ip": "192.168.40.1", "src_port": "50592", "status": "failed", "timestamp": "2024-09-29T07:52:17.171531", "username": "guest"}
 ...
 ^C
 ```
@@ -564,7 +564,7 @@ Ao executar o comando acima você deverá observar uma série de erros retornado
 root@h401:~# hydra -I -l admin -P /tmp/wordlist-password.txt imap://172.16.10.2/PLAIN
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 08:35:22
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-09-29 08:35:22
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 21 login tries (l:1/p:21), ~2 tries per task
 [DATA] attacking imap://172.16.10.2:143/PLAIN
@@ -575,7 +575,7 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2024-10-29 08:35:
 [ERROR] IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled.
 
 1 of 1 target completed, 0 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-10-29 08:35:24
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2024-09-29 08:35:24
 ```
 
 A mensagem de erro listada acima (`IMAP PLAIN AUTH : 2 NO [PRIVACYREQUIRED] Plaintext authentication disabled`) indica que os mecanismos de autenticação estão desativados quando a conexão não possui criptografia TLS/SSL (boa prática!). Portanto, temos duas opções na execução do hydra: 1) executar um STARTTLS para transformar a conexão IMAP em uma conexão segura, ou executar o Hydra na porta do IMAPS (993). Vamos executar o Hydra com STARTTLS:
@@ -839,7 +839,7 @@ No terminal do ids201, execute o seguinte comando para observar os pacotes do se
 tcpdump -i ids201-eth0 -n
 ```
 
-Você deve observar pacotes de LLDP do Kytos e também os pacotes da varredura UDP realizada a partir do secflood (lembre-se que configuramos um intervalo de 30 segundos entra cada varredura no Secflood, então é possível que o tcpdump acima leve alguns segundos para exibir os pacotes da varredura).
+Você deve observar pacotes de LLDP do Kytos e também os pacotes da varredura UDP realizada a partir do secflood (lembre-se que configuramos um intervalo de 30 segundos entra cada varredura no Secflood, então é possível que o tcpdump acima leve alguns segundos para exibir os pacotes da varredura). Após confirmar que o IDS está recebendo o tráfego espelhado, pare a captura de pacotes digitando CTRL+C.
 
 Ainda no terminal do ids201, pode ser executado o seguinte comando para observar os logs do suricata sobre o ataque:
 ```
@@ -881,7 +881,10 @@ python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 30
 
 A partir dos comandos acima, a aplicação hackinsdn-guardian irá analisar o arquivo `eve.json` que contém informações sobre os ataques conforme identificado pelo Suricata (incluindo as  VLANs dos hosts), se for detectado um ataque, promove um bloqueio do host com duração de 300 segundos. 
 
-Aguarde alguns segundos até que um novo ataque de varredura seja executado pelo Secflood e observe no terminal do host ids201 a mensagem de bloqueio sendo criado.
+Aguarde alguns segundos até que um novo ataque de varredura seja executado pelo Secflood e observe no terminal do host ids201 a mensagem de bloqueio sendo criado. No terminal do host ids201 você deve visualizar uma mensagem do tipo:
+```
+Mon Sep 30 09:02:15 UTC 2024 Block untagged 192.168.20.10
+```
 
 Por fim, acesse novamente o terminal do srv501 e rode o comando abaixo para confirmar que o ataque não mais afeta o host srv501 (lembre-se de aguardar no mínimo 30 segundos que é o intervalo entre execuções configurado no Secflood):
 ```
