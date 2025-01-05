@@ -893,6 +893,11 @@ Por fim, acesse novamente o terminal do srv501 e rode o comando abaixo para conf
 tcpdump -i srv501-eth0 -n
 ```
 
+> [!IMPORTANT]  
+> O bloqueio automático de ataques como mostrado acima é uma ferramenta interessante para a rápida resposta a incidentes de segurança, porém ele vem acompanhado de alguns riscos. Quais riscos você observa na estratégia adotada acima e como esses riscos podem ser mitigados?
+<textarea name="resposta_bloqueio_automatico" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+</textarea>
+
 Opcionalmente, é possível remover manualmente o bloqueio acima. Para isso, no terminal do host ids201 pare a execução do `hackinsdn-guardian` com o comando CTRL+C. Em seguida, execute o comando abaixo no terminal do host ids201 para visualizar os bloqueios ativos:
 ```
 curl -X GET -H 'Content-type: application/json' http://$KYTOS:8181/api/hackinsdn/containment/v1/ | jq -r
@@ -903,6 +908,7 @@ A partir da saída do comando acima, pode ser obtido o ID do bloqueio. Em seguid
 curl -s -X DELETE http://$KYTOS:8181/api/hackinsdn/containment/v1/ID_BLOQUEIO
 ```
 
+Com isso concluimos este laboratório!
 
 
 
