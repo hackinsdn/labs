@@ -721,6 +721,7 @@ ifstat -t -b -i s201-eth2
 ```
 
 A saída esperada é ilustrada abaixo:
+
 ![ifstat on mininet-sec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/ifstat-mnsec.png)
 
 
