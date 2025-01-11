@@ -137,7 +137,7 @@ rtt min/avg/max/mdev = 3.444/3.497/3.546/0.044 ms
 
 ## Atividade 2 - Ataques de varredura de porta
 
-Os ataques de varredura de porta, também conhecidos como *port scanning*, visam levantar informações sobre um ambiente alvo, incluindo os computadores que estão online, serviços de rede em execução no computador (i.e, portas abertas) e informações sobre o software que está recebendo pacotes em determinada porta. A varredura de portas faz parte da fase de reconhecimento de rede e levantamento de informações em um ataque ou exercício de auditoria, ou seja, em um ataque coordenado e autorizado o qual pode ser realizado em uma organização com o objetivo de avaliar a eficácia dos sistemas de segurança cibernética aplicados. Nesta atividade vamos explorar alguns cenários de varredura de porta utilizando a ferramenta **nmap**.
+Os ataques de varredura de porta, também conhecidos como *port scanning*, visam levantar informações sobre um ambiente alvo, incluindo os computadores que estão online, serviços de rede em execução no computador (i.e, portas abertas) e informações sobre o software que está recebendo pacotes em determinada porta. A varredura de portas faz parte da fase de reconhecimento de rede e levantamento de informações em um ataque ou exercício de auditoria (exercício de auditoria aqui refere-se a uma ação/ataque coordenada e autorizada o qual pode ser realizado em uma organização com o objetivo de avaliar a eficácia dos sistemas de segurança cibernética aplicados). Nesta atividade vamos explorar alguns cenários de varredura de porta utilizando a ferramenta **nmap**.
 
 ### 2.1 Executando nmap através da interface web do secflood
 
