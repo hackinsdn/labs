@@ -83,7 +83,7 @@ From 192.168.20.10 icmp_seq=4 Destination Host Unreachable
 pipe 4
 ```
 
-O comportamento acima é esperado e se dá pelo fato de que o AS200 ainda não foi configurado para prover conectividade entre os nós. O AS 200 possui switches programáveis e uma rede SDN (Rede Definida por Software), cujo controlador é o Kytos (leia mais sobre o Kytos em https://github.com/kytos-ng/). Vamos, portanto, configurar o Kytos para estabelecer a conectividade no AS 200, através da criação de um circuito os qual irá permitir a troca de pacotes entre interfaces de hosts de grupos distintos.
+O comportamento acima é esperado e se dá pelo fato de que o AS200 ainda não foi configurado para prover conectividade entre os nós. O AS 200 possui switches programáveis e uma rede SDN (Rede Definida por Software), cujo controlador é o Kytos (leia mais sobre o Kytos em https://github.com/kytos-ng/). Vamos, portanto, configurar o Kytos para estabelecer a conectividade no AS 200, através da criação de um circuito virtual de VPN L2 (também chamado de EVC, _Ethernet Virtual Circuit_) que irá permitir a troca de pacotes entre interfaces de hosts de grupos distintos.
 
 Para isso, vamos abrir o terminal do Kytos através do Mininet-sec:
 
