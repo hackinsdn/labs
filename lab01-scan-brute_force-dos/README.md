@@ -83,7 +83,7 @@ From 192.168.20.10 icmp_seq=4 Destination Host Unreachable
 pipe 4
 ```
 
-O comportamento acima é esperado e se dá pelo fato de que o AS200 ainda não foi configurado para prover conectividade entre os nós. O AS 200 possui switches programáveis e uma rede SDN (Rede Definida por Software), cujo controlador é o Kytos (leia mais sobre o Kytos em https://github.com/kytos-ng/). Vamos, portanto, configurar o Kytos para estabelecer a conectividade no AS 200.
+O comportamento acima é esperado e se dá pelo fato de que o AS200 ainda não foi configurado para prover conectividade entre os nós. O AS 200 possui switches programáveis e uma rede SDN (Rede Definida por Software), cujo controlador é o Kytos (leia mais sobre o Kytos em https://github.com/kytos-ng/). Vamos, portanto, configurar o Kytos para estabelecer a conectividade no AS 200, através da criação de um circuito os qual irá permitir a troca de pacotes entre interfaces de hosts de grupos distintos.
 
 Para isso, vamos abrir o terminal do Kytos através do Mininet-sec:
 
@@ -137,7 +137,7 @@ rtt min/avg/max/mdev = 3.444/3.497/3.546/0.044 ms
 
 ## Atividade 2 - Ataques de varredura de porta
 
-Os ataques de varredura de porta, também conhecidos como *port scanning*, visam levantar informações sobre um ambiente alvo, incluindo os computadores que estão online, serviços de rede em execução no computador (i.e, portas abertas) e informações sobre o software que recebendo pacotes em determinada porta. A varredura de portas faz parte da fase de reconhecimento de rede e levantamento de informações em um ataque ou exercício de auditoria. Nesta atividade vamos explorar alguns cenários de varredura de porta utilizando a ferramenta **nmap**.
+Os ataques de varredura de porta, também conhecidos como *port scanning*, visam levantar informações sobre um ambiente alvo, incluindo os computadores que estão online, serviços de rede em execução no computador (i.e, portas abertas) e informações sobre o software que está recebendo pacotes em determinada porta. A varredura de portas faz parte da fase de reconhecimento de rede e levantamento de informações em um ataque ou exercício de auditoria, ou seja, em um ataque coordenado e autorizado o qual pode ser realizado em uma organização com o objetivo de avaliar a eficácia dos sistemas de segurança cibernética aplicados. Nesta atividade vamos explorar alguns cenários de varredura de porta utilizando a ferramenta **nmap**.
 
 ### 2.1 Executando nmap através da interface web do secflood
 
@@ -271,11 +271,11 @@ Tal comportamento se dá devido a forma como a varredura de rede padrão do nmap
 19:45:37.523543 IP 192.168.10.1.37988 > 172.16.10.1.443: Flags [R], seq 1376385576, win 0, length 0
 ```
 
-Observe que os pacotes seguem uma sequencia lógica: o host que executa o nmap (192.168.10.1) envia um pacote TCP-SYN na porta de interesse (observe, inclusive, que por padrão o NMAP começa com as portas mais comuns 23, 110, 143, 443, etc. uma estratégia mais eficience que fazer o levantamento sequencial), caso a porta não esteja aberta no host alvo (172.16.10.1 na saída acima) uma resposta TCP-RST (reset) é enviada. Este é o conhecido processo **three-way handshake** do TCP, porém invés de o cliente confirmar a abertura de conexão com o ACK final, ele envia o reset (RST). Isso ocorre para a porta 23, então 110, 143, mas o comportamento muda na porta 443. Para a porta 443 (https), o host srv101 responde com TCP-SYN-ACK `S.` e então o host que executa o scan envia o TCP-RST (reset). Esse comportamento é um indicativo de que a porta está aberta. Note que o nmap possui outros tipos de varredura (exemplo: Connect/ACK/Window/Maimon scans/TCP Null/FIN/Xmas), mas não as abordaremos neste laboratórios.
+Observe que os pacotes seguem uma sequencia lógica: o host que executa o nmap (192.168.10.1) envia um pacote TCP-SYN na porta de interesse (observe, inclusive, que por padrão o NMAP começa com as portas mais comuns 23, 110, 143, 443, etc. uma estratégia mais eficience que fazer o levantamento sequencial), caso a porta não esteja aberta no host alvo (172.16.10.1 na saída acima) uma resposta TCP-RST (reset) é enviada. Este é o conhecido processo **three-way handshake** do TCP, porém ao invés de o cliente confirmar a abertura de conexão com o ACK final, ele envia o reset (RST). Isso ocorre para a porta 23, então 110, 143, mas o comportamento muda na porta 443. Para a porta 443 (https), o host srv101 responde com TCP-SYN-ACK `S.` e então o host que executa o scan envia o TCP-RST (reset). Esse comportamento é um indicativo de que a porta está aberta. Note que o nmap possui outros tipos de varredura (exemplo: Connect/ACK/Window/Maimon scans/TCP Null/FIN/Xmas), mas não as abordaremos neste laboratórios.
 
 ### 2.3 Varredura UDP
 
-Como mencionamentos na atividade anterior, o scan padrão do nmap para TCP vale-se do processo **three-way handshake**. Para verreduras com UDP, entretanto, este processo ocorre de forma ligeiramente diferente. Nesta atividade vamos analisar a varredura UDP.
+Como mencionamos na atividade anterior, o scan padrão do nmap para TCP vale-se do processo **three-way handshake**. Para varreduras com UDP, entretanto, este processo ocorre de forma ligeiramente diferente. Nesta atividade vamos analisar a varredura UDP.
 
 Para verificar como a varredura UDP ocorre na perspectiva da rede, vamos iniciar o TCPUMP no host *fw101* e posteriormente analisar a captura de tráfego. Para isso, no terminal do host fw101 execute o seguinte comando:
 ```
@@ -408,7 +408,7 @@ Observe que o NMAP continua listado como "open|filtered". Execute um scan agress
 
 ### 2.4 Scan horizontal e Engine de scripts do NMAP
 
-Nesta atividade vamos testar o scan do tipo horizontal, onde você varre múltiplos endereços IPs porém em uma porta ou conjunto de portas específico. Adicionalmente, é possível fazer uso da engine de scripts do NMAP, que contém checagens adicionais muito úteis para detecção de serviços, teste de vulnerabilidades, inventariado ou levantamento de informações adicionais do serviço, dentre outros. A combinação das duas técnicas pode ser interessante para identificar vulnerabilidades que atingem uma grande escala de dispositivos e podem ser exploradas pela rede. Um exemplo de tal cenário é a CVE-2014-0160 (https://nvd.nist.gov/vuln/detail/cve-2014-0160), popularmente conhecida como OpenSSL Heartbleed, uma vulnerabilidade de alto impacto identificada em 2014 que permitia ao atacante ler a memória do processo remoto em resposta a pacotes especificamente formatados. Tal vulnerailidade ganhou um grau de proporção grande pois muitos software de diferentes fabricantes utilizavam de alguma maneira a biblioteca openssl em uma das versões afetadas, e portanto também foram afetados. Nesse cenário, o uso do scan horizontal em conjunto com NSE podem ser bastante úteis para levantamento da superfice da vulnerabilidade na instituição.
+Nesta atividade vamos testar o scan do tipo horizontal, onde você varre múltiplos endereços IPs porém em uma porta ou conjunto de portas específico. Adicionalmente, é possível fazer uso da engine de scripts do NMAP, que contém checagens adicionais muito úteis para detecção de serviços, teste de vulnerabilidades, inventariado ou levantamento de informações adicionais do serviço, dentre outros. A combinação das duas técnicas pode ser interessante para identificar vulnerabilidades que atingem uma grande escala de dispositivos e podem ser exploradas pela rede. Um exemplo de tal cenário é a CVE-2014-0160 (https://nvd.nist.gov/vuln/detail/cve-2014-0160), popularmente conhecida como OpenSSL Heartbleed, uma vulnerabilidade de alto impacto identificada em 2014 que permitia ao atacante ler a memória do processo remoto em resposta a pacotes especificamente formatados. Tal vulnerailidade ganhou um grau de proporção grande pois muitos softwares de diferentes fabricantes utilizavam de alguma maneira a biblioteca openssl em uma das versões afetadas, e portanto também foram afetados. Nesse cenário, o uso do scan horizontal em conjunto com NSE podem ser bastante úteis para levantamento da superfice da vulnerabilidade na instituição.
 
 Abra o terminal do host *secflood* e execute o comando abaixo:
 ```
@@ -451,7 +451,7 @@ Observe que o host 172.16.40.1 é listado como vulnerável ao ataque. De fato, e
 
 ## Atividade 3 - Ataques de brute-force
 
-Ataques de brute-force são ataques contra o mecanismo de autenticação em que o atacante executa diversas testes de autenticação para obter credenciais válidas na "força bruta", ou seja, na tentativa e erro. Os testes de autenticação podem ser baseados em um conjunto de usuários e senhas candidados (também conhecido como *wordlist* ou ataque de dicionário) ou podem ser baseados em valores (pseudo-)aleatórios (exemplo: senha120, senha121, senha122, senha123, ...) -- dizemos pseudo-aleatórios pois o processo de geração de valores pode ser melhorado com heurísticas que aumentam as chances de sucesso. Os ataques de brute-force podem ainda ter como alvo sistemas online ou ainda hashes de senhas que vazaram e, eventualmente, pode ser quebrabas (para obter a entrada que gerou o hash). Nesta atividade vamos mostrar ataques de brute-force contra sistemas online.
+Ataques de brute-force são ataques contra o mecanismo de autenticação em que o atacante executa diversas testes de autenticação para obter credenciais válidas na "força bruta", ou seja, na tentativa e erro. Os testes de autenticação podem ser baseados em um conjunto de usuários e senhas candidatos (também conhecido como *wordlist* ou ataque de dicionário) ou podem ser baseados em valores (pseudo-)aleatórios (exemplo: senha120, senha121, senha122, senha123, ...) -- dizemos pseudo-aleatórios pois o processo de geração de valores pode ser melhorado com heurísticas que aumentam as chances de sucesso. Os ataques de brute-force podem ainda ter como alvo sistemas online ou ainda hashes de senhas que vazaram e, eventualmente, pode ser quebrabas (para obter a entrada que gerou o hash). Nesta atividade vamos mostrar ataques de brute-force contra sistemas online.
 
 ### 3.1 Download de dicionários e regras de geração de senhas
 
@@ -661,7 +661,7 @@ root@srv103:~# tail apache2/error.log
 
 Aguarde alguns minutos e verifique se o Hydra conseguiu identificar alguma credencial válida. No terminal do host h401, pare a execução do Hydra com o comando CTRL+C. Observe que diversas tentativas foram enviadas para o servidor porém nenhuma com sucesso, e diversas outras tentativas ainda estão pendentes. Esse tipo de ataque pode gerar muito ruído na rede (exemplo: logs de falha) e facilmente ser bloqueado.
 
-Vamos realizar um novo ataque de força bruta em uma página web, porém agora contra um site cujo login ocorre através de formulários HTML (cenário bastante comum). Como fizemos anteriormente, primeio vamos fazer o acesso manualmente e em seguida executar o ataque.
+Vamos realizar um novo ataque de força bruta em uma página web, porém agora contra um site cujo login ocorre através de formulários HTML (cenário bastante comum). Como fizemos anteriormente, primeiro vamos fazer o acesso manualmente e em seguida executar o ataque.
 
 A partir do host h401, faça uma requisição ao site protegido por autenticação baseada em formulário HTML:
 ```
