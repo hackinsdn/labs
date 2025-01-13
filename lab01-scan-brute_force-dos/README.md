@@ -12,15 +12,15 @@ Clique no link do Serviço "http-mininet-sec" conforme ilustrado abaixo para abr
 
 ![Abrir Mininet-Sec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-mininet-sec.png)
 
-Após clicar no serviço Mininet-Sec, uma nova aba do seu navegador web deve ser aberta com a interface web do Mininet-Sec. Caso o Mininet-sec ainda esteja criando a topologia, você verá uma mensagem informando para aguardar alguns segundos até que a topologia seja criada. Após finalizar a criação da topologia, você verá uma imagem como ilustrado abaixo:
+Após clicar no serviço Mininet-Sec, uma nova aba do seu navegador web deve ser aberta com a interface web do Mininet-Sec. Caso o Mininet-Sec ainda esteja criando a topologia, você verá uma mensagem informando para aguardar alguns segundos até que a topologia seja criada. Após finalizar a criação da topologia, você verá uma imagem como ilustrado abaixo:
 
-![Tela inicial Mininet-sec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/tela-mininet-sec.png)
+![Tela inicial Mininet-Sec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/tela-mininet-sec.png)
 
-Na tela do Mininet-sec, localize o host **h301** (host 3 do AS 300), clique neste host (ele deve mudar de cor para azul) e com o botão direito do mouse escolha a opção "Terminal". O terminal do host h301 deve ser aberto em uma nova aba do seu navegador web. Abaixo ilustramos esse processo:
+Na tela do Mininet-Sec, localize o host **h301** (host 3 do AS 300), clique neste host (ele deve mudar de cor para azul) e com o botão direito do mouse escolha a opção "Terminal". O terminal do host h301 deve ser aberto em uma nova aba do seu navegador web. Abaixo ilustramos esse processo:
 
 ![Abrir terminal do host h301](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/mnsec-terminal-h301.gif)
 
-Após visualizar o terminal do h301, o próximo passo é testar a conectividade com o host srv501 (servidor 1 do AS 500). Para isso, devem ser executados comandos os quais utilizam as ferramentas ping e traceroute. A primeira é utilizada para verificar se um host está ativo, através do envio de pacotes do tipo *ICMP Echo Request* para um determinado destino, que pode responder com pacotes do tipo *ICMP Echo Reply*, se for possível fazer o envio de pacotes para ele. Dessa forma, o comando ping tem como saída informações sobre a conectvidade, como a disponibilidade do host de destino e tempo percorrido até receber a resposta, por exemplo.
+Após visualizar o terminal do h301, o próximo passo é testar a conectividade com o host srv501 (servidor 1 do AS 500). Para isso, devem ser executados comandos os quais utilizam as ferramentas ping e traceroute. A primeira é utilizada para verificar se um host está ativo, através do envio de pacotes do tipo *ICMP Echo Request* para um determinado destino, que pode responder com pacotes do tipo *ICMP Echo Reply*, se for possível fazer o envio de pacotes para ele. Dessa forma, o comando ping tem como saída informações sobre a conectividade, como a disponibilidade do host de destino e tempo percorrido até receber a resposta, por exemplo.
 
 O traceroute, por outro lado, é uma ferramenta utilizada para verificar o caminho até um destino, de modo que o resultado do comando são os endereços IP dos hosts intermediários entre a origem e o destino. Para identificar os hosts intermediários, o roteador envia pacotes do tipo *ICMP Echo Request* com valores de TTL (ou seja, saltos máximos na rede) que aumentam gradualmente, de forma que, quando o TTL zera, o roteador recebe informações sobre o host intermediário que recebeu o pacote, de forma que consegue construir o caminho até o destino
 
@@ -76,7 +76,7 @@ Repita o teste acima, porém agora utilizando como destino o IP do firewall **fw
 ping -c4 192.168.20.254
 ```
 
-Novamente a saída indica que o firewall está inalcanável:
+Novamente a saída indica que o firewall está inalcançável:
 ```
 root@mnsec-secflood1-14bbabbf330b44:/# ping -c4 192.168.20.254
 PING 192.168.20.254 (192.168.20.254) 56(84) bytes of data.
@@ -92,7 +92,7 @@ pipe 4
 
 O comportamento acima é esperado e se dá pelo fato de que o AS200 ainda não foi configurado para prover conectividade entre os nós. O AS 200 possui switches programáveis e uma rede SDN (Rede Definida por Software), cujo controlador é o Kytos (leia mais sobre o Kytos em https://github.com/kytos-ng/). Vamos, portanto, configurar o Kytos para estabelecer a conectividade no AS 200, através da criação de um circuito virtual de VPN L2 (também chamado de EVC, _Ethernet Virtual Circuit_) que irá permitir a troca de pacotes entre interfaces de hosts de grupos distintos.
 
-Para isso, vamos abrir o terminal do Kytos através do Mininet-sec:
+Para isso, vamos abrir o terminal do Kytos através do Mininet-Sec:
 
 ![Abrir Kytos](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-kytos.png)
 
@@ -149,11 +149,11 @@ Os ataques de varredura de porta, também conhecidos como *port scanning*, visam
 
 ### 2.1 Executando nmap através da interface web do secflood
 
-Na interface web do Dashbaord, clique no link do Serviço "https-secflood" conforme ilustrado abaixo para abrir a interface web do Secflood:
+Na interface web do Dashboard, clique no link do Serviço "https-secflood" conforme ilustrado abaixo para abrir a interface web do Secflood:
 
 ![Abrir Secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-secflood.png)
 
-Ao clicar no link do serviço, você deve receber um alerta sobre o certificado SSL auto-assinado. Neste ambiente restrito de teste, é seguro ignorar o alerta e processeguir:
+Ao clicar no link do serviço, você deve receber um alerta sobre o certificado SSL auto-assinado. Neste ambiente restrito de teste, é seguro ignorar o alerta e prosseguir:
 
 ![Erro SSL](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/erro-ssl.png)
 
@@ -266,7 +266,7 @@ listening on srv101-eth0, link-type EN10MB (Ethernet), snapshot length 262144 by
 ...
 ```
 
-Tal comportamento se dá devido a forma como a varredura de rede padrão do nmap ocorre: primeiro o nmap verificar os hosts que estão ativos (enviando os ICMP echo request) e em seguida faz a verificação de portas abertas. Você pode modificar esse comportamento utilizando a opçõa `-Pn` do nmap. De toda forma, ao continuar analisando a captura de pacotes, você vai observar os testes de portas abertas como mostrado abaixo:
+Tal comportamento se dá devido a forma como a varredura de rede padrão do nmap ocorre: primeiro o nmap verifica os hosts que estão ativos (enviando os ICMP echo request) e em seguida faz a verificação de portas abertas. Você pode modificar esse comportamento utilizando a opção `-Pn` do nmap. De toda forma, ao continuar analisando a captura de pacotes, você vai observar os testes de portas abertas como mostrado abaixo:
 ```
 19:45:37.520408 IP 192.168.10.1.37988 > 172.16.10.1.23: Flags [S], seq 1376385575, win 1024, options [mss 1460], length 0
 19:45:37.520428 IP 172.16.10.1.23 > 192.168.10.1.37988: Flags [R.], seq 0, ack 1376385576, win 0, length 0
@@ -279,13 +279,13 @@ Tal comportamento se dá devido a forma como a varredura de rede padrão do nmap
 19:45:37.523543 IP 192.168.10.1.37988 > 172.16.10.1.443: Flags [R], seq 1376385576, win 0, length 0
 ```
 
-Observe que os pacotes seguem uma sequencia lógica: o host que executa o nmap (192.168.10.1) envia um pacote TCP-SYN na porta de interesse (observe, inclusive, que por padrão o NMAP começa com as portas mais comuns 23, 110, 143, 443, etc. uma estratégia mais eficience que fazer o levantamento sequencial), caso a porta não esteja aberta no host alvo (172.16.10.1 na saída acima) uma resposta TCP-RST (reset) é enviada. Este é o conhecido processo **three-way handshake** do TCP, porém ao invés de o cliente confirmar a abertura de conexão com o ACK final, ele envia o reset (RST). Isso ocorre para a porta 23, então 110, 143, mas o comportamento muda na porta 443. Para a porta 443 (https), o host srv101 responde com TCP-SYN-ACK `S.` e então o host que executa o scan envia o TCP-RST (reset). Esse comportamento é um indicativo de que a porta está aberta. Note que o nmap possui outros tipos de varredura (exemplo: Connect/ACK/Window/Maimon scans/TCP Null/FIN/Xmas), mas não as abordaremos neste laboratórios.
+Observe que os pacotes seguem uma sequencia lógica: o host que executa o nmap (192.168.10.1) envia um pacote TCP-SYN na porta de interesse (observe, inclusive, que por padrão o NMAP começa com as portas mais comuns 23, 110, 143, 443, etc. uma estratégia mais eficiente que fazer o levantamento sequencial), caso a porta não esteja aberta no host alvo (172.16.10.1 na saída acima) uma resposta TCP-RST (reset) é enviada. Este é o conhecido processo **three-way handshake** do TCP, porém ao invés de o cliente confirmar a abertura de conexão com o ACK final, ele envia o reset (RST). Isso ocorre para a porta 23, então 110, 143, mas o comportamento muda na porta 443. Para a porta 443 (https), o host srv101 responde com TCP-SYN-ACK `S.` e então o host que executa o scan envia o TCP-RST (reset). Esse comportamento é um indicativo de que a porta está aberta. Saiba que o nmap possui outros tipos de varredura (exemplo: Connect/ACK/Window/Maimon scans/TCP Null/FIN/Xmas), mas não as abordaremos neste laboratório.
 
 ### 2.3 Varredura UDP
 
 Como mencionamos na atividade anterior, o scan padrão do nmap para TCP vale-se do processo **three-way handshake**. Para varreduras com UDP, entretanto, este processo ocorre de forma ligeiramente diferente. Nesta atividade vamos analisar a varredura UDP.
 
-Para verificar como a varredura UDP ocorre na perspectiva da rede, vamos iniciar o TCPUMP no host *fw101* e posteriormente analisar a captura de tráfego. Para isso, no terminal do host fw101 execute o seguinte comando:
+Para verificar como a varredura UDP ocorre na perspectiva da rede, vamos iniciar o TCPDUMP no host *fw101* e posteriormente analisar a captura de tráfego. Para isso, no terminal do host fw101 execute o seguinte comando:
 ```
 tcpdump -i fw101-eth2 -n
 ```
@@ -408,7 +408,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 27.11 seconds
 ```
 
-Observe que o NMAP continua listado como "open|filtered". Execute um scan agressivo com detecção de serviço direcionado para a porta 123/udp utilizando as seguintes opções:
+Observe que a porta 123/udp continua listada como "open|filtered". Execute um scan agressivo com detecção de serviço direcionado para a porta 123/udp utilizando as seguintes opções:
 
 ![Secflood UDP scan agressivo](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-udp-scan-agressivo.png)
 
@@ -419,7 +419,7 @@ Observe que o NMAP continua listado como "open|filtered". Execute um scan agress
 
 ### 2.4 Scan horizontal e Engine de scripts do NMAP
 
-Nesta atividade vamos testar o scan do tipo horizontal, onde você varre múltiplos endereços IPs porém em uma porta ou conjunto de portas específico. Adicionalmente, é possível fazer uso da engine de scripts do NMAP, que contém checagens adicionais muito úteis para detecção de serviços, teste de vulnerabilidades, inventariado ou levantamento de informações adicionais do serviço, dentre outros. A combinação das duas técnicas pode ser interessante para identificar vulnerabilidades que atingem uma grande escala de dispositivos e podem ser exploradas pela rede. Um exemplo de tal cenário é a CVE-2014-0160 (https://nvd.nist.gov/vuln/detail/cve-2014-0160), popularmente conhecida como OpenSSL Heartbleed, uma vulnerabilidade de alto impacto identificada em 2014 que permitia ao atacante ler a memória do processo remoto em resposta a pacotes especificamente formatados. Tal vulnerailidade ganhou um grau de proporção grande pois muitos softwares de diferentes fabricantes utilizavam de alguma maneira a biblioteca openssl em uma das versões afetadas, e portanto também foram afetados. Nesse cenário, o uso do scan horizontal em conjunto com NSE podem ser bastante úteis para levantamento da superfice da vulnerabilidade na instituição.
+Nesta atividade vamos testar o scan do tipo horizontal, onde você varre múltiplos endereços IPs porém em uma porta ou conjunto de portas específico. Adicionalmente, é possível fazer uso da engine de scripts do NMAP, que contém checagens adicionais muito úteis para detecção de serviços, teste de vulnerabilidades, inventariado ou levantamento de informações adicionais do serviço, dentre outros. A combinação das duas técnicas pode ser interessante para identificar vulnerabilidades que atingem uma grande escala de dispositivos e podem ser exploradas pela rede. Um exemplo de tal cenário é a CVE-2014-0160 (https://nvd.nist.gov/vuln/detail/cve-2014-0160), popularmente conhecida como OpenSSL Heartbleed, uma vulnerabilidade de alto impacto identificada em 2014 que permitia ao atacante ler a memória do processo remoto em resposta a pacotes especificamente formatados. Tal vulnerabilidade ganhou um grau de proporção grande pois muitos softwares de diferentes fabricantes utilizavam de alguma maneira a biblioteca openssl em uma das versões afetadas, e portanto também foram afetados. Nesse cenário, o uso do scan horizontal em conjunto com NSE podem ser bastante úteis para levantamento da superfície da vulnerabilidade na instituição.
 
 Abra o terminal do host *secflood* e execute o comando abaixo:
 ```
@@ -458,11 +458,11 @@ PORT     STATE  SERVICE
 ...
 ```
 
-Observe que o host 172.16.40.1 é listado como vulnerável ao ataque. De fato, esse host foi incluido propositalmente na topologia e sua execução é baseada no repositório de vulnerabildiades do projeto HackInSDN.
+Observe que o host 172.16.40.1 é listado como vulnerável ao ataque. De fato, esse host foi incluído propositalmente na topologia e sua execução é baseada no repositório de vulnerabilidades do projeto HackInSDN.
 
 ## Atividade 3 - Ataques de brute-force
 
-Ataques de brute-force são ataques contra o mecanismo de autenticação em que o atacante executa diversas testes de autenticação para obter credenciais válidas na "força bruta", ou seja, na tentativa e erro. Os testes de autenticação podem ser baseados em um conjunto de usuários e senhas candidatos (também conhecido como *wordlist* ou ataque de dicionário) ou podem ser baseados em valores (pseudo-)aleatórios (exemplo: senha120, senha121, senha122, senha123, ...) -- dizemos pseudo-aleatórios pois o processo de geração de valores pode ser melhorado com heurísticas que aumentam as chances de sucesso. Os ataques de brute-force podem ainda ter como alvo sistemas online ou ainda hashes de senhas que vazaram e, eventualmente, pode ser quebrabas (para obter a entrada que gerou o hash). Nesta atividade vamos mostrar ataques de brute-force contra sistemas online.
+Ataques de brute-force são ataques contra o mecanismo de autenticação em que o atacante executa diversas tentativas de autenticação para obter credenciais válidas na "força bruta", ou seja, na tentativa e erro. Os testes de autenticação podem ser baseados em um conjunto de usuários e senhas candidatos (também conhecido como *wordlist* ou ataque de dicionário) ou podem ser baseados em valores (pseudo-)aleatórios (exemplo: senha120, senha121, senha122, senha123, ...) -- dizemos pseudo-aleatórios pois o processo de geração de valores pode ser melhorado com heurísticas que aumentam as chances de sucesso. Os ataques de brute-force podem ainda ter como alvo sistemas online ou ainda hashes de senhas que vazaram e, eventualmente, pode ser quebradas (para obter a entrada que gerou o hash). Nesta atividade vamos mostrar ataques de brute-force contra sistemas online.
 
 ### 3.1 Download de dicionários e regras de geração de senhas
 
@@ -470,7 +470,7 @@ O primeiro passo é fazer o download de um dicionário de usuários (logins) e s
 
 O primeiro passo é fazer o download dos dicionários. Para isso, acesso o terminal do Mininet-Sec a partir do Dashboard HackInSDN:
 
-![abrir mininet-sec terminal](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-mnsec-terminal.png)
+![abrir Mininet-Sec terminal](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-mnsec-terminal.png)
 
 Em seguida, no terminal do Mininet-Sec, execute os seguintes comandos:
 ```
@@ -487,21 +487,21 @@ curl -LO https://raw.githubusercontent.com/NotSoSecure/password_cracking_rules/r
 
 ### 3.2 Ataques de força-bruta contra o SMTP e IMAP
 
-Nesta atividade, realzaremos ataques de força bruta contra os mecanismos de autenticação dos serviços SMTP e IMAP. 
+Nesta atividade, realizaremos ataques de força bruta contra os mecanismos de autenticação dos serviços SMTP e IMAP. 
 
-Para visualizar o ataque de força bruta ocorrendo, abra o terminal do host srv102 e execute o seguinte comnado para monitorar o log das aplicações:
+Para visualizar o ataque de força bruta ocorrendo, abra o terminal do host srv102 e execute o seguinte comando para monitorar o log das aplicações:
 ```
 tail -f /tmp/mnsec/srv102/log/smtp.log
 ```
 
 O comando acima irá exibir mensagens de log relacionadas a falhas de login.
 
-De volta ao terminal do Mininet-sec, vamos utilizar o aplicativo **mnsecx** (mininet-sec exec) para executar comandos em nós específicos da topologia. Por exemplo, para executar o ataque de brute-force a partir do host h401, execute o seguinte comando no Terminal do Mininet-Sec:
+De volta ao terminal do Mininet-Sec, vamos utilizar o aplicativo **mnsecx** (mininet-sec exec) para executar comandos em nós específicos da topologia. Por exemplo, para executar o ataque de brute-force a partir do host h401, execute o seguinte comando no Terminal do Mininet-Sec:
 ```
 mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/PLAIN
 ```
 
-O comando acima inicializará um ataque de força bruta contra o serviço IMAP que está em execução no srv102 (172.16.10.2). Após executar o ataque você deve visualizar uma saída como mostrado abaixo:
+O comando acima inicializará um ataque de força bruta contra o serviço SMTP que está em execução no srv102 (172.16.10.2). Após executar o ataque você deve visualizar uma saída como mostrado abaixo:
 ```
 root@mininet-sec-637b0d4f77fb4f-dc67c9b77-f2x6p:/src/mnsec# mnsecx h401 hydra -I -L /tmp/wordlist-login.txt -P /tmp/wordlist-password.txt smtp://172.16.10.2/PLAIN
 Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
@@ -528,9 +528,9 @@ root@srv102:~# tail -f /tmp/mnsec/srv102/log/smtp.log
 ^C
 ```
 
-Observe que o hydra reporta ter encontrado uma combinação válida de credenciais: usuário "teste" e senha "hackinsdn". Isso ocorre pois propositalmente configuramos o serviço SMTP em execuçãio no srv102 para aceitar estas credenciais, e os dicioários utilizamos continham combinações que casaram com essa configuração.
+Observe que o hydra reporta ter encontrado uma combinação válida de credenciais: usuário "teste" e senha "hackinsdn". Isso ocorre pois propositalmente configuramos o serviço SMTP em execução no srv102 para aceitar estas credenciais, e os dicionários utilizados continham combinações que casaram com essa configuração.
 
-Vamos realizar agora um novo ataque de força-bruta, porém dessa vez contra o serviço IMAP. Nesse testes utilizamos o software Dovecot, que provê suporte aos serviços de IMAP e POP3 com TLS e diferentes mecanismos de autenticação. Por padrão, a autenticação do Dovecot é baseada nos usuários locais do Linux, portanto o primeiro passo é criar uma conta local que será alvo do ataque.
+Vamos realizar agora um novo ataque de força-bruta, porém dessa vez contra o serviço IMAP. Nesse teste utilizamos o software Dovecot, que provê suporte aos serviços de IMAP e POP3 com TLS e diferentes mecanismos de autenticação. Por padrão, a autenticação do Dovecot é baseada nos usuários locais do Linux, portanto o primeiro passo é criar uma conta local que será alvo do ataque.
 
 No terminal do srv102, crie uma conta local para o usuário "admin" (essa conta será criada sem um shell válido):
 ```
@@ -639,7 +639,7 @@ Executaremos agora o ataque de força bruta. Vamos inicialmente utilizar o hydra
 hydra -I -V -l admin -x 6:6:aA1 https-get://172.16.10.3/admin/
 ```
 
-Ao executar o comando acima, o Hydra retorna um erro (_definition for password bruteforce (-x) generates more than 4 billion passwords, it is just not feasible to try so many attempts_) informando que o conjunto de caracteres escolhido gera muitas combinações, tornando o ataque computacionalmente infactível de realizar. No comando acima combinamos letras minúsculas (`a`), maiúsculas (`A`) e números (`1`). Vamos reduzir o conjutno de caracteres para combinar apenas letras minúsculas e números. Repita o comando acima porém agora com uma modificação:
+Ao executar o comando acima, o Hydra retorna um erro (_definition for password bruteforce (-x) generates more than 4 billion passwords, it is just not feasible to try so many attempts_) informando que o conjunto de caracteres escolhido gera muitas combinações, tornando o ataque computacionalmente infactível de realizar. No comando acima combinamos letras minúsculas (`a`), maiúsculas (`A`) e números (`1`). Vamos reduzir o conjunto de caracteres para combinar apenas letras minúsculas e números. Repita o comando acima porém agora com uma modificação:
 ```
 hydra -I -V -l admin -x 6:6:a1 https-get://172.16.10.3/admin/
 ```
@@ -716,7 +716,7 @@ grep -w -n "adm123" /tmp/mutated
 Como pode observar, ambas as senhas estão no dicionário expandido. O parâmetro `-n` no grep mostra o número da linha na qual a string foi encontrada, o que ajuda a entender quantas tentativas seriam mais ou menos necessárias para o Hydra obter sucesso. No entanto, você pode utilizar também técnicas de reordenação aleatória do arquivo para aumentar a chances de encontrar as credenciais válidas mais cedo.
 
 > [!IMPORTANT]  
-> Como previnir tais ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
+> Como prevenir tais ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
 <textarea name="resposta_brute_force" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
 </textarea>
 
@@ -819,7 +819,7 @@ Abaixo uma ilustração da configuração acima:
 Em Bulk Execution, é possível visualizar que o ataque foi configurado. Em seguida, clicamos em Execute tasks.
 ![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec-1.png)
 
-Com a execução desses comandos, o ataque será configurado e executado. Na aba Dashboard da interface web do sec-flood, pode-se observar a grande quantidade de tráfego gerado. 
+Com a execução desses comandos, o ataque será configurado e executado. Na aba Dashboard da interface web do secflood, pode-se observar a grande quantidade de tráfego gerado. 
 ![secflood bulk exec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-bulk-exec.png)
 
 Agora podemos acessar o terminal do srv501 e rodar o comando abaixo para visualizar o ataque de scan sendo recebido no servidor:
@@ -837,7 +837,7 @@ echo $EVC_ID
 
 A saída esperada é o ID do circuito, no formato "08e9526bee7e40".
 
-A partir do ID do circuito, ainda no terminal do Kytos, execute o comando a segurir para habilitar o espelhamento de tráfego no circuito em questão:
+A partir do ID do circuito, ainda no terminal do Kytos, execute o comando a seguir para habilitar o espelhamento de tráfego no circuito em questão:
 ```
 curl -s -X POST -H 'Content-type: application/json' http://127.0.0.1:8181/api/hackinsdn/mirror/v1/ -d '{"circuit_id": "'$EVC_ID'", "switch": "00:00:00:00:00:00:00:cb", "target_port": "00:00:00:00:00:00:00:cb:5", "name": "mirror for EVC '$EVC_ID'"}' | jq -r
 ```
@@ -880,7 +880,7 @@ grep -wR sid:1000010 /etc/suricata
 Note, ainda, que os alertas gerados pelo IDS possuem uma tag de ação a ser tomada: `[DROP]`. Essa ação, no entanto, não estava definida na regra, conforme pode ser visto na saída do comando grep anterior. Isso ocorre pois existe uma outra configuração do Suricata localizada no arquivo `/etc/suricata/drop.conf` que define quais regras terão como ação o bloqueio automático.
 
 
-O próximo, portanto, consiste em de fato habilitar o bloqueio automático. Conforme citado anteriormente, ao executar IDS em modo de espelhamento de tráfego, as ações de bloqueio valem-se de chamadas de APIs para sistemas externos (tipicamente Firewalls) para efetivar os bloqueios. Para efetuar o bloqueio externo vamos utilizar uma ferramenta chamada `hackinsdn-guardian` que faz o _parsing_ dos logs JSON do Suricata (i.e, `eve.log` -- que inclui informações importantes do tráfego, como a VLAN por exemplo)  e dispara chamadas de bloqueio externo, em particular bloqueios no controlador SDN Kytos.
+O próximo passo, portanto, consiste em de fato habilitar o bloqueio automático. Conforme citado anteriormente, ao executar IDS em modo de espelhamento de tráfego, as ações de bloqueio valem-se de chamadas de APIs para sistemas externos (tipicamente Firewalls) para efetivar os bloqueios. Para efetuar o bloqueio externo vamos utilizar uma ferramenta chamada `hackinsdn-guardian` que faz o _parsing_ dos logs JSON do Suricata (i.e, `eve.log` -- que inclui informações importantes do tráfego, como a VLAN por exemplo)  e dispara chamadas de bloqueio externo, em particular bloqueios no controlador SDN Kytos.
 
 
 No terminal do host ids201, execute os seguintes comandos:
@@ -918,4 +918,4 @@ A partir da saída do comando acima, pode ser obtido o ID do bloqueio. Em seguid
 curl -s -X DELETE $KYTOS_URL/api/hackinsdn/containment/v1/ID_BLOQUEIO
 ```
 
-Com isso concluimos este laboratório!
+Com isso concluímos este laboratório!
