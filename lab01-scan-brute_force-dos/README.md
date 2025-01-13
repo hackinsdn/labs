@@ -101,7 +101,7 @@ No terminal do Kytos, vamos utilizar o comando curl para enviar requisições pa
 curl -s -H 'Content-type: application/json' -X POST http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ -d '{"name": "l2vpn-secflood-to-fw", "dynamic_backup_path": true, "uni_z": {"interface_id": "00:00:00:00:00:00:00:cb:1", "tag": {"tag_type": "vlan", "value": "untagged"}}, "uni_a": {"interface_id": "00:00:00:00:00:00:00:c9:2", "tag": {"tag_type": "vlan", "value": "untagged"}}}' | jq
 ```
 
-A saída esperada do comando acima nostra o id do circuito criado e o statos de que o mesmo está ativo:
+A saída esperada do comando acima mostra o id do circuito criado e o status de que o mesmo está ativo:
 ```
 root@kytos-14bbabbf330b44-75854d5cf8-94j6b:/# curl -s -H 'Content-type: application/json' -X POST http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ -d '{"name": "l2vpn-secflood-to-fw", "dynamic_backup_path": true, "uni_z": {"interface_id": "00:00:00:00:00:00:00:cb:1", "tag": {"tag_type": "vlan", "value": "untagged"}}, "uni_a": {"interface_id": "00:00:00:00:00:00:00:c9:2", "tag": {"tag_type": "vlan", "value": "untagged"}}}' | jq
 {
@@ -837,7 +837,7 @@ echo $EVC_ID
 
 A saída esperada é o ID do circuito, no formato "08e9526bee7e40".
 
-A partir do ID do circuit, ainda no terminal do Kytos, execute o comando a segurir para habilitar o espelhamento de tráfego no circuito em questão:
+A partir do ID do circuito, ainda no terminal do Kytos, execute o comando a segurir para habilitar o espelhamento de tráfego no circuito em questão:
 ```
 curl -s -X POST -H 'Content-type: application/json' http://127.0.0.1:8181/api/hackinsdn/mirror/v1/ -d '{"circuit_id": "'$EVC_ID'", "switch": "00:00:00:00:00:00:00:cb", "target_port": "00:00:00:00:00:00:00:cb:5", "name": "mirror for EVC '$EVC_ID'"}' | jq -r
 ```
