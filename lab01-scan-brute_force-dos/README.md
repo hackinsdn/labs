@@ -910,12 +910,12 @@ tcpdump -i srv501-eth0 -n
 
 Opcionalmente, é possível remover manualmente o bloqueio acima. Para isso, no terminal do host ids201 pare a execução do `hackinsdn-guardian` com o comando CTRL+C. Em seguida, execute o comando abaixo no terminal do host ids201 para visualizar os bloqueios ativos:
 ```
-curl -X GET -H 'Content-type: application/json' http://$KYTOS:8181/api/hackinsdn/containment/v1/ | jq -r
+curl -X GET -H 'Content-type: application/json' $KYTOS_URL/api/hackinsdn/containment/v1/ | jq -r
 ```
 
 A partir da saída do comando acima, pode ser obtido o ID do bloqueio. Em seguida, pode-se excluir a regra de bloqueio, a partir do seguinte comando a ser executado também no terminal do host ids201 (Substitua o `ID_BLOQUEIO` com o valor obtido no passo anterior):
 ```
-curl -s -X DELETE http://$KYTOS:8181/api/hackinsdn/containment/v1/ID_BLOQUEIO
+curl -s -X DELETE $KYTOS_URL/api/hackinsdn/containment/v1/ID_BLOQUEIO
 ```
 
 Com isso concluimos este laboratório!
