@@ -117,7 +117,7 @@ ping -c 4 172.16.50.1
 ping -c 4 192.168.20.254
 ```
 
-O comportamento espero agora indica o sucesso na conectividade do secflood, conforme ilustrado abaixo nos testes entre o secflood e o fw201 e entre o secflood e srv50:
+O comportamento esperado agora indica o sucesso na conectividade do secflood, conforme ilustrado abaixo nos testes entre o secflood e o fw201 e entre o secflood e srv501:
 
 ```
 root@mnsec-secflood1-14bbabbf330b44:/# ping -c 4 192.168.20.254
