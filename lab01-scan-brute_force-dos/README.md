@@ -20,7 +20,14 @@ Na tela do Mininet-sec, localize o host **h301** (host 3 do AS 300), clique nest
 
 ![Abrir terminal do host h301](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/mnsec-terminal-h301.gif)
 
-Após visualizar o terminal do h301, teste a conectividade com o host srv501 (servidor 1 do AS 500):
+Após visualizar o terminal do h301, o próximo passo é testar a conectividade com o host srv501 (servidor 1 do AS 500). Para isso, devem ser executados comandos os quais utilizam as ferramentas ping e traceroute. A primeira é utilizada para verificar se um host está ativo, através do envio de pacotes do tipo *ICMP Echo Request* para um determinado destino, que pode responder com pacotes do tipo *ICMP Echo Reply*, se for possível fazer o envio de pacotes para ele. Dessa forma, o comando ping tem como saída informações sobre a conectvidade, como a disponibilidade do host de destino e tempo percorrido até receber a resposta, por exemplo.
+
+O traceroute, por outro lado, é uma ferramenta utilizada para verificar o caminho até um destino, de modo que o resultado do comando são os endereços IP dos hosts intermediários entre a origem e o destino. Para identificar os hosts intermediários, o roteador envia pacotes do tipo *ICMP Echo Request* com valores de TTL (ou seja, saltos máximos na rede) que aumentam gradualmente, de forma que, quando o TTL zera, o roteador recebe informações sobre o host intermediário que recebeu o pacote, de forma que consegue construir o caminho até o destino
+
+É importante ressaltar que alguns hosts podem ser configurados para não responderem a comandos desse tipo, por questões de segurança, de modo que a falta de respostas não significa necessariamente que o host está inativo. 
+
+Nesse sentido, para testar a conectividade, execute os seguintes comandos:
+
 ```
 ping -c 4 172.16.50.1
 traceroute -n 172.16.50.1
@@ -47,7 +54,7 @@ traceroute to 172.16.50.1 (172.16.50.1), 30 hops max, 60 byte packets
  4  172.16.50.1  0.095 ms  0.061 ms  0.059 ms
 ```
 
-Agora vamos realizar um novo teste de conectividade, desta vez a partir do host **secflood**. O host secflood possui conexões no AS 200 e no AS 400, porém o roteamento deste nós foi configurado para que a saída de Internet ocorra através do AS 200. Execute os passos anteriores para abrir o Terminal mas desta vez do "secflood". Ao acesso o terminal do secflood execute o teste de ping para o srv501:
+Agora vamos realizar um novo teste de conectividade, desta vez a partir do host **secflood**. O host secflood possui conexões no AS 200 e no AS 400, porém o roteamento deste nós foi configurado para que a saída de Internet ocorra através do AS 200. Ou seja, quando o secflood envia pacotes para destinos quaisquer da topologia, por exemplo, um host no AS300, o pacote será enviado através da sua conexão no AS200. Execute os passos anteriores para abrir o Terminal mas desta vez do "secflood". Ao acesso o terminal do secflood execute o teste de ping para o srv501:
 ```
 ping -c 4 172.16.50.1
 ```
@@ -89,12 +96,12 @@ Para isso, vamos abrir o terminal do Kytos através do Mininet-sec:
 
 ![Abrir Kytos](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/abrir-kytos.png)
 
-No terminal do Kytos, vamos utilizar o comando curl para enviar requisições para a API REST do Kytos para criar uma VPN L2 que interconecta o secflood ao firewall fw201. Para isso, na aba com o terminal do Kytos, execute o seguinte comando:
+No terminal do Kytos, vamos utilizar o comando curl para enviar requisições para a API REST do Kytos para criar uma VPN L2 que interconecta o secflood ao firewall fw201. Para isso, será utilizado um comando que cria um circuito o qual permite a troca de pacotes entre as interfaces eth1 do switch s203 (a qual possui o id 00:00:00:00:00:00:00:cb:1) e a interface eth2 do switch s201 (a qual possui o id 00:00:00:00:00:00:00:c9:2), permitindo que o secflood se conecte ao firewall e, consequentemente, tenha uma saída de internet pelo AS200. Nesse sentido, na aba com o terminal do Kytos, execute o seguinte comando:
 ```
 curl -s -H 'Content-type: application/json' -X POST http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ -d '{"name": "l2vpn-secflood-to-fw", "dynamic_backup_path": true, "uni_z": {"interface_id": "00:00:00:00:00:00:00:cb:1", "tag": {"tag_type": "vlan", "value": "untagged"}}, "uni_a": {"interface_id": "00:00:00:00:00:00:00:c9:2", "tag": {"tag_type": "vlan", "value": "untagged"}}}' | jq
 ```
 
-A saída esperada do comando acima é:
+A saída esperada do comando acima nostra o id do circuito criado e o statos de que o mesmo está ativo:
 ```
 root@kytos-14bbabbf330b44-75854d5cf8-94j6b:/# curl -s -H 'Content-type: application/json' -X POST http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ -d '{"name": "l2vpn-secflood-to-fw", "dynamic_backup_path": true, "uni_z": {"interface_id": "00:00:00:00:00:00:00:cb:1", "tag": {"tag_type": "vlan", "value": "untagged"}}, "uni_a": {"interface_id": "00:00:00:00:00:00:00:c9:2", "tag": {"tag_type": "vlan", "value": "untagged"}}}' | jq
 {
@@ -110,7 +117,8 @@ ping -c 4 172.16.50.1
 ping -c 4 192.168.20.254
 ```
 
-O comportamento espero agora indica o sucesso na conectividade do secflood, conforme ilustrado abaixo nos testes entre o secflood e o fw201 e entre o secflood e srv501:
+O comportamento espero agora indica o sucesso na conectividade do secflood, conforme ilustrado abaixo nos testes entre o secflood e o fw201 e entre o secflood e srv50:
+
 ```
 root@mnsec-secflood1-14bbabbf330b44:/# ping -c 4 192.168.20.254
 PING 192.168.20.254 (192.168.20.254) 56(84) bytes of data.
@@ -404,7 +412,10 @@ Observe que o NMAP continua listado como "open|filtered". Execute um scan agress
 
 ![Secflood UDP scan agressivo](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-udp-scan-agressivo.png)
 
-É possível afirmar com certeza o estado da porta? Podemos afirmar que muito provavelmente a porta está fechada?
+> [!IMPORTANT]  
+> É possível afirmar com certeza o estado da porta? Podemos afirmar que muito provavelmente a porta está fechada?
+<textarea name="resposta_nmap_estado_portas" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+</textarea>
 
 ### 2.4 Scan horizontal e Engine de scripts do NMAP
 
