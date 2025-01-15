@@ -546,16 +546,20 @@ No terminal do srv102, crie uma conta local para o usuário "admin" (essa conta 
 ```
 useradd -m -s /bin/false admin
 ```
+
+Depois configure a senha "Hackinsdn123!" para o usuário:
 ```
 echo "admin:Hackinsdn123!" | chpasswd
 ```
 
 Observe que a senha utilizada agora possui algumas características de segurança, como uso de letras maiúsculas e minúsculas, números e caracteres especiais.
 
-O próximo passo é iniciar o serviço Dovecot. Ainda no terminal do srv102, execute os seguintes comandos para iniciar o Dovecot e verificar seu funcionamento:
+O próximo passo é iniciar o serviço Dovecot. Ainda no terminal do srv102, execute os seguintes comandos para iniciar o Dovecot:
 ```
 service-mnsec-dovecot.sh srv102 --start
 ```
+
+Para verificar seu funcionamento execute o comando abaixo:
 ```
 netstat -lnptu
 ```
@@ -721,10 +725,12 @@ hashcat -r /tmp/OneRuleToRuleThemAll.rule --stdout /tmp/wordlist-password.txt > 
 > [!TIP]  
 > A instalação padrão do hashcat já inclui algumas regras de mutação de dicionários no diretório `/usr/share/hashcat/rules`.
 
-Em seguida, vamos checar se as senhas que buscamos estão no dicionário expandido:
+Em seguida, vamos checar se as senhas que buscamos estão no dicionário expandido. Primeiro, busque pela senha "Hackinsdn123!":
 ```
 grep -w -n "Hackinsdn123!" /tmp/mutated
 ```
+
+Depois busque pela outra senha, "adm123":
 ```
 grep -w -n "adm123" /tmp/mutated
 ```
