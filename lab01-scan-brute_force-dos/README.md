@@ -30,6 +30,8 @@ Nesse sentido, para testar a conectividade, execute os seguintes comandos:
 
 ```
 ping -c 4 172.16.50.1
+```
+```
 traceroute -n 172.16.50.1
 ```
 
@@ -114,6 +116,8 @@ root@kytos-14bbabbf330b44-75854d5cf8-94j6b:/#
 Agora vamos voltar ao terminal do secflood e realizar novamente os testes de ping:
 ```
 ping -c 4 172.16.50.1
+```
+```
 ping -c 4 192.168.20.254
 ```
 
@@ -475,13 +479,19 @@ O primeiro passo é fazer o download dos dicionários. Para isso, acesso o termi
 Em seguida, no terminal do Mininet-Sec, execute os seguintes comandos:
 ```
 cd /tmp
+```
+```
 curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-password.txt
+```
+```
 curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-login.txt
 ```
 
 Ainda no terminal do Mininet-Sec, faça também o download de um arquivo de regras para geração de senhas que são muito úteis para expandir o dicionário com combinações tipicamente adotadas pelos usuários:
 ```
 cd /tmp
+```
+```
 curl -LO https://raw.githubusercontent.com/NotSoSecure/password_cracking_rules/refs/heads/master/OneRuleToRuleThemAll.rule
 ```
 
@@ -535,6 +545,8 @@ Vamos realizar agora um novo ataque de força-bruta, porém dessa vez contra o s
 No terminal do srv102, crie uma conta local para o usuário "admin" (essa conta será criada sem um shell válido):
 ```
 useradd -m -s /bin/false admin
+```
+```
 echo "admin:Hackinsdn123!" | chpasswd
 ```
 
@@ -543,6 +555,8 @@ Observe que a senha utilizada agora possui algumas características de seguranç
 O próximo passo é iniciar o serviço Dovecot. Ainda no terminal do srv102, execute os seguintes comandos para iniciar o Dovecot e verificar seu funcionamento:
 ```
 service-mnsec-dovecot.sh srv102 --start
+```
+```
 netstat -lnptu
 ```
 
@@ -710,6 +724,8 @@ hashcat -r /tmp/OneRuleToRuleThemAll.rule --stdout /tmp/wordlist-password.txt > 
 Em seguida, vamos checar se as senhas que buscamos estão no dicionário expandido:
 ```
 grep -w -n "Hackinsdn123!" /tmp/mutated
+```
+```
 grep -w -n "adm123" /tmp/mutated
 ```
 
@@ -832,6 +848,8 @@ O próximo passo é configurar mecanismos para detectar o ataque. Para isso, vam
 Para espelhar o tráfego para o ids201, vamos utilizar o controlador SDN Kytos com uma aplicação de espelhamento de tráfego. Para isso, a partir da topologia no Mininet-Sec, abra o terminal do Kytos e digite os comandos a seguir para obter o ID do circuito criado:
 ```
 EVC_ID=$(curl -s http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ | jq -r '.[].id')
+```
+```
 echo $EVC_ID
 ```
 
@@ -886,7 +904,11 @@ O próximo passo, portanto, consiste em de fato habilitar o bloqueio automático
 No terminal do host ids201, execute os seguintes comandos:
 ```
 export KYTOS_URL=http://10.20.1.3:8181
+```
+```
 echo > /var/log/suricata/eve.json
+```
+```
 python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 300
 ```
 
