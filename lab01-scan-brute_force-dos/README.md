@@ -479,11 +479,7 @@ O primeiro passo é fazer o download dos dicionários. Para isso, acesso o termi
 Em seguida, no terminal do Mininet-Sec, execute os seguintes comandos:
 ```
 cd /tmp
-```
-```
 curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-password.txt
-```
-```
 curl -LO https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/wordlist-login.txt
 ```
 
@@ -854,8 +850,6 @@ O próximo passo é configurar mecanismos para detectar o ataque. Para isso, vam
 Para espelhar o tráfego para o ids201, vamos utilizar o controlador SDN Kytos com uma aplicação de espelhamento de tráfego. Para isso, a partir da topologia no Mininet-Sec, abra o terminal do Kytos e digite os comandos a seguir para obter o ID do circuito criado:
 ```
 EVC_ID=$(curl -s http://127.0.0.1:8181/api/kytos/mef_eline/v2/evc/ | jq -r '.[].id')
-```
-```
 echo $EVC_ID
 ```
 
@@ -910,11 +904,7 @@ O próximo passo, portanto, consiste em de fato habilitar o bloqueio automático
 No terminal do host ids201, execute os seguintes comandos:
 ```
 export KYTOS_URL=http://10.20.1.3:8181
-```
-```
 echo > /var/log/suricata/eve.json
-```
-```
 python3 /usr/local/bin/hackinsdn-guardian.py -e /var/log/suricata/eve.json -d 300
 ```
 
