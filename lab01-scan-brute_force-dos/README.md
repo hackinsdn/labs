@@ -147,6 +147,16 @@ PING 172.16.50.1 (172.16.50.1) 56(84) bytes of data.
 rtt min/avg/max/mdev = 3.444/3.497/3.546/0.044 ms
 ```
 
+> [!IMPORTANT]  
+> A sequência de comandos acima indica que uma configuração estava pendente no cenário do laboratório e após essa configuração a conectividade foi restaurada. Escolha uma das opções abaixo que melhor descreve a configuração que estava faltando e foi realizada:
+
+<input type="radio" name="resposta_atividade1_config" id="id1" value="configuracao-gateway" /> <label for="id1">Estava faltando configurar o gateway (roteador padrão) no host secflood e por isso o ping para o host srv501 não funcionou.</label><br>
+<input type="radio" name="resposta_atividade1_config" id="id2" value="ativacao-controlador-sdn" /> <label for="id2">Por se tratar de uma rede SDN, a configuração que estava faltando foi ativar o Controlador SDN que estava desativado.</label><br>
+<input type="radio" name="resposta_atividade1_config" id="id3" value="criacao-l2vpn-evc" /> <label for="id3">Na configuração do controlador SDN, estava faltando a criação do circuito L2 virtual (EVC) que habilita a conectividade entre o secflood e o fw201.</label><br>
+<input type="radio" name="resposta_atividade1_config" id="id4" value="ativacao-firewall" /> <label for="id4">A configuração que estava faltando foi uma regra de firewall no host fw201 que foi automaticamente criada a partir da sequencia de comandos executada.</label><br>
+
+
+
 ## Atividade 2 - Ataques de varredura de porta
 
 Os ataques de varredura de porta, também conhecidos como *port scanning*, visam levantar informações sobre um ambiente alvo, incluindo os computadores que estão online, serviços de rede em execução no computador (i.e, portas abertas) e informações sobre o software que está recebendo pacotes em determinada porta. A varredura de portas faz parte da fase de reconhecimento de rede e levantamento de informações em um ataque ou exercício de auditoria (exercício de auditoria aqui refere-se a uma ação/ataque coordenada e autorizada o qual pode ser realizado em uma organização com o objetivo de avaliar a eficácia dos sistemas de segurança cibernética aplicados). Nesta atividade vamos explorar alguns cenários de varredura de porta utilizando a ferramenta **nmap**.
