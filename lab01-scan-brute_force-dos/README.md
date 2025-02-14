@@ -149,11 +149,11 @@ rtt min/avg/max/mdev = 3.444/3.497/3.546/0.044 ms
 
 > [!IMPORTANT]  
 > A sequência de comandos acima indica que uma configuração estava pendente no cenário do laboratório e após essa configuração a conectividade foi restaurada. Escolha uma das opções abaixo que melhor descreve a configuração que estava faltando e foi realizada:
-
-<input type="radio" name="resposta_atividade1_config" id="id1" value="configuracao-gateway" /> <label for="id1">Estava faltando configurar o gateway (roteador padrão) no host secflood e por isso o ping para o host srv501 não funcionou.</label><br>
-<input type="radio" name="resposta_atividade1_config" id="id2" value="ativacao-controlador-sdn" /> <label for="id2">Por se tratar de uma rede SDN, a configuração que estava faltando foi ativar o Controlador SDN que estava desativado.</label><br>
-<input type="radio" name="resposta_atividade1_config" id="id3" value="criacao-l2vpn-evc" /> <label for="id3">Na configuração do controlador SDN, estava faltando a criação do circuito L2 virtual (EVC) que habilita a conectividade entre o secflood e o fw201.</label><br>
-<input type="radio" name="resposta_atividade1_config" id="id4" value="ativacao-firewall" /> <label for="id4">A configuração que estava faltando foi uma regra de firewall no host fw201 que foi automaticamente criada a partir da sequencia de comandos executada.</label><br>
+>
+> <input type="radio" name="resposta_atividade1_config" id="id1" value="configuracao-gateway" /> <label for="id1">Estava faltando configurar o gateway (roteador padrão) no host secflood e por isso o ping para o host srv501 não funcionou.</label><br>
+> <input type="radio" name="resposta_atividade1_config" id="id2" value="ativacao-controlador-sdn" /> <label for="id2">Por se tratar de uma rede SDN, a configuração que estava faltando foi ativar o Controlador SDN que estava desativado.</label><br>
+> <input type="radio" name="resposta_atividade1_config" id="id3" value="criacao-l2vpn-evc" /> <label for="id3">Na configuração do controlador SDN, estava faltando a criação do circuito L2 virtual (EVC) que habilita a conectividade entre o secflood e o fw201.</label><br>
+> <input type="radio" name="resposta_atividade1_config" id="id4" value="ativacao-firewall" /> <label for="id4">A configuração que estava faltando foi uma regra de firewall no host fw201 que foi automaticamente criada a partir da sequencia de comandos executada.</label><br>
 
 
 
@@ -257,8 +257,9 @@ Note que, diferente da execução anterior, desta vez foi realizada uma varredur
 
 > [!IMPORTANT]  
 > Por que ocorre essa diferença entre as saídas quando realizada a partir do host secflood e do h101? Considerando a fase de reconhecimento de uma auditoria de segurança, ou mesmo o processo de levantamento de vulnerabilidades, quais as vantagens e desvantagens de ambas as execuções?
-<textarea name="resposta_nmap_secflood_h101" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-</textarea>
+> 
+> <textarea name="resposta_nmap_secflood_h101" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+> </textarea>
 
 Voltando ao terminal do srv101, digite CTRL+C a fim de parar a execução do tcpdump. Utilize a barra de rolagem do navegador web para visualizar a saída desde o início. Observe que parte da captura de tráfego contém requisições ARP feitas a partir do gateway para os demais IPs da rede 172.16.10.0/24:
 ```
@@ -394,8 +395,9 @@ listening on fw101-eth2, link-type EN10MB (Ethernet), snapshot length 262144 byt
 
 > [!IMPORTANT]  
 > A partir da análise da captura de pacotes acima, como explicar a estratégia usada pelo NMAP para identificar a porta como aberta? De acordo com a captura, por que o NMAP identifica a porta 123/udp como "aberta" ou "filtrada" ? Por que a porta 500/udp foi listada pelo NMAP como "closed", ao passo que a maioria das portas estava listada como "filtered"?
-<textarea name="resposta_nmap_udp" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-</textarea>
+> 
+> <textarea name="resposta_nmap_udp" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+> </textarea>
 
 Repita o scan com NMAP, porém agora marque também a opção **Service detection (Lighter)**. A varredura deve ser um pouco mais longa, pois agora o NMAP executará algumas checagens adicionais para tentar identificar o serviço. A saída esperada deve ser similar ao mostrado abaixo:
 ```
@@ -428,8 +430,9 @@ Observe que a porta 123/udp continua listada como "open|filtered". Execute um sc
 
 > [!IMPORTANT]  
 > É possível afirmar com certeza o estado da porta? Podemos afirmar que muito provavelmente a porta está fechada?
-<textarea name="resposta_nmap_estado_portas" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-</textarea>
+> 
+> <textarea name="resposta_nmap_estado_portas" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+> </textarea>
 
 ### 2.4 Scan horizontal e Engine de scripts do NMAP
 
@@ -745,8 +748,8 @@ Como pode observar, ambas as senhas estão no dicionário expandido. O parâmetr
 
 > [!IMPORTANT]  
 > Como prevenir tais ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
-<textarea name="resposta_brute_force" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-</textarea>
+> <textarea name="resposta_brute_force" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+> </textarea>
 
 ## Atividade 4 - Ataques de negação de serviço
 
@@ -822,8 +825,9 @@ No terminal do Mininet-sec, pare a coleta de estatísticas de rede do ifstat pre
 
 > [!IMPORTANT]  
 > Comparando a volumetria de tráfego entre os dois ataques, explique quais mecanismos poderiam ser utilizados para detectar cada um deles e quais mitigações poderiam ser aplicados para reduzir os danos.
-<textarea name="resposta_ataques_dos_hping_slowloris" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-</textarea>
+>
+> <textarea name="resposta_ataques_dos_hping_slowloris" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+> </textarea>
 
 ## Atividade 5 - Execução, Detecção e Contenção de ataques de varredura
 
@@ -933,8 +937,9 @@ tcpdump -i srv501-eth0 -n
 
 > [!IMPORTANT]  
 > O bloqueio automático de ataques como mostrado acima é uma ferramenta interessante para a rápida resposta a incidentes de segurança, porém ele vem acompanhado de alguns riscos. Quais riscos você observa na estratégia adotada acima e como esses riscos podem ser mitigados?
-<textarea name="resposta_bloqueio_automatico" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-</textarea>
+> 
+> <textarea name="resposta_bloqueio_automatico" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
+> </textarea>
 
 Opcionalmente, é possível remover manualmente o bloqueio acima. Para isso, no terminal do host ids201 pare a execução do `hackinsdn-guardian` com o comando CTRL+C. Em seguida, execute o comando abaixo no terminal do host ids201 para visualizar os bloqueios ativos:
 ```
