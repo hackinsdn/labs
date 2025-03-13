@@ -1,0 +1,1 @@
+## TODO: using mininet yaml topology with some requirements: link from srv1 to switch will be 100MB or 1G. srv1, h7 and h8 will be k8s Pods. Botnet will be pre-installed on h2, h4, h5, h6, h9. Kytos controller running l2ls Napp?
