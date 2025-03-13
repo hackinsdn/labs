@@ -2,7 +2,7 @@
 
 Neste laboratório vamos realizar a exploração de vulnerabilidade de injeção de SQL. Utilizaremos como alvo o [DVWA](https://github.com/digininja/DVWA), uma aplicação feita propositalmente vulnerável para estudos. E para a exploração será o [Secflood](https://github.com/hackinsdn/secflood), ferramenta que faz parte da suíte [HackInSDN](https://hackinsdn.ufba.br/) que contém diversas ferramentas de geração de tráfego benigno e de ataque, incluindo o [SQLMap](https://sqlmap.org/), que é a ferramenta que faremos maior uso para a exploração. Além disso também teremos atividade com a configuração do [ModSecurity](https://modsecurity.org/) com as regras do projeto [CRS](https://coreruleset.org/). Você pode ver a topologia dos ativos envolvidos nesse laboratório na imagem abaixo:
 
-![topologia](images/topologia.svg)
+![topologia](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/topologia.svg)
 
 ## Atividade 1 - Teste de conectividade e configuração do laboratório
 
@@ -10,11 +10,11 @@ Ao completar a criação do laboratório você terá disponível a topologia sem
 
 Para acessar o console do Secflood clique no serviço "Mininet-Sec", como ilustrado na imagem abaixo:
 
-![mininetsec_service](images/mininetsec_service.png)
+![mininetsec_service](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/mininetsec_service.png)
 
 Uma nova aba irá abrir exibindo a topologia do laboratório via Mininet-Sec. Basta fazer um duplo clique no ícone do Secflood que uma nova aba será aberta com um terminal para executar comados no Secflood:
 
-![mininetsec_secflood](images/mininetsec_secflood.png)
+![mininetsec_secflood](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/mininetsec_secflood.png)
 
 Com acesso ao terminal, veja o endereço IP do Secflood digitando o comando:
 
@@ -24,7 +24,7 @@ ip a
 
 Você pode notar que o endereço é `192.168.0.10`, como na imagem abaixo:
 
-![secflood_ip](images/secflood_ip.png)
+![secflood_ip](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_ip.png)
 
 O DVWA está configurado com o IP `192.168.0.20`. Faça um teste de conexão entre os dois serviços executando o comando `ping` abaixo:
 
@@ -40,15 +40,15 @@ curl -i 192.168.0.20
 
 Você perceberá que recebe resposta HTTP devidamente, como na imagem abaixo. Então tudo está nos conformes.
 
-![secflood_acesso_dvwa](images/secflood_acesso_dvwa.png)
+![secflood_acesso_dvwa](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_acesso_dvwa.png)
 
 Para você já se familiarizar com o Secflood, vamos também realizar o teste de conexão através da interface web da ferramenta. Clique no serviço "https-secflood", disponível no Dashboard HackInSDN, como mostra a figure abaixo:
 
-![secflood_servico](images/secflood_servico.png)
+![secflood_servico](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_servico.png)
 
 Deve ser exibido um aviso sobre risco de segurança. Isso acontece por conta de como está a configuração dos certificado criptográficos desse serviço. Mas não se preocupe, pode clicar para avançar e em seguida aceitar os riscos.
 
-![secflood_warning](images/secflood_warning.png)
+![secflood_warning](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_warning.png)
 
 Ao fazer isso uma tela de autenticação é exibida. Faça login informando o seguinte:
 
@@ -56,34 +56,34 @@ Ao fazer isso uma tela de autenticação é exibida. Faça login informando o se
 - User: `root`
 - Password: `hackinsdn`
 
-![secflood_login](images/secflood_login.png)
+![secflood_login](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_login.png)
 
 Em seguida clique em "Tools List" e selecione a ferramenta `ping`, como a imagem abaixo:
 
-![secflood_ping_tool](images/secflood_ping_tool.png)
+![secflood_ping_tool](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_ping_tool.png)
 
 Preencha o campo de "Target" com o endereço IP do alvo, `192.168.0.20`, e clique para executar:
 
-![secflood_ping_alvo](images/secflood_ping_alvo.png)
+![secflood_ping_alvo](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_ping_alvo.png)
 
 Depois de alguns instantes, visualizando a parte de baixo da tela, você deve ter o retorno do comando executado com sucesso:
 
-![secflood_ping_execucao](images/secflood_ping_execucao.png)
+![secflood_ping_execucao](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_ping_execucao.png)
 
 Agora vamos acessar a aplicação DVWA, realizar uma pequena configuração e estará pronta para nosso uso no laboratório. Então acesse o serviço do DVWA no Dashboard HackInSDN, como mostra a imagem abaixo:
 
-![dvwa_servico](images/dvwa_servico.png)
+![dvwa_servico](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_servico.png)
 
 Na página de login que se abriu você deve se autenticar com as seguintes informações:
 
 - Username: `admin`
 - Password: `password`
 
-![dvwa_login](images/dvwa_login.png)
+![dvwa_login](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_login.png)
 
 Você será redirecionado a uma página para fazer a configuração do banco de dados. Basta clicar no botão "Create / Reset Database":
 
-![dvwa_database](images/dvwa_database.png)
+![dvwa_database](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_database.png)
 
 Após esse passo você será redirecionado novamente para a tela de login. Pode acessar com as mesmas credenciais informadas anteriormente. A partir desse ponto a aplicação já está pronta para ser utilizada.
 
@@ -93,7 +93,7 @@ Vamos apenas fazer um pequeno ajuste no nível de segurança para início das no
 2. Selecione "Low"
 3. Clique em "Submit"
 
-![dvwa_set_low](images/dvwa_set_low.png)
+![dvwa_set_low](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_set_low.png)
 
 Com isso você configurou o nível de segurança da aplicação para baixo. Isto implica em a aplicação não contar com nenhum mecanismo de segurança para as vulnerabilidades que iremos tratar no início das atividades desse roteiro.
 
@@ -113,11 +113,11 @@ Com esse exemplo o que está sendo feito é uma consulta no banco de dados, na t
 
 No DVWA você consegue utilizar uma funcionalidade que implementa esse tipo de consulta. Estando logado na aplicação, clique em "SQL Injection". No formulário no centro da tela é possível especificar um identificador de usuário para realizar a consulta com filtro, como mostrado na imagem abaixo:
 
-![sqli_consulta_simples](images/sqli_consulta_simples.png)
+![sqli_consulta_simples](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_consulta_simples.png)
 
 Clicando no botão "View Source", localizado na parte inferior da tela, você poderá ler o código responsável pela funcionalidade em questão. Através dessa página você consegue ver que o comando utilizado está como na imagem abaixo:
 
-![sql_query](images/sql_query.png)
+![sql_query](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sql_query.png)
 
 Primeiro é criada uma string de consulta concatenando o identificador de usuário a partir do dado que foi enviado pelo usuário na requisição HTTP. Depois esse comando é realmente executado pelo método `->query()`, e após isso o resultado é exibido na tela.
 
@@ -131,7 +131,7 @@ SELECT first_name, last_name FROM users WHERE user_id = '' OR 1=1 #';
 
 Perceba que a consulta modificada dessa maneira agora será retornado todas as entradas que tem na tabela `users`. Experimente enviar isso (`' OR 1=1 #`) no DVWA e veja o resultado:
 
-![sqli_poc](images/sqli_poc.png)
+![sqli_poc](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_poc.png)
 
 Isso acontece pois a consulta foi modificada contendo agora a seguinte condição: me retorne os dados da tabela `users` em que `user_id` seja igual a `''` (string vazia) **OU** se `1=1`. Como um é sempre igual a um ([tautologia](https://pt.wikipedia.org/wiki/Tautologia)), então todas as entradas da tabela serão retornados.
 
@@ -157,11 +157,11 @@ A quantidade de colunas podemos descobrir ao tentar ordenar os resultados da con
 
 Como primeiro teste vamos inserir `' OR 1=1 ORDER BY 1 #` e ver o resultado. Essa consulta deve funcionar sem problemas, já que tem que ter pelo menos uma coluna na consulta.
 
-![sqli_order_1](images/sqli_order_1.png)
+![sqli_order_1](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_order_1.png)
 
 Vamos aumentar nosso teste, agora fazer a consulta ser ordenada pela segunda coluna. Para isso, insira `' OR 1=1 ORDER BY 2 #` e veja o resultado. Novamente deve tudo ter funcionado certo, modificando apenas a ordem da lista exibida.
 
-![sqli_order_2](images/sqli_order_2.png)
+![sqli_order_2](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_order_2.png)
 
 Continuamos nosso processo, agora com o número 3 para tentar ordenar pela terceira coluna. Insira `' OR 1=1 ORDER BY 3 #` e veja o resultado que é retornado:
 
@@ -176,7 +176,7 @@ Agora que sabemos que são duas colunas retornadas na consulta, vamos identifica
 
 A forma de fazer isso é especificar uma condição que não retorne nenhuma informação (por exemplo `1=2`) e unir o resultado dessa consulta com uma outra que tenha informações que conhecemos. Para unir os resultados podemos utilizar a cláusula `UNION` do SQL. Assim, nosso ataque pode ser feito com a entrada `' OR 1=2 UNION SELECT 1,2 #`. Envie isso para o sistema e veja o resultado.
 
-![sqli_union](images/sqli_union.png)
+![sqli_union](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_union.png)
 
 Prontinho, conseguimos descobrir que a consulta retorna 2 colunas e sabemos onde cada uma é exibida na tela: a primeira coluna é o retorno de "First name" e a segunda coluna o retorno de "Surname".
 
@@ -196,7 +196,7 @@ Então envie o seguinte no DVWA:
 
 Com essa string o retorno é o resultado de duas consultas (veja o `UNION`), mas a primeira não retorna nenhum registro (repare na condicional `-1`), então, de fato, o que está sendo retornado é o resultado da segunda parte da consulta. A segunda parte busca pelo nome das bases de dados existentes.
 
-![sqli_schema_name](images/sqli_schema_name.png)
+![sqli_schema_name](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_schema_name.png)
 
 Repare que tem a base de dados chamada `dvwa`, essa parece ser interessante para nosso propósito de extrair dados. Sabendo o nome da base, agora precisamos saber quais tabelas contém nela. Também há essa informação na base `information_schema`, na tabela `tables`. Podemos filtrar a consulta para mostrar as tabelas apenas dessa base.
 
@@ -206,7 +206,7 @@ Envie o seguinte para o DVWA:
 -1' UNION SELECT table_name,2 FROM information_schema.tables WHERE table_schema='dvwa'#
 ```
 
-![sqli_table_name](images/sqli_table_name.png)
+![sqli_table_name](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_table_name.png)
 
 Veja as tabelas existentes: `guestbook` e `users`. Por agora é interessante extrair dados da tabela `users`, certo? Então precisamos saber como ela é definida, quais colunas há nessa tabela. Voltamos a recorrer à `information_schema` para obter essa informação. Dessa vez vamos buscar na tabela `columns` e podemos filtrar para saber as colunas apenas da tabela desejada.
 
@@ -216,7 +216,7 @@ Envie o seguinte para o DVWA:
 -1' UNION SELECT column_name,2 FROM information_schema.columns WHERE table_schema='dvwa' AND table_name='users' #
 ```
 
-![sqli_colum_name](images/sqli_colum_name.png)
+![sqli_colum_name](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_colum_name.png)
 
 Há diversas colunas interessantes para extrairmos dados, né? Por exemplo `user` e `password`. Vamos extrair os dados dela então!
 
@@ -241,7 +241,7 @@ Envie o comando abaixo no DVWA e configura o resultado:
 -1' UNION SELECT user,password FROM users #
 ```
 
-![sqli_dump](images/sqli_dump.png)
+![sqli_dump](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqli_dump.png)
 
 Você pode ver que todos os usuários do banco de dados foram exibidos na página. Então conseguimos extrair os dados do banco de dados.
 
@@ -261,15 +261,15 @@ Na atividade anterior fizemos a exploração da vulnerabilidade de injeção de 
 
 Acesse o painel do Secflood a partir do Dashboard HackInSDN. No Secflood clique em "Tools List" e em seguida em "sqlmap", como indica a imagem abaixo:
 
-![secflood_sqlmap](images/secflood_sqlmap.png)
+![secflood_sqlmap](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_sqlmap.png)
 
 Na página do SQLmap no Secflood clique em "Options", assim você consegue ver diversas opções que são disponibilizadas para utilizar ao executar a ferramenta.
 
-![secflood_options](images/secflood_options.png)
+![secflood_options](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/secflood_options.png)
 
 A primeira coisa que vamos fazer é já tentar listar as bases de dados disponíveis. Para tal, devemos indicar o alvo no campo "Target". Informe o IP do DVWA (`192.168.0.20`) com o caminho e os parâmetros da aplicação vulnerável (`/vulnerabilities/sqli/?id=a&Submit=Submit`). Coloque tudo isso cercado de aspas simples. Assim o campo "Target" deve ter `'192.168.0.20/vulnerabilities/sqli/?id=a&Submit=Submit'` como mostra a imagem abaixo:
 
-![sqlmap_target](images/sqlmap_target.png)
+![sqlmap_target](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_target.png)
 
 Como se trata de um teste em uma parte da aplicação que é após um processo de autenticação (lembra que você fez login no DVWA? Pois bem), então devemos informar cookies de sessão para que o SQLmap também consiga acessar a página.
 
@@ -283,19 +283,19 @@ document.cookie
 
 Será mostrado os cookies, como na imagem abaixo:
 
-![dvwa_cookies](images/dvwa_cookies.png)
+![dvwa_cookies](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_cookies.png)
 
 Copie a saída, inclusive as aspas duplas. Agora, de volta à página do SQLmap no Secflood, procure pelo campo de "Cookie" e cole o que você acabou de copiar, como está na imagem abaixo:
 
-![sqlmap_cookie](images/sqlmap_cookie.png)
+![sqlmap_cookie](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_cookie.png)
 
 Depois selecione a opção "Databases":
 
-![sqlmap_databases](images/sqlmap_databases.png)
+![sqlmap_databases](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_databases.png)
 
 Em seguida clique em "Execute" e analise o retorno da execução da ferramenta. Você poderá ver que o SQLmap listou todas as bases de dados do ambiente, como já tínhamos visto na atividade anterior.
 
-![sqlmap_dbs](images/sqlmap_dbs.png)
+![sqlmap_dbs](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_dbs.png)
 
 > [!IMPORTANT]
 > Além dos nomes das base de dados, o que mais você vê de interessante na saída do SQLmap? Quais são os tipos de injeção que o SQLmap detectou?
@@ -304,27 +304,27 @@ Em seguida clique em "Execute" e analise o retorno da execução da ferramenta. 
 
 Com o nome do banco de dados em mãos, vamos seguir o processo de descobrir quais tabelas há nele. Digite o nome do banco no campo `Database`:
 
-![sqlmap_database](images/sqlmap_database.png)
+![sqlmap_database](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_database.png)
 
 Então desmarque o campo "Databases" e marque "Tables", em seguida clique em "Execute" e analise o resultado.
 
-![sqlmap_tables](images/sqlmap_tables.png)
+![sqlmap_tables](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_tables.png)
 
 Dando continuidade, vamos especificar a tabela e buscar pelas colunas que a compõem. Para isso, especifique `users` no campo `Table`:
 
-![dvwa_table](images/dvwa_table.png)
+![dvwa_table](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_table.png)
 
 Desmarque o campo `Tables` e marque `Columns` e analise o resultado.
 
-![sqlmap_columns](images/sqlmap_columns.png)
+![sqlmap_columns](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_columns.png)
 
 Novamente conseguimos as informações da estrutura do banco de dados que são pertinentes para nossa extração. Agora vamos seguir para coletar os dados do usuário. Indique as colunas que deseja fazer a coleta no campo `Column`:
 
-![sqlmap_colum](images/sqlmap_colum.png)
+![sqlmap_colum](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_colum.png)
 
 Por fim, desmarque o campo "Columns" e marque "Dump". Depois disso clique em "Execute" e veja o resultado obtido:
 
-![sqlmap_dump](images/sqlmap_dump.png)
+![sqlmap_dump](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlmap_dump.png)
 
 > [!IMPORTANT]
 > A imagem acima há apenas algumas entradas dos dados obtidos. Nos envie todos os dados extraídos na última execução do SQLmap por aqui.
@@ -340,9 +340,9 @@ O tipo de injeção SQL que exploramos na atividade anterior é chamado de UNION
 
 Agora nesta atividade iremos tratar de outro tipo de vulnerabilidade de injeção de SQL, o tipo cego. Nesse tipo de vulnerabilidade não temos um retorno direto dos dados da consulta, mas apenas um tipo de resposta verdadeiro ou falso. Acesse a página "SQL Injection (Blind)" no DVWA e insira termos para realizar a busca. Note que, com exceção de casos de erro, os únicos retornos que você tem na página são as seguintes mensagens:
 
-![sqlib_true](images/sqlib_true.png)
+![sqlib_true](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlib_true.png)
 
-![sqlib_false](images/sqlib_false.png)
+![sqlib_false](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlib_false.png)
 
 Buscando por '1', encontrou algum registro no banco, por isso o retorno verdadeiro (`User ID exists in the database.`), já ao buscar por '100' não foi encontrado nada no banco de dados, por isso o retorno falso (`User ID is MISSING from the database`).
 
@@ -537,15 +537,15 @@ Você já sabe bastante coisa de como utilizar o SQLmap, pois foi bem detalhado 
 
 2. Insira `'192.168.0.20/vulnerabilities/sqli_blind/?id=1&Submit=Submit#'` no campo de alvo (atenção para colocar as aspas simples)
 
-![sqlib_target](images/sqlib_target.png)
+![sqlib_target](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlib_target.png)
 
 3. Coloque o cookie no campo correspondente. O código para coletar o cookie é `document.cookie`. Lembre-se de colocar as aspas duplas corretamente.
 
-![sqlib_cookie](images/sqlib_cookie.png)
+![sqlib_cookie](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlib_cookie.png)
 
 4. Selecione o campo para a ferramenta buscar as bases de dados:
 
-![sqlib_dbs](images/sqlib_dbs.png)
+![sqlib_dbs](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlib_dbs.png)
 
 Clique em executar e analise o resultado:
 
@@ -562,7 +562,7 @@ Pelo que pode ver no resultado da ferramenta ela não conseguiu detectar a vulne
 
 Sendo esse o problema, então podemos informar isso para a ferramenta utilizando o parâmetro `--string`:
 
-![sqlib_string](images/sqlib_string.png)
+![sqlib_string](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlib_string.png)
 
 Configurando dessa maneira ao executar a ferramenta ela conseguirá injetar e explorar a vulnerabilidade. Depois disso execute o restante dos passos para extrair os dados como você já sabe:
 
@@ -572,7 +572,7 @@ Configurando dessa maneira ao executar a ferramenta ela conseguirá injetar e ex
 
 Realizando todos esses passos você deve obter um resultado semelhante ao que seque:
 
-![sqlib_dump](images/sqlib_dump.png)
+![sqlib_dump](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/sqlib_dump.png)
 
 ## Atividade 6 - Proteção com Web Application Firewall
 
@@ -584,27 +584,27 @@ Web Application Firewall é um tipo de software que conta com algumas configura�
 
 Vamos testar e confirmar o funcionamento do ModSecurity. Primeiro acesse o serviço DVWA via Dashboard HackInSDN:
 
-![servico_dvwa](images/servico_dvwa.png)
+![servico_dvwa](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/servico_dvwa.png)
 
 Realize login se necessário. Também confirme que o nível de segurança está definido como baixo ("Low"), então acesse a página "SQL Injection". Nessa página vamos fazer alguns usos simples. Primeiro, envie o ID 1, você deve receber como retorno que uma entrada foi encontrada:
 
-![dvwa_payload_1](images/dvwa_payload_1.png)
+![dvwa_payload_1](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_payload_1.png)
 
 Depois disso, teste enviar uma aspas simples (`'`) para verificar a possibilidade de injeção de SQL. Nesse caso um erro simples da aplicação ocorreu. Agora utilize o payload `' OR 1=1 #` para abusar da vulnerabilidade. Perceba que serão listadas todas as entradas da tabela.
 
-![dvwa_sem_waf](images/dvwa_sem_waf.png)
+![dvwa_sem_waf](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/dvwa_sem_waf.png)
 
 Agora faremos o mesmo mas com a aplicação protegida pelo ModSecurity. Clique no serviço "ModSec" no Dashboard HackInSDN:
 
-![servico_modsec](images/servico_modsec.png)
+![servico_modsec](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/servico_modsec.png)
 
 Caso necessário, faça login na aplicação (mesmo usuário `admin` e senha `password` do DVWA normal). Confirme que o nível de segurança está definido para baixo ("Low") e então acesse a página "SQL Injection". Aqui seguiremos os mesmo testes que fizemos com o DVWA sem a proteção do ModSecurity. Primeiro envie como entrada `1` para buscar por esse identificador.
 
-![modsec_payload_1](images/modsec_payload_1.png)
+![modsec_payload_1](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/modsec_payload_1.png)
 
 Depois teste também enviar aspas simples, tal qual fizemos anteriormente. Nesse caso houve novamente um erro de sintaxe reportado pela aplicação. Agora vem a parte interessante: também teste inserir o payload `' OR 1=1 #` para fazer a exploração da vulnerabilidade e perceba o resultado qual foi.
 
-![waf_blocking](images/waf_blocking.png)
+![waf_blocking](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/waf_blocking.png)
 
 Nesse caso que tentamos fazer a exploração da vulnerabilidade o ModSecurity corretamente entendeu que era um ataque e rapidamente fez o bloqueio da requisição. Essa requisição maliciosa nem sequer chegou ao servidor do DVWA.
 
@@ -624,25 +624,25 @@ Abra o Secflood e acessa a página da ferramenta SQLmap. Você já sabe o que é
 > [!WARNING]
 > Apenas atenção que o IP da instância com ModSecurity é `192.168.0.30` e o serviço está na porta **8000**!
 
-![modsec_alvo](images/modsec_alvo.png)
+![modsec_alvo](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/modsec_alvo.png)
 
 - Cookies:
 
-![modsec_cookie](images/modsec_cookie.png)
+![modsec_cookie](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/modsec_cookie.png)
 
 - Solicitar listagem das bases de dados:
 
-![modsec_dbs](images/modsec_dbs.png)
+![modsec_dbs](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/modsec_dbs.png)
 
 Depois disso clique em "Execute" e analise o resultado:
 
-![modsec_sqlmap_detecta_waf](images/modsec_sqlmap_detecta_waf.png)
+![modsec_sqlmap_detecta_waf](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/modsec_sqlmap_detecta_waf.png)
 
 Como você pode reparar o próprio SQLmap também não conseguiu fazer a exploração de forma direta. Por isso a ferramenta até dá a dica sobre ter um WAF protegendo a aplicação e sugere o uso de alguns script para modificar a injeção ([tamper](https://github.com/sqlmapproject/sqlmap/wiki/Usage#tamper-injection-data)) na tentativa de fazer o bypass dessas proteções.
 
 Vamos então especificar alguns desses scripts. Você pode ver uma lista completa dos scripts de tamper existentes no próprio [repositório da ferramenta](https://github.com/sqlmapproject/sqlmap/tree/master/tamper). Utilizaremos uma mescla de dois scripts como exemplo: `space2comment` e `space2hash`:
 
-![modsec_tamper](images/modsec_tamper.png)
+![modsec_tamper](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab02-sqli/images/modsec_tamper.png)
 
 Clique em "Execute" e analise o resultado.
 
