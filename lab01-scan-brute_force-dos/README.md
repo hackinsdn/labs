@@ -150,10 +150,10 @@ rtt min/avg/max/mdev = 3.444/3.497/3.546/0.044 ms
 > [!IMPORTANT]  
 > A sequência de comandos acima indica que uma configuração estava pendente no cenário do laboratório e após essa configuração a conectividade foi restaurada. Escolha uma das opções abaixo que melhor descreve a configuração que estava faltando e foi realizada:
 >
-> <input type="radio" name="resposta_atividade1_config" id="id1" value="configuracao-gateway" /> <label for="id1">Estava faltando configurar o gateway (roteador padrão) no host secflood e por isso o ping para o host srv501 não funcionou.</label><br>
-> <input type="radio" name="resposta_atividade1_config" id="id2" value="ativacao-controlador-sdn" /> <label for="id2">Por se tratar de uma rede SDN, a configuração que estava faltando foi ativar o Controlador SDN que estava desativado.</label><br>
-> <input type="radio" name="resposta_atividade1_config" id="id3" value="criacao-l2vpn-evc" /> <label for="id3">Na configuração do controlador SDN, estava faltando a criação do circuito L2 virtual (EVC) que habilita a conectividade entre o secflood e o fw201.</label><br>
-> <input type="radio" name="resposta_atividade1_config" id="id4" value="ativacao-firewall" /> <label for="id4">A configuração que estava faltando foi uma regra de firewall no host fw201 que foi automaticamente criada a partir da sequencia de comandos executada.</label><br>
+> <input type="radio" name="resposta_atividade1_config" id="id101" value="configuracao-gateway" /> <label for="id101">Estava faltando configurar o gateway (roteador padrão) no host secflood e por isso o ping para o host srv501 não funcionou.</label><br>
+> <input type="radio" name="resposta_atividade1_config" id="id102" value="ativacao-controlador-sdn" /> <label for="id102">Por se tratar de uma rede SDN, a configuração que estava faltando foi ativar o Controlador SDN que estava desativado.</label><br>
+> <input type="radio" name="resposta_atividade1_config" id="id103" value="criacao-l2vpn-evc" /> <label for="id103">Na configuração do controlador SDN, estava faltando a criação do circuito L2 virtual (EVC) que habilita a conectividade entre o secflood e o fw201.</label><br>
+> <input type="radio" name="resposta_atividade1_config" id="id104" value="ativacao-firewall" /> <label for="id104">A configuração que estava faltando foi uma regra de firewall no host fw201 que foi automaticamente criada a partir da sequencia de comandos executada.</label><br>
 
 
 
@@ -258,8 +258,10 @@ Note que, diferente da execução anterior, desta vez foi realizada uma varredur
 > [!IMPORTANT]  
 > Por que ocorre essa diferença entre as saídas quando realizada a partir do host secflood e do h101? Considerando a fase de reconhecimento de uma auditoria de segurança, ou mesmo o processo de levantamento de vulnerabilidades, quais as vantagens e desvantagens de ambas as execuções?
 > 
-> <textarea name="resposta_nmap_secflood_h101" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-> </textarea>
+> <input type="radio" name="resposta_nmap_secflood_h101" id="id201" value="secflood-possui-mais-ferramentas" /> <label for="id201">A diferença ocorre pois o Secflood é um sistema especializado de segurança e inclui ferramentas avançadas de segurança ofensiva e geração de tráfego benífico, por isso a vantagem de utilzar sistemas desse tipo no processo de auditoria de segurança.</label><br>
+> <input type="radio" name="resposta_nmap_secflood_h101" id="id202" value="scan-rede-versus-scan-host" /> <label for="id202">A diferença ocorre pois na primeira execução do scan foi utilizado como alvo apenas um endereço IP, ao passo que na segunda execução foi utilizado uma rede como alvo, aumentando, portanto, a análise dos serviços em questão. Daí a importância de realizar ambos os testes em um processo de auditoria.</label><br>
+> <input type="radio" name="resposta_nmap_secflood_h101" id="id203" value="scan-interno-versus-scan-externo" /> <label for="id203">A diferença ocorre pois a primeira execução foi realizada a partir de um host externo e a segunda execução a partir de um host interno, cujas políticas de firewall são diferentes. Daí a importância de realizar testes de auditoria a partir de diferentes contextos de rede.</label><br>
+> <input type="radio" name="resposta_nmap_secflood_h101" id="id204" value="uso-port-knocking" /> <label for="id204">A diferença ocorre pois no segundo teste o serviço de DNS e SSH foram ativados no host automaticamente a partir dos pacotes enviados no primeiro scan, uma técnica conhecida como Port-Knocking. Portanto, em testes de auditoria, é importante repetir o mesmo teste múltiplas vezes.</label><br>
 
 Voltando ao terminal do srv101, digite CTRL+C a fim de parar a execução do tcpdump. Utilize a barra de rolagem do navegador web para visualizar a saída desde o início. Observe que parte da captura de tráfego contém requisições ARP feitas a partir do gateway para os demais IPs da rede 172.16.10.0/24:
 ```
@@ -747,9 +749,12 @@ grep -w -n "adm123" /tmp/mutated
 Como pode observar, ambas as senhas estão no dicionário expandido. O parâmetro `-n` no grep mostra o número da linha na qual a string foi encontrada, o que ajuda a entender quantas tentativas seriam mais ou menos necessárias para o Hydra obter sucesso. No entanto, você pode utilizar também técnicas de reordenação aleatória do arquivo para aumentar a chances de encontrar as credenciais válidas mais cedo.
 
 > [!IMPORTANT]  
-> Como prevenir tais ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
-> <textarea name="resposta_brute_force" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-> </textarea>
+> Como prevenir a execução ou sucesso de ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
+> <input type="radio" name="resposta_brute_force" id="id301" value="autenticacao-2fa" /> <label for="id301">Autenticação de dois fatores (2FA).</label><br>
+> <input type="radio" name="resposta_brute_force" id="id302" value="limitacao-tentativas" /> <label for="id302">Limitação de tentativas de login (throttle) com bloqueio temporário.</label><br>
+> <input type="radio" name="resposta_brute_force" id="id303" value="politica-senhas" /> <label for="id303">Política de senhas fortes e complexas.</label><br>
+> <input type="radio" name="resposta_brute_force" id="id304" value="captcha" /> <label for="id304">Implementação de sistema de CAPTCHA.</label><br>
+> <input type="radio" name="resposta_brute_force" id="id305" value="todas" /> <label for="id305">Todas as alternativas anteriores.</label><br>
 
 ## Atividade 4 - Ataques de negação de serviço
 
@@ -824,10 +829,12 @@ No terminal do Mininet-sec, pare a coleta de estatísticas de rede do ifstat pre
 ![ifstat mnsec attacks](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/ifstat-mnsec-attacks.png)
 
 > [!IMPORTANT]  
-> Comparando a volumetria de tráfego entre os dois ataques, explique quais mecanismos poderiam ser utilizados para detectar cada um deles e quais mitigações poderiam ser aplicados para reduzir os danos.
+> Comparando a volumetria de tráfego entre os ataques de Negação de Serviço por consumo de banda e Negação de Serviço do tipo Slow HTTP, quais mecanismos podem ser utilizados para detectar e mitigar cada um deles?
 >
-> <textarea name="resposta_ataques_dos_hping_slowloris" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-> </textarea>
+> <input type="radio" name="resposta_ataques_dos" id="id401" value="uso-de-firewalls" /> <label for="id401">O uso de firewalls do tipo filtro de pacotes e análise de padrões de tráfego são suficientes para detectar ambos os ataques, com mitigação através do bloqueio das portas TCP de destino e endereços IP.</label><br>
+> <input type="radio" name="resposta_ataques_dos" id="id402" value="monitorar-taxa-req-tempo-resp" /> <label for="id402">O monitoramento de tráfego de rede e análise de taxas de requisição pode detectar o ataque de Negação de Serviço por consumo de banda, enquanto para o ataque Slow HTTP, são necessárias técnicas de detecção de tempo de resposta.</label><br>
+> <input type="radio" name="resposta_ataques_dos" id="id403" value="aumentar-banda" /> <label for="id403">Para ambos os ataques, a mitigação consiste em aumentar a largura de banda da rede.</label><br>
+> <input type="radio" name="resposta_ataques_dos" id="id404" value="uso-de-vpns" /> <label for="id404">O uso de VPNs e criptografia é eficaz na detecção e mitigação de ambos os ataques.</label><br>
 
 ## Atividade 5 - Execução, Detecção e Contenção de ataques de varredura
 
@@ -936,10 +943,12 @@ tcpdump -i srv501-eth0 -n
 ```
 
 > [!IMPORTANT]  
-> O bloqueio automático de ataques como mostrado acima é uma ferramenta interessante para a rápida resposta a incidentes de segurança, porém ele vem acompanhado de alguns riscos. Quais riscos você observa na estratégia adotada acima e como esses riscos podem ser mitigados?
+> O bloqueio automático de ataques como mostrado acima é uma ferramenta interessante para a rápida resposta a incidentes de segurança, porém ele vem acompanhado de alguns riscos. Assinale a alternativa mais adequada para os riscos que você observa na estratégia adotada e como esses riscos podem ser mitigados.
 > 
-> <textarea name="resposta_bloqueio_automatico" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
-> </textarea>
+> <input type="radio" name="resposta_bloqueio_automatico" id="id501" value="risco-falso-positivo-uso-revisao-manual" /> <label for="id501">O bloqueio automático pode gerar falsos positivos, resultando no bloqueio de usuários legítimos; isso pode ser mitigado com a implementação de um sistema de revisão manual e análise de logs.</label><br>
+> <input type="radio" name="resposta_bloqueio_automatico" id="id502" value="risco-atacante-experiente-uso-criptografia" /> <label for="id502">O bloqueio automático pode ser facilmente contornado por atacantes experientes; isso pode ser mitigado com a utilização de ferramentas de criptografia avançada.</label><br>
+> <input type="radio" name="resposta_bloqueio_automatico" id="id503" value="risco-desempenho-uso-maior-capacidade" /> <label for="id503">O bloqueio automático pode sobrecarregar os servidores, prejudicando o desempenho; isso pode ser mitigado com o aumento da capacidade do servidor.</label><br>
+> <input type="radio" name="resposta_bloqueio_automatico" id="id504" value="risco-visibilidade-ataque-uso-sistema-log" /> <label for="id504">O bloqueio automático pode resultar em falta de visibilidade dos ataques, dificultando a análise de segurança; isso pode ser mitigado com a implementação de técnicas de log centralizado e monitoramento em tempo real.</label><br>
 
 Opcionalmente, é possível remover manualmente o bloqueio acima. Para isso, no terminal do host ids201 pare a execução do `hackinsdn-guardian` com o comando CTRL+C. Em seguida, execute o comando abaixo no terminal do host ids201 para visualizar os bloqueios ativos:
 ```
