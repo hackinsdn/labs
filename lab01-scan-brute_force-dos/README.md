@@ -430,6 +430,9 @@ Observe que a porta 123/udp continua listada como "open|filtered". Execute um sc
 
 ![Secflood UDP scan agressivo](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab01-scan-brute_force-dos/images/secflood-udp-scan-agressivo.png)
 
+Observe atentamente a saída do teste acima e verifique se houveram mudanças com relação ao estado da porta (STATE).
+
+
 > [!IMPORTANT]  
 > É possível afirmar com certeza o estado da porta? Podemos afirmar que muito provavelmente a porta está fechada?
 > 
