@@ -753,6 +753,7 @@ Como pode observar, ambas as senhas estão no dicionário expandido. O parâmetr
 
 > [!IMPORTANT]  
 > Como prevenir a execução ou sucesso de ataques de força bruta na autenticação dos serviços de rede ilustrados anteriormente?
+> 
 > <input type="radio" name="resposta_brute_force" id="id301" value="autenticacao-2fa" /> <label for="id301">Autenticação de dois fatores (2FA).</label><br>
 > <input type="radio" name="resposta_brute_force" id="id302" value="limitacao-tentativas" /> <label for="id302">Limitação de tentativas de login (throttle) com bloqueio temporário.</label><br>
 > <input type="radio" name="resposta_brute_force" id="id303" value="politica-senhas" /> <label for="id303">Política de senhas fortes e complexas.</label><br>
