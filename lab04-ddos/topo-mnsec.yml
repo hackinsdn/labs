@@ -56,7 +56,7 @@ hosts:
       value: "kytos"
     - name: "MONGO_DBNAME"
       value: "kytos"
-    - name: "MONGO_HOST_SEEDS
+    - name: "MONGO_HOST_SEEDS"
       value: "127.0.0.1:27017"
     publish:
     - "6653:6653"
