@@ -1,1 +1,95 @@
 ## TODO: using mininet yaml topology with some requirements: link from srv1 to switch will be 100MB or 1G. srv1, h7 and h8 will be k8s Pods. Botnet will be pre-installed on h2, h4, h5, h6, h9. Kytos controller running l2ls Napp?
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mininet-sec-${pod_hash}
+  labels:
+    app: mininet-sec-${pod_hash}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mininet-sec-${pod_hash}
+  template:
+    metadata:
+      name: mininet-sec-${pod_hash}
+      labels:
+        app: mininet-sec-${pod_hash}
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/mininet-sec: unconfined
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values: ${allowed_nodes}
+      containers:
+      - name: mininet-sec
+        image: hackinsdn/mininet-sec:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8050
+        - containerPort: 8181
+        - containerPort: 8008
+        command: ["/usr/bin/tini", "--", "/bin/sh", "-x", "-c"]
+        args:
+          - git clone --branch feat/lab04-ddos http://github.com/hackinsdn/labs /tmp/labs;
+            mv /tmp/labs/lab04-ddos/* /root/labs/lab04-ddos/;
+            rm -rf /tmp/labs;
+            cd /root/labs/lab04-ddos;
+            service openvswitch-switch start;
+            tmux new-sess -d -s mnsec mnsec --topofile topo-mnsec.yml;
+            sleep infinity;
+        workingDir: /root/labs/lab04-ddos
+        env:
+        - name: K8S_POD_HASH
+          value: ${pod_hash}
+        - name: K8S_NODE_AFFINITY
+          value: ${allowed_nodes_str}
+        - name: K8S_PROXY_CERT_FILE
+          value: /usr/local/etc/mnsec-proxy-ca.crt
+        - name: K8S_PROXY_HOST
+          value: mnsec-proxy-service.hackinsdn.svc.cnacv5
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN", "SYS_MODULE", "SYS_ADMIN"]
+        volumeMounts:
+        - name: lib-modules
+          mountPath: /lib/modules
+        - name: mnsec-proxy-ca-volume
+          mountPath: /usr/local/etc/mnsec-proxy-ca.crt
+          readOnly: true
+          subPath: ca.crt
+      volumes:
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+      - name: mnsec-proxy-ca-volume
+        configMap:
+          defaultMode: 0600
+          name: mnsec-proxy-ca-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mininet-sec-${pod_hash}
+  labels:
+    app: mininet-sec-${pod_hash}
+spec:
+  type: NodePort
+  ports:
+  - port: 8050
+    targetPort: 8050
+    name: http-mininet-sec
+  - port: 8181
+    targetPort: 8181
+    name: http-kytos
+  - port: 8008
+    targetPort: 8008
+    name: http-sflow-rt
+  selector:
+    app: mininet-sec-${pod_hash}

