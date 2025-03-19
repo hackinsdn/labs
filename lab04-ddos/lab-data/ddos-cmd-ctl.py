@@ -6,7 +6,7 @@ zumbies = {}
 tasks = {}
 
 
-@app.route("")
+@app.route("/")
 def get_home():
     return render_template("index.html")
 
