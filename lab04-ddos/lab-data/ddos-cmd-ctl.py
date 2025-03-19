@@ -1,9 +1,14 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/s', static_folder='static')
 zumbies = {}
 tasks = {}
+
+
+@app.route("")
+def get_home():
+    return render_template("index.html")
 
 
 @app.route("/register", methods=["POST"])
@@ -56,4 +61,4 @@ def get_tasks():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=5000)

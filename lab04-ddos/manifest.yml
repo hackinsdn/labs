@@ -91,5 +91,8 @@ spec:
   - port: 8008
     targetPort: 8008
     name: http-sflow-rt
+  - port: 5000
+    targetPort: 5000
+    name: http-c2c
   selector:
     app: mininet-sec-${pod_hash}

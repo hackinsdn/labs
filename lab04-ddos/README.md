@@ -12,9 +12,19 @@ Nesse cenário, uma organização fictícia que hospeda o site "HackInSDN.com" s
 
 TODO
 
+1. ping from h1 to srv1: falha
+
+2. configurar Kytos com of-l2ls
+
+3. ping novamente: okay
+
+4. curl http://192.168.1.254
+
+5. testar com ali: ali --timeout 2s --duration 0 http://192.168.1.254
+
 ## Atividade 2 - Orquestrando a formação da botnet
 
-TODO
+
 
 ## Atividade 3 - Executando ataques de DDoS volumétrico
 
