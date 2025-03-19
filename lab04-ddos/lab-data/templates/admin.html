@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+</style>
+</head>
+<body>
+<h1>Admin view of the DDoS Command-and-Controller</h1>
+<hr/>
+<p></p>
+<h2>Zumbie hosts</h2>
+<hr/>
+<table>
+  <thead>
+    <tr>
+      <th>Host</th>
+      <th>Additional information</th>
+      <th>Tasks</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for zumbi in zumbies %}
+    <tr>
+      <td>{{zumbi}}</td>
+      <td>{{zumbies[zumbi]["_info"]}}</td>
+      <td>{{zumbies[zumbi]["_tasks"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
+<h2>Tasks</h2>
+<hr/>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Task</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for taskid in tasks %}
+    <tr>
+      <td>{{taskid}}</td>
+      <td>{{tasks[taskid]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>

