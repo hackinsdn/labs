@@ -38,6 +38,13 @@ table, th, td {
 <br>
 <h2>Tasks</h2>
 <hr/>
+<p>You can create new tasks:</p>
+<form method="POST" action="/new_task">
+  <label>When: <input placeholder="YYYY-MM-DD,HH:MM:SS or S" size="25" type="text" name="when"></label>
+  <label>Task: <input placeholder="command to be executed" size="50" type="text" name="task"></label>
+  <input type="submit" value="Submit">
+</form>
+<br/>
 <table>
   <thead>
     <tr>

