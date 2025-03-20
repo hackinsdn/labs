@@ -57,7 +57,7 @@ table, th, td {
     {% for taskid in tasks %}
     <tr>
       <td>{{taskid}}</td>
-      <td>{{"ACTIVE" if taskid > now else "EXPIRED"}}</td>
+      <td>{{"ACTIVE - starting in %d sec" % (taskid - now) if taskid > now else "EXPIRED"}}</td>
       <td>{{tasks[taskid]}}</td>
     </tr>
     {% endfor %}
