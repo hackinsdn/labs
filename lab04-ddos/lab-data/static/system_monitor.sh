@@ -1,7 +1,7 @@
 #!/bin/bash
 
 while true; do
-	HOSTNAME=$(hostname)
+	test -z "$HOSTNAME" && HOSTNAME=$(hostname)
 	RESULT=$(curl -s http://192.168.1.250:5000/register -X POST -H 'Content-type: application/json' -d '{"name":"'$HOSTNAME'"}')
 	if [ "$RESULT" = "OK" ]; then
 		break
