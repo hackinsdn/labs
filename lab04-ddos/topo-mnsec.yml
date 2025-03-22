@@ -71,7 +71,6 @@ hosts:
     publish:
     - "6653:6653"
     - "8181:8181"
-    - "8008:8008"
   c2c:
     ip: 192.168.1.250/24
     publish:
@@ -82,6 +81,7 @@ hosts:
       - ln -s /usr/local/bin/slowloris /usr/bin/linux_verify
       - cp /usr/sbin/hping3 /root/labs/lab04-ddos/lab-data/static/
       - ln -s /usr/sbin/hping3 /usr/bin/linux_checker
+      - python3 /root/labs/lab04-ddos/lab-data/ddos-cmd-ctl.py &
 switches:
   s1:
     kind: ovs
@@ -110,6 +110,8 @@ links:
     node2: s1
   - node1: srv1
     node2: s1
+    kind: tc
+    bw: 100
   - node1: c2c
     node2: s1
   - node1: srv2
