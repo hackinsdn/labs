@@ -30,10 +30,10 @@ setEventHandler(function(evt) {
     interface: port.ofport,
     match: {
       'IN_PORT': port.ofport,
-      'ETH_TYPE': ethType:'0x800',
-      'IPV4_DST': ip:ipdestination+'/32',
-      'IP_PROTO': protocol:'17',
-      'UDP_SRC': udpPort:udpsourceport,
+      'ETH_TYPE': '0x800',
+      'IPV4_DST': ipdestination+'/32',
+      'IP_PROTO': '17',
+      'UDP_SRC': udpsourceport,
     }
  };
 

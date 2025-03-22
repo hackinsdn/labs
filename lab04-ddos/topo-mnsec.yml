@@ -1,7 +1,11 @@
 name: Lab DDoS
-defaults:
+settings:
   env:
     DEFENVVAR1: xpto
+  sflow_enabled: true
+  sflow_collector: 127.0.0.1:6343
+  sflow_sampling: 64
+  sflow_polling: 10
   # hosts_kind: default
   # switches_kind: default
   # links_kind: default
