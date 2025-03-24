@@ -13,52 +13,76 @@ hosts:
   h1:
     ip: 192.168.1.1/24
     defaultRoute: via 192.168.1.254
+    posX: 84.46
+    posY: 303.67
   h2:
     ip: 192.168.1.2/24
     defaultRoute: via 192.168.1.254
     postStart:
       - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+    posX: -1.77
+    posY: 224.05
   h3:
     ip: 192.168.1.3/24
     defaultRoute: via 192.168.1.254
+    posX: 11.01
+    posY: 267.63
   h4:
     ip: 192.168.1.4/24
     defaultRoute: via 192.168.1.254
     postStart:
       - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+    posX: 9.54
+    posY: 176.28
   h5:
     ip: 192.168.1.5/24
     defaultRoute: via 192.168.1.254
     postStart:
       - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+    posX: 121.97
+    posY: 187.62
   h6:
     ip: 192.168.1.6/24
     defaultRoute: via 192.168.1.254
     kind: k8spod
     image: hackinsdn/debian:latest
+    posX: 96.83
+    posY: 143.99
   h7:
     ip: 192.168.1.7/24
     defaultRoute: via 192.168.1.254
     kind: k8spod
     image: hackinsdn/debian:latest
+    posX: 162.96
+    posY: 81.35
   h8:
     ip: 192.168.1.8/24
     defaultRoute: via 192.168.1.254
     kind: k8spod
     image: hackinsdn/debian:latest
+    posX: 196.66
+    posY: 56.20
   h9:
     ip: 192.168.1.9/24
     defaultRoute: via 192.168.1.254
     postStart:
       - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+    posX: 239.83
+    posY: 54.90
   srv1:
     ip: 192.168.1.254/24
     kind: k8spod
     image: hackinsdn/vuln-ssl-heartbleed:latest
     postStart:
       - echo "<html><body><h1>Welcome to HackInSDN.com</h1></body></html>" > /var/www/index.html
+    posX: 345.44
+    posY: 283.52
+    group: HackInSDN.com
   srv2:
     kind: iptables
+    posX: 377.87
+    posY: 220.78
+    group: HackInSDN.com
   c1:
     kind: k8spod
     image: hackinsdn/kytos:allinone
@@ -75,6 +99,9 @@ hosts:
     publish:
     - "6653:6653"
     - "8181:8181"
+    posX: 333.06
+    posY: 186.50
+    group: HackInSDN.com
   c2c:
     ip: 192.168.1.250/24
     publish:
@@ -86,9 +113,13 @@ hosts:
       - cp /usr/sbin/hping3 /root/labs/lab04-ddos/lab-data/static/
       - ln -s /usr/sbin/hping3 /usr/bin/linux_checker
       - python3 /root/labs/lab04-ddos/lab-data/ddos-cmd-ctl.py &
+    posX: 49.19
+    posY: 81.03
+    group: Atacante
 switches:
   s1:
     kind: ovs
+    group: HackInSDN.com
   s2:
     kind: lxbr
 links:
