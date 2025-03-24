@@ -120,8 +120,12 @@ switches:
   s1:
     kind: ovs
     group: HackInSDN.com
+    posX: 242.00
+    posY: 193.72
   s2:
     kind: lxbr
+    posX: 63.51
+    posY: 235.25
 links:
   - node1: h1
     node2: s1

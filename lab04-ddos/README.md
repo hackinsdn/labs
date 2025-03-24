@@ -6,13 +6,20 @@ O cenário utilizado para esse laboratório é ilustrado na figura abaixo:
 
 ![Topology](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/topology.png)
 
-Nesse cenário, uma organização fictícia que hospeda o site "HackInSDN.com" será vítima de ataques de negação de serviço distribuídos, tendo como alvo principal o servidor **srv1** que hospeda o site da organização. O atancante orquestra os ataques através do host **c2c** (ou C&C, do inglês _Command and Control_) que gerencia uma botnet de hosts comprometidos (h2, h4, .., h6, h8, h9) utilizados para disparar de fato o ataque. Clientes legítimos como o host **h1** (e também h3 e h7) serão impactados pelo ataque e observarão impacto na disponibilidade do site. Além do processo de orquestração e execução do ataque, este experimento também ilustra técnicas para detecção e contenção de tais ataques.
+Nesse cenário, uma organização fictícia que hospeda o site "HackInSDN.com" será vítima de ataques de negação de serviço distribuídos, tendo como alvo principal o servidor **srv1** que hospeda o site da organização. O atancante orquestra os ataques através do host **c2c** (ou C&C, do inglês _Command and Control_) que gerencia uma botnet de hosts comprometidos (h2, h4, h5, h6, h8 e h9) utilizados para disparar de fato o ataque. Clientes legítimos como o host **h1** (e também h3 e h7) serão afetados pelo ataque e observarão impacto na disponibilidade do site. Além do processo de orquestração e execução do ataque, este experimento também ilustra técnicas para detecção e contenção de tais ataques.
 
 ## Atividade 1 - Testes de funcionamento normal do cenário
 
-TODO
+Antes de iniciar o cenário de orquestração, execução e contenção dos ataques de DDoS, vamos fazer alguns testes de acesso ao ambiente e configurar a conectividade dos hosts.
 
-1. ping from h1 to srv1: falha
+1. O primeiro passo é verificar a conectividade entre o host **h1** e o servidor **srv1**. Para isso, abra o Mininet-Sec conforme ilustrado na imagem abaixo:
+
+![lab04-ddos-resources-dashboard-mnsec.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-resources-dashboard-mnsec.png)
+
+Você deve observar que uma nova aba no navegador é aberta com a topologia do Mininet-Sec conforme ilustrado abaixo:
+
+
+ ping from h1 to srv1: falha
 
 2. configurar Kytos com of-l2ls
 
