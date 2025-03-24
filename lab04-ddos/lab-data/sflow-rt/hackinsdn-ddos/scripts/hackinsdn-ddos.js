@@ -10,16 +10,29 @@
 // References:
 //  - https://github.com/sflow-rt/ddos-protect/blob/master/scripts/ddos.js
 //  - https://sflow-rt.com/reference.php
-var user = 'kytosuser';
-var password = 'kytospwd';
-var kytosserver = '127.0.0.1';
-var ifIndexesUrl = "http://127.0.0.1:8050/ifindexes";
+
+var settings = {
+  ip_fragmentation:{threshold:1000},
+  icmp_flood:{threshold:1000},
+  udp_amplification:{threshold:1000},
+  udp_flood:{threshold:1000},
+  tcp_amplification:{threshold:1000},
+  tcp_flood:{threshold:1000},
+  action:"none",
+  redirect_to:null,
+  kytosuser: 'kytosuser',
+  kytospassword: 'kytospwd',
+  kytosserver: '127.0.0.1',
+  topologyIfIndexesUrl: "http://127.0.0.1:8050/ifindexes",
+  sourceCountFilterThreshold: 10,
+};
+
 var controls = {};
 var ifindexes = {};
 
 function fetchIfIndexes(retry) {
   var resp = http2({
-    url:ifIndexesUrl,
+    url:settings.topologyIfIndexesUrl,
     headers:{'Accept':'application/json'},
     operation:'get',
   });
@@ -37,28 +50,15 @@ function fetchIfIndexes(retry) {
 }
 fetchIfIndexes(5);
 
-var keys = 'ipdestination';
+var keys = 'null:vlan:0,ipdestination';
 var filter = 'first:stack:.:ip:ip6=ip';
-var value = 'frames';
 var values = 'count:ipsource,avg:ipbytes';
+var keys6 = 'null:vlan:0,ip6destination';
+var filter6 = 'first:stack:.:ip:ip6=ip6';
+var values6 = 'count:ip6source,avg:ip6bytes';
+var value = 'frames';
 var flow_t = '2';
 var threshold_t = '10';
-var sourceCountFilterThreshold = 10;
-
-var keys6 = 'ip6destination,group:ip6destination:ddos_protect';
-var values6 = 'count:ip6source,avg:ip6bytes';
-var filter6 = 'first:stack:.:ip:ip6=ip6';
-
-var settings = {
-  ip_fragmentation:{threshold:1000},
-  icmp_flood:{threshold:1000},
-  udp_amplification:{threshold:1000},
-  udp_flood:{threshold:1000},
-  tcp_amplification:{threshold:1000},
-  tcp_flood:{threshold:1000},
-  action:"drop",
-  redirect_to:null,
-};
 
 
 setFlow('ddos_protect_ip_fragmentation', {
@@ -166,11 +166,11 @@ setEventHandler(function(evt) {
     return;
   }
 
-  var [target,protocol] = evt.flowKey.split(',');
+  var [vlan,target,protocol] = evt.flowKey.split(',');
   var [attackers,packetsize] = evt.values ? evt.values : [0,0];
 
   // avoid false positives by ignoring events with small number of attackers
-  if(attackers > 0 && attackers < sourceCountFilterThreshold) {
+  if(attackers > 0 && attackers < settings.sourceCountFilterThreshold) {
     logWarning("HackInSDN DDoS - Aborting: source count "+attackers+" too small for "+evt.thresholdID+" "+target+" "+protocol);
     return;
   }
@@ -180,56 +180,56 @@ setEventHandler(function(evt) {
   switch(evt.thresholdID) {
     case 'ddos_protect_icmp_flood':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv4_dst': target,
         'icmp_type': parseInt(protocol),
       };
       break;
     case 'ddos_protect_icmp6_flood':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv6_dst': target,
         'icmp_type': parseInt(protocol),
       };
       break;
     case 'ddos_protect_tcp_flood':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv4_dst': target,
         'tcp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_tcp6_flood':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv6_dst': target,
         'tcp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_udp_flood':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv4_dst': target,
         'udp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_udp6_flood':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv6_dst': target,
         'udp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_ip_fragmentation':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv4_dst': target,
         'ip_proto': parseInt(protocol),
       };
       break;
     case 'ddos_protect_ip6_fragmentation':
       kytos_match = {
-        'vlan': 0,
+        'vlan': vlan,
         'ipv6_dst': target,
         'ip_proto': parseInt(protocol),
       };
@@ -237,6 +237,11 @@ setEventHandler(function(evt) {
   }
   var match_str = JSON.stringify(kytos_match)
   logInfo("HackInSDN DDoS - detected "+evt.thresholdID+" match="+match_str+" attackers="+attackers+" packetsize="+packetsize);
+
+  if (settings.action == "none") {
+    logInfo("HackInSDN DDoS - no actions to be taken, ignoring..");
+    return;
+  }
 
   var msg = {
     switch: port.dpid,
@@ -249,11 +254,11 @@ setEventHandler(function(evt) {
   }
 
   var resp = http2({
-    url:'http://'+kytosserver+':8181/api/hackinsdn/containment/v1/',
+    url:'http://'+settings.kytosserver+':8181/api/hackinsdn/containment/v1/',
     headers:{'Content-Type':'application/json','Accept':'application/json'},
     operation:'post',
-    user:user,
-    password:password,
+    user:settings.kytosuser,
+    password:settings.kytospassword,
     body: JSON.stringify(msg)
   });
 
@@ -300,12 +305,12 @@ setIntervalHandler(function() {
    if(thresholdTriggered(rec.threshold,rec.agent,rec.metric,rec.flowKey)) continue;
 
    var resp = http2({
-    url:'http://'+kytosserver+':8181/api/hackinsdn/containment/v1/'
+    url:'http://'+settings.kytosserver+':8181/api/hackinsdn/containment/v1/'
         +encodeURIComponent(rec.containmentId),
     headers:{'Accept':'application/json'},
     operation:'delete',
-    user:user,
-    password:password
+    user:settings.kytosuser,
+    password:settings.kytospassword,
    });
 
    delete controls[key];
@@ -321,16 +326,22 @@ setHttpHandler(function(request) {
   if (request.method != "POST") {
     return "Unsupported request";
   }
-  if (request.body.action) {
-    if (request.body.action == "redirect") {
-      if (request.body.redirect_to) {
-        settings.redirect_to = request.body.redirect_to;
+  for (var attr in request.body) {
+    if (attr == "action") {
+      if (request.body.action == "redirect") {
+        if (request.body.redirect_to) {
+          settings.redirect_to = request.body.redirect_to;
+        }
+        settings.action = request.body.action;
+      } else if (request.body.action == "drop") {
+        settings.action = request.body.action;
+      } else if (request.body.action == "none") {
+        settings.action = request.body.action;
+      } else {
+        return "Unsupported request action. Supported actions: drop, redirect";
       }
-      settings.action = request.body.action;
-    } else if (request.body.action == "drop") {
-      settings.action = request.body.action;
-    } else {
-      return "Unsupported request action. Supported actions: drop, redirect";
+    } else if (settings[attr]) {
+      settings[attr] = request.body[attr];
     }
   }
   return "OK";
