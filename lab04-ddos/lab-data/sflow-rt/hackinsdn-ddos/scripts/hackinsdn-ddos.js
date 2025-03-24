@@ -180,56 +180,56 @@ setEventHandler(function(evt) {
   switch(evt.thresholdID) {
     case 'ddos_protect_icmp_flood':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv4_dst': target,
         'icmp_type': parseInt(protocol),
       };
       break;
     case 'ddos_protect_icmp6_flood':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv6_dst': target,
         'icmp_type': parseInt(protocol),
       };
       break;
     case 'ddos_protect_tcp_flood':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv4_dst': target,
         'tcp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_tcp6_flood':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv6_dst': target,
         'tcp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_udp_flood':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv4_dst': target,
         'udp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_udp6_flood':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv6_dst': target,
         'udp_dst': parseInt(protocol),
       };
       break;
     case 'ddos_protect_ip_fragmentation':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv4_dst': target,
         'ip_proto': parseInt(protocol),
       };
       break;
     case 'ddos_protect_ip6_fragmentation':
       kytos_match = {
-        'vlan': vlan,
+        'vlan': parseInt(vlan),
         'ipv6_dst': target,
         'ip_proto': parseInt(protocol),
       };
