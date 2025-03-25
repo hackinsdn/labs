@@ -68,10 +68,10 @@ A saída esperada é mostrada abaixo:
 
 5. Ainda no host **h1**, vamos utilizar uma ferramenta de teste contínuo e _benchmarking_ para as requisições HTTP. A ferramenta utilizada será o **ali** (https://github.com/nakabonne/ali), que pode ser executada com o seguinte comando no terminal do host h1:
 ```
-ali --timeout 2s --duration 0 http://192.168.1.254
+ali --timeout 2s --duration 0 --start http://192.168.1.254
 ```
 
-Após executar o comando acima, você deve pressionar a tecla ENTER para iniciar o processo de coleta. A saída esperada do ali é mostrada abaixo:
+A saída esperada do ali é mostrada abaixo:
 
 ![lab04-ddos-h1-ali.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h1-ali.png)
 
