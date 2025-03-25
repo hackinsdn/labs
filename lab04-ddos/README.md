@@ -52,16 +52,18 @@ tmux new-session -d -s kytosserver "kytosd -f -E"
 ping -c4 192.168.1.254
 ```
 
-É possível que o primeiro pacote seja "perdido" pois o controlador SDN Kytos precisa de um tempo para fazer a descoberta da porta e configuração das regras OpenFlow.
+A saída esperada é mostrada abaixo. É possível que o primeiro pacote seja "perdido" pois o controlador SDN Kytos precisa de um tempo para fazer a descoberta da porta e configuração das regras OpenFlow.
+
+![lab04-ddos-h1-ping-srv1-ok.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h1-ping-srv1-ok.png)
 
 4. Ainda no host **h1**, execute também um teste de acesso ao site do HackInSDN.com na linha de comando com o seguinte comando:
 ```
 curl http://192.168.1.254
 ```
 
-A saída esperada é mostrada abaixo (a saída abaixo inclui o teste do ping e também do curl):
+A saída esperada é mostrada abaixo:
 
-![lab04-ddos-h1-ping-srv1-ok.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h1-ping-srv1-ok.png)
+![lab04-ddos-h1-curl-ok.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h1-curl-ok.png)
 
 
 5. Ainda no host **h1**, vamos utilizar uma ferramenta de teste contínuo e _benchmarking_ para as requisições HTTP. A ferramenta utilizada será o **ali** (https://github.com/nakabonne/ali), que pode ser executada com o seguinte comando no terminal do host h1:
@@ -89,7 +91,7 @@ A saída esperada é mostrada abaixo:
 
 O comando acima irá monitorar as estatísticas de rede da interface **s1-eth8** que deve ser a interface conectando o switch **s1** com o host **srv1**.
 
-Ao observar a saída acima podemos notar que o tráfego enviado gira em torno de 90Kbps e o tráfego recebido gira em torno de 170Kbps. O tráfego em questão é resultante do benchmark executado pela ferramenta "ali" que gera cerca de 50 requisições por segundo, resultando em um tráfego enviado de 90Kbps, sendo a resposta com o conteúdo HTML correspondente ao tráfego recebido de 170Kbps.
+Ao observar a saída acima podemos notar que o tráfego enviado gira em torno de 80Kbps e o tráfego recebido gira em torno de 140Kbps. O tráfego em questão é resultante do benchmark executado pela ferramenta "ali" que gera cerca de 50 requisições por segundo, resultando em um tráfego enviado de 80Kbps, sendo a resposta com o conteúdo HTML correspondente ao tráfego recebido de 140Kbps.
 
 Por fim, caso você deseje confirmar que a interface **s1-eth8** é a interface correta que conecta **s1** e **srv1**, volte para a aba que mostra a topologia do Mininet-Sec e clique no link entre os dois elementos:
 
@@ -186,7 +188,7 @@ Na tela do DSTAT, observe agora o volume de tráfego subindo para algo em torno 
 
 ## Atividade 3 - Executando ataques de DDoS volumétrico
 
-1. Como já observamos anteriormente, as estatísticas de rede com a ferramenta DSTAT mostram que em consições normais o volume de tráfego do host **srv1** gira em torno de 170Kbps de saída e 90Kbps de entrada. O volume está baixo e em conformidade com o uso da ferramenta de benchmark "ali". Confirme a visualização das estatísticas no terminal do Mininet-Sec que está executando o comando "dstat".
+1. Como já observamos anteriormente, as estatísticas de rede com a ferramenta DSTAT mostram que em consições normais o volume de tráfego do host **srv1** gira em torno de 140Kbps de saída e 80Kbps de entrada. O volume está baixo e em conformidade com o uso da ferramenta de benchmark "ali". Confirme a visualização das estatísticas no terminal do Mininet-Sec que está executando o comando "dstat".
 
 2. Volte a interface console admin C2C e confirme que todos os hosts infectados continuam ativos, você deve visualizar 6 bots ativos (h2, h4, h5, h6, h8, h9) -- observe os endereços IPs especialmente o último octeto e também a coluna "Last seen".
 
