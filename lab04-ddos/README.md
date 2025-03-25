@@ -139,7 +139,7 @@ Em seguida, recarregue a página e observe que todos os **bots** já obtiveram a
 
 ![lab04-ddos-c2c-admin-zumbie-tasks.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-admin-zumbie-tasks.png)
 
-5. Volte à aba que estava mostrando as estatísticas de tráfegoccom dstat e observe que a média de tráfego enviado e recebido aumentou em cerca de 30Kbps cada:
+5. Volte à aba que estava mostrando as estatísticas de tráfego com DSTAT e observe que a média de tráfego recebido e enviado aumentou em cerca de 30Kbps cada (passando de 140Kbps para 170Kbps e 80 para 110Kbps, respectivamente):
 
 ![lab04-ddos-mnsec-dstat-task-ping.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-mnsec-dstat-task-ping.png)
 
@@ -204,19 +204,29 @@ O comando acima vai executar um volume de tráfego muito grande a partir de cada
 
 ![lab04-ddos-dstat-ddos-vol.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-dstat-ddos-vol.png)
 
-5. Na aba do h1 que está com o "ali" em execução, observar as requisições com falha de timeout
+5. Na aba do h1 que está com o "ali" em execução, observar as requisições com falha de timeout:
 
-6. No host h8, executar o seguinte comando e observar o resultado (notar que não aparece o hping3 mas sim um processo chamado "linux\_checker" o que pode confundir e passar despercebido pelo administrador):
+![lab04-ddos-ali-timeout.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-ali-timeout.png)
+
+6. No host h8, executar o seguinte comando para listar os processos e observar o resultado:
 
 ```
 ps aux
 ```
 
+A saída esperada é mostrada abaixo:
+
+![lab04-ddos-h8-ps-aux.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h8-ps-aux.png)
+
+Note que não aparece o hping3 na lista de processos em execução, mas sim um processo chamado "linux\_checker" o que pode confundir e dificultar a detecção do host comprometido pelo administrador:
+
 ## Atividade 4 - Mitigando ataques de DDoS volumétrico com bloqueio de atacantes
 
-TODO: falar sobre os tipos de mitigação e sobre ferramentas. bloqueio de ataques (blackhole)
+A mitigação de ataques de DDoS visa minimizar ou aliviar os efeitos danosos de um ataque de negação de serviço para reduzir os impactos causados. A mitigação de um ataque de DDoS pode não significar que cessar o ataque por completo, mas sim reduzir os impactos para níveis aceitáveis pela organização. O processo de mitigação pode envolver diversas estratégias, porém as mais comuns são: criação de filtros para bloqueio dos atacantes (também conhecido como _blackhole_), restrição de banda para redução dos impactos (_rate limit_), soluções de limpeza de tráfego e planos de contingência com movimentação do alvo do ataque (exemplo: migração de serviço). Nesse laboratório vamos explorar a mitigação dos ataques através do bloqueio simples (_blackhole_).
 
 1. Abrir o terminal do Mininet-Sec a partir do dashboard:
+
+![lab04-ddos-resources-dashboard-term-mnsec.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-resources-dashboard-term-mnsec.png)
 
 2. A partir do terminal do Mininet-Sec, instalar o Sflow-RT:
 
@@ -227,9 +237,9 @@ curl -sfL https://inmon.com/products/sFlow-RT/sflow-rt.tar.gz | tar -xz -C /opt/
 
 3. Instalar a aplicação "HackInSDN Anti-DDoS" e a aplicação "Browse and trend traffic flows" no Sflow-RT.
 
-Para instalar a aplicação hackinsdn-ddos:
+Para instalar a aplicação hackinsdn-anti-ddos:
 ```
-/opt/sflow-rt/get-app.sh hackinsdn hackinsdn-ddos
+/opt/sflow-rt/get-app.sh hackinsdn hackinsdn-anti-ddos
 ```
 
 Para instalar a aplicação browse-flows:
@@ -245,6 +255,8 @@ Para instalar a aplicação browse-flows:
 
 Saída esperada:
 
+![lab04-ddos-start-sflow-rt.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-start-sflow-rt.png)
+
 5. Agora vamos executar novamente o ataque de DDoS volumétrico contra o servidor web da organização HackInSDN.com. Na aba que possui o console admin do C2C aberto, adicionar uma nova Task para executar em 30 segundos e com o comando:
 
 ```
@@ -253,19 +265,21 @@ timeout 60 hping3 -d 1200 -p 80 -i u250 --rand-source 192.168.1.254
 
 6. Na aba do terminal do MininetSec que estava executando o Sflow-RT, observe a saída:
 
-Saída esperada...
+![lab04-ddos-sflow-rt-detect.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-sflow-rt-detect.png)
 
 7. Na aba que mostra a ferramenta "ali" executando um benchmark a partir de cliente legítimo h1, note que o acesso continua sendo impactado:
 
-Saída esperada
+![lab04-ddos-ali-impacted-sflow-rt.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-ali-impacted-sflow-rt.png)
 
 8. Observe que o ataque foi detectado porém a aplicação HackInSDN Anti-DDoS estava configurada de forma a não realizar a mitigação automática. Para visualizar as configurações da aplicação HackInSDN Anti-DDoS, abra um novo terminal do Mininet-Sec a partir do Dashboard e execute o seguinte comando no terminal do Mininet-Sec:
 
 ```
-curl -s http://127.0.0.1:8008/app/hackinsdn-ddos/scripts/hackinsdn-ddos.js/json
+curl -s http://127.0.0.1:8008/app/hackinsdn-anti-ddos/scripts/main.js/json | jq -r
 ```
 
 A saída esperada é mostrada a seguir:
+
+![lab04-ddos-hackinsdn-anti-ddos-settings.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-hackinsdn-anti-ddos-settings.png)
 
 Observe que a ação de mitigação está configurada como "none", o que significa que nenhuma ação será tomada.
 
@@ -274,7 +288,7 @@ Observe que a ação de mitigação está configurada como "none", o que signifi
 10. Altere a ação de mitigação para DROP, descartando o tráfego malicioso:
 
 ```
-curl -X POST -H 'Content-type: application/json' -s http://127.0.0.1:8008/app/hackinsdn-ddos/scripts/hackinsdn-ddos.js/json -d '{"action": "drop"}'
+curl -X POST -H 'Content-type: application/json' -s http://127.0.0.1:8008/app/hackinsdn-anti-ddos/scripts/main.js/json -d '{"action": "drop"}' | jq -r
 ```
 
 11. Repita novamente a execução do ataque a partir do console admin do C2C porém agora com uma duração maior (tempo para início do ataque: 30 segundos):
@@ -285,13 +299,15 @@ timeout 120 hping3 -d 1200 -p 80 -i u250 --rand-source 192.168.1.254
 
 12. Obseve a saída do Sflow-RT:
 
-Saída esperada
+![lab04-ddos-sflow-rt-mitigate.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-sflow-rt-unblock.png)
 
 13. Observe agora o funcionamento de um cliente legítimo h1 executando o benchmark com a ferramenta "ali":
 
-Saída esperada
+![lab04-ddos-ali-ok-sflow-rt.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-ali-ok-sflow-rt.png)
 
-14. No cenário acima, clientes legítimos que de alguma forma compartilham infraestrutura de rede com atacantes (cenário muitíssimo comum) também seriam impactados. Podemos comprovar essa observação, executaremos um teste de acesso web a partir do host h3 que compartilha infraestrutura de redes com hosts notodamente infectados (i.e, h2 e h4). Abra o terminal do h3 e execute o seguinte comando:
+14. No cenário acima, clientes legítimos que de alguma forma compartilham infraestrutura de rede com atacantes (cenário muitíssimo comum) também seriam impactados. Podemos comprovar essa observação, executaremos um teste de acesso web a partir do host h3 que compartilha infraestrutura de redes com hosts notodamente infectados (i.e, h2 e h4).
+
+Abra o terminal do h3 e execute o seguinte comando:
 
 ```
 curl --max-time 10 http://192.168.1.254
@@ -299,7 +315,11 @@ curl --max-time 10 http://192.168.1.254
 
 A saída esperada é mostrada abaixo:
 
+![lab04-ddos-h3-timeout.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h3-timeout.png)
+
 15. Aguarde o fim do ataque e observe que o Sflow-RT automaticamente remove o bloqueio:
+
+![lab04-ddos-sflow-rt-unblock.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-sflow-rt-unblock.png)
 
 16. Teste novamente o acesso a partir dos clientes legítimos h3 e h1 através do seguinte comando:
 
@@ -309,12 +329,12 @@ curl --max-time 10 http://192.168.1.254
 
 ## Atividade 5 - Mitigando ataques de DDoS volumétrico com limpeza de tráfego
 
-TODO: na seção anterior foi possível observar que o ataque foi contido e o sistema passou a funcionar apesar do ataque, porém clientes legítimos que compartilham infraestrutura com atacantes foram impactados. A técnica de bloqueio de tráfego permite pode ser combinado com filtros que permitem bloquear o tráfego em pontos estratégicos, como tráfego internacional, tráfego vindo de determinado ponto de tráfego, entre outros; tudo depende das funcionalidades previstas no seu provedor de Internet. Outra opção seria as técnicas de limpeza de tráfego, que, a partir de alguma heurística, removem o tráfego de ataque ou tráfego malicioso e encaminham para o cliente apenas o tráfego benígno. Existem empresas que fornecem esse tipo de serviço a partir de diferentes estratégias (TODO: ref??????). Nesta seção vamos ilustrar uma solução simplificada de limpeza de tráfego.
+Na seção anterior foi possível observar que o ataque foi mitigado e o sistema passou a funcionar apesar do ataque, porém clientes legítimos que compartilham infraestrutura com atacantes foram impactados. A técnica de bloqueio de tráfego pode ser combinada com filtros que permitem bloquear o tráfego em pontos estratégicos, como tráfego internacional, tráfego vindo de determinado ponto de tráfego, entre outros; tudo depende das funcionalidades previstas no seu provedor de Internet. Outra opção seria as técnicas de **limpeza de tráfego**, que, a partir de alguma heurística, removem o tráfego de ataque ou tráfego malicioso e encaminham para o cliente apenas o tráfego benígno. Existem empresas que fornecem esse tipo de serviço a partir de diferentes estratégias (https://imasd.lacnic.net/reportes/ciberseguridad/soluciones-anti-ddos-existentes-mercado-pt.pdf). Nesta seção vamos ilustrar uma solução simplificada de limpeza de tráfego.
 
-1. No terminal do Mininet-Sec que configuramos a aplicação HackInSDN Anti-DDoS e vamos alterar o tipo de bloqueio:
+1. No terminal do Mininet-Sec, altere o tipo de bloqueio com o seguinte comando:
 
 ```
-curl -X POST -H 'Content-type: application/json' -s http://127.0.0.1:8008/app/hackinsdn-ddos/scripts/hackinsdn-ddos.js/json -d '{"action": "redirect", "redirect_to": 20}'
+curl -X POST -H 'Content-type: application/json' -s http://127.0.0.1:8008/app/hackinsdn-anti-ddos/scripts/main.js/json -d '{"action": "redirect", "redirect_to": 20}' | jq -r
 ```
 
 A porta 20, em particular, é a porta na qual o servidor de limpeza de tráfego está conectado. A ideia é que o tráfego será encaminhado para essa porta 20, o servidor de limpeza de tráfego irá remover o tráfego malicioso e permitir apenas o tráfego legítimo. No passo seguinte vamos configurar o servidor de limpeza de tráfego.
@@ -338,15 +358,17 @@ iptables -P FORWARD DROP
 iptables -A FORWARD -i br0 -s 192.168.1.0/24 -j ACCEPT
 ```
 
-3. Repita novamente a execução do ataque a partir do console admin do C2C porém agora com uma duração maior (tempo para início do ataque: 30 segundos):
+3. Repita novamente a execução do ataque a partir do console admin do C2C:
 
+- when: 30
+- task:
 ```
 timeout 120 hping3 -d 1200 -p 80 -i u250 --rand-source 192.168.1.254
 ```
 
 4. Obseve a saída do Sflow-RT:
 
-Saída esperada
+![lab04-ddos-sflow-rt-block-redirect.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-sflow-rt-block-redirect.png)
 
 5. Observe agora o funcionamento de um cliente legítimo que compartilha infraestrutura de rede com clientes infectados. Para isso, navegue novamente para o terminal do h3 e execute o seguinte comando:
 
@@ -356,10 +378,17 @@ curl --max-time 10 http://192.168.1.254
 
 A saída esperada é mostrada abaixo:
 
+![lab04-ddos-h3-ok.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-h3-ok.png)
+
+6. Observe também a saída da ferramenta "ali" e observe que as requisições continuam sendo tratadas normalmente apesar do pico:
+
+![lab04-ddos-ali-ok-redirect.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-ali-ok-redirect.png)
 
 ## Atividade 6 - Executando ataques de Slow DDoS
 
-1. Na aba que está com o console do Mininet-Sec exibindo estatísticas de rede do srv1 com o **dstat**, checar que o volume está baixo e em conformidade com o uso da ferramenta "ali"
+Ataques de Slow DDoS ou Low DDoS, que em português podemos traduzir como ataques de DDoS de baixa volumetria, são ataques cujo objetivo continua sendo indisponibilizar serviços e sistemas a partir de origens distribuídas porém utilizando um baixo volume de requisições ou requisições com ritmo muito mais lento que o uso típico. Tais ataques têm como alvo servidores que tratam as requisições a partir de um conjunto de recursos, por exemplo um _pool_ de _threads_ em um servidor web, de forma que multiplas requisições malignas sejam atreladas a cada uma dessas _threads_ e enviem requisições muito lentamente para manter o recurso ocupado e indisponível para usuários legítimos. Os atacantes podem usar cabeçalhos HTTP, requisições HTTP POST, tráfego TCP, entre outros, para efetivar os ataques de Slow DDoS. Alguns exemplos desses ataques incluem: [Slowloris](https://www.akamai.com/pt/glossary/what-is-a-slowloris-ddos-attack) -- envio parcial e lento de cabeçalhos HTTP; [R.U.D.Y.](https://www.imperva.com/learn/ddos/rudy-r-u-dead-yet/) (R-U-DEAD-YET?) -- baseado no envio de requisições HTTP POST para formulários; [Sockstress](https://en.wikipedia.org/wiki/Sockstress) -- explora uma vulnerabilidade do TCP 3-way handshake para criar conexões que nunca finalizam. Neste laboratório vamos explorar o ataque Slowloris.
+
+1. Na aba do terminal do Mininet-Sec que está executando o **dstat**, checar que o volume está baixo e em conformidade com o uso da ferramenta "ali"
 
 2. Recarregar a interface do C2C e checar que todos os hosts infectados continuam ativos
 
@@ -371,33 +400,26 @@ timeout 120 slowloris -s 100 -p 80 --randuseragents 192.168.1.254
 
 4. Observar o volume de tráfego gerado para o srv1 a partir da ferramenta **dstat** no terminal do Mininet-Sec:
 
-Saída esperada: TODO
+![lab04-ddos-dstat-slowloris.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-dstat-slowloris.png)
 
-5. Observe que o volume de tráfego gerado é muito menor que no caso anterior. Nesse caso, ferramentas de detecção de ataques, como a aplicação HackInSDN Anti-DDoS no Sflow-RT, e muitas outras não são capazes de facilmente detectar o ataque. Por outro lado, os clientes legítimos são igualmente impactados. Para observar esse fato, aa aba do h1 que está com o "ali" em execução, observar as requisições com falha de timeout
+5. Observe que o volume de tráfego gerado é muito menor que no caso anterior. Nesse caso, ferramentas de detecção de ataques, como a aplicação HackInSDN Anti-DDoS no Sflow-RT, e muitas outras não são capazes de facilmente detectar o ataque. Por outro lado, os clientes legítimos são impactados de forma ainda mais significativa. Para observar esse fato, a aba do h1 que está com o "ali" em execução, observar as requisições com falha de timeout:
 
-Saída esperada: TODO
+![lab04-ddos-ali-slowloris.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-ali-slowloris.png)
 
-6. Aguarde alguns segundos até a finalização do ataque e observe que o benchmark na ferramenta "ali" no host h1 foi normalizado:
-
-TODO: saída esperada
+6. Aguarde alguns segundos até a finalização do ataque e observe que o benchmark na ferramenta "ali" no host h1 foi normalizado.
 
 ## Atividade 7 - Mitigando ataques de Slow DDoS
 
-Nesta atividade vamos ilustrar uma possível metodologia para mitigação do ataque de Slow DDos motrado na seção anterior a partir de limitação de banda com o IPTables. É importante ressaltar que a estratégia ilustrada nessa seção tem uma finalidade meramente didática, portanto a abordagem de mitigação escolhida deve ser avaliada com cuidado antes de utilizar em outros cenários, pois pode impactar requisições legítimas em ambientes com uma quantidade de tráfego maior. Outras soluções mais robustas podem ser encontradas na literatura e nas aplicações comerciais. Recomendamos a leitura das referências a seguir para maiores informações: **TODO????**
+Nesta atividade vamos ilustrar a mitigação do ataque de Slow DDoS, motrado na seção anterior, a partir de limitação de banda com o IPTables. É importante ressaltar que a estratégia ilustrada nessa seção tem uma finalidade meramente didática, portanto a abordagem de mitigação a ser escolhida e implantada em produção deve ser cuidadosamente avaliada, sob o risco de impactar requisições legítimas dependendo da volumetria de tráfego legítimo. Outras soluções mais robustas podem ser encontradas na literatura e nas aplicações comerciais. Recomendamos a leitura das referências a seguir para maiores informações: [Detection and Mitigation of Low-Rate Denial-of-Service Attacks: A Survey](https://ieeexplore.ieee.org/abstract/document/9830749), [Mitigando a Ameaça dos Ataques Slow DDoS a Redes SDN usando Consolidação de Regras](https://sol.sbc.org.br/index.php/sbseg/article/view/27214) e [Mitigate Slow HTTP GET/POST Vulnerabilities in the Apache HTTP Server](https://www.acunetix.com/blog/articles/slow-http-dos-attacks-mitigate-apache-http-server/).
 
-1. No terminal do servidor srv1, execute os seguintes comandos para instalar o iptables:
-
-```
-ip netns exec mgmt apt-get update
-ip netns exec mgmt apt-get install -y iptables
-```
-
-2. Aplicar configurações de limitação de banda para evitar as requisições potencialmente maliciosas:
+1. No terminal do servidor srv1, aplicar configurações de limitação de banda para evitar as requisições potencialmente maliciosas:
 
 ```
-iptables -A INPUT -p tcp --dport 80 -m connlimit --connlimit-above 20 --connlimit-mask 32 -j REJECT --reject-with tcp-reset
-iptables -A INPUT -p tcp --dport 80 -m conntrack --ctstate RELATED,ESTABLISHED -m limit --limit 150/second -j ACCEPT
-iptables -A INPUT -p tcp --dport 80 -j REJECT --reject-with tcp-reset
+iptables -A INPUT -p tcp --dport 80 -m connlimit --connlimit-above 15 --connlimit-mask 32 -j REJECT --reject-with tcp-reset
 ```
 
-3. Repetir os testes da seção anterior e avaliar os resultados.
+No comando acima estamos utilizando a extensão "connlimit" do IPTables/Netfilter para descartar (via TCP reset) requisições originadas pelo mesmo IP (`--connlimit-mask 32`) que excedam um máximo de 15 conexões simultâneas (`--connlimit-above 15`). É importante observar que clientes legítimos tipicamente tentarão reconectar e obter o recursos desejado novamente ao receber um TCP reset, ao passo que o atacante perde a característica principal que é manter um grande volume de conexões simultâneas ocupando todas as threads do servidor.
+
+3. Repetir os testes da seção anterior (o ataque e também o monitoramento do "ali") e avaliar os resultados.
+
+![lab04-ddos-ali-mitigate-slowloris.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-ali-mitigate-slowloris.png)

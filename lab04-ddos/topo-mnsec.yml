@@ -19,7 +19,7 @@ hosts:
     ip: 192.168.1.2/24
     defaultRoute: via 192.168.1.254
     postStart:
-      - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+      - nohup /root/labs/lab04-ddos/lab-data/static/system_monitor.sh >/dev/null 2>&1 &
     posX: -1.77
     posY: 224.05
   h3:
@@ -31,14 +31,14 @@ hosts:
     ip: 192.168.1.4/24
     defaultRoute: via 192.168.1.254
     postStart:
-      - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+      - nohup /root/labs/lab04-ddos/lab-data/static/system_monitor.sh >/dev/null 2>&1 &
     posX: 9.54
     posY: 176.28
   h5:
     ip: 192.168.1.5/24
     defaultRoute: via 192.168.1.254
     postStart:
-      - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+      - nohup /root/labs/lab04-ddos/lab-data/static/system_monitor.sh >/dev/null 2>&1 &
     posX: 121.97
     posY: 187.62
   h6:
@@ -66,14 +66,14 @@ hosts:
     ip: 192.168.1.9/24
     defaultRoute: via 192.168.1.254
     postStart:
-      - /root/labs/lab04-ddos/lab-data/static/system_monitor.sh &
+      - nohup /root/labs/lab04-ddos/lab-data/static/system_monitor.sh >/dev/null 2>&1 &
     posX: 239.83
     posY: 54.90
   srv1:
     ip: 192.168.1.254/24
     postStart:
       - service-mnsec-apache2.sh srv1 --start
-      - echo "<html><body><h1>Welcome to HackInSDN.com</h1></body></html>" > /tmp/mnsec/srv1/apache2/var/www/index.html
+      - echo "<html><body><h1>Welcome to HackInSDN.com</h1></body></html>" > /tmp/mnsec/srv1/apache2/www/index.html
     posX: 292.25
     posY: 284.41
     group: HackInSDN.com
@@ -111,7 +111,7 @@ hosts:
       - ln -s /usr/local/bin/slowloris /usr/bin/linux_verify
       - cp /usr/sbin/hping3 /root/labs/lab04-ddos/lab-data/static/
       - ln -s /usr/sbin/hping3 /usr/bin/linux_checker
-      - nohup python3 /root/labs/lab04-ddos/lab-data/ddos-cmd-ctl.py &
+      - nohup python3 /root/labs/lab04-ddos/lab-data/ddos-cmd-ctl.py >/dev/null 2>&1 &
     posX: 49.19
     posY: 81.03
     group: Atacante
