@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  background-color:black; color: white;
+}
+table, th, td {
+  border: 1px solid white;
+  border-collapse: collapse;
+}
+</style>
+</head>
+<body>
+<h1>Admin view of the DDoS Command-and-Controller</h1>
+<hr/>
+<p></p>
+<h2>Zumbie hosts</h2>
+<hr/>
+<table>
+  <thead>
+    <tr>
+      <th>Host</th>
+      <th>Last seen</th>
+      <th>Additional information</th>
+      <th>Tasks</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for zumbi in zumbies %}
+    <tr>
+      <td>{{zumbi}}</td>
+      <td>{{zumbies[zumbi]["_lastseen"]}}</td>
+      <td>{{zumbies[zumbi]["_info"]}}</td>
+      <td>{{zumbies[zumbi]["_tasks"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
+<h2>Tasks</h2>
+<hr/>
+<p>You can create new tasks:</p>
+<form method="POST" action="/new_task">
+  <label>When: <input placeholder="YYYY-MM-DD,HH:MM:SS or S" size="25" type="text" name="when"></label>
+  <label>Task: <input placeholder="command to be executed" size="50" type="text" name="task"></label>
+  <input type="submit" value="Submit">
+</form>
+<br/>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Status</th>
+      <th>Task</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for taskid in tasks %}
+    <tr>
+      <td>{{taskid}}</td>
+      <td>{{"ACTIVE - starting in %d sec" % (taskid - now) if taskid > now else "EXPIRED"}}</td>
+      <td>{{tasks[taskid]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>
