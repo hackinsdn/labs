@@ -61,8 +61,8 @@ iptables -I INPUT -i lo -j ACCEPT
 Após isso, precisamos configurar o processo de resolução de nomes no _fw101_. Para isso, precisamos iniciar o serviço msec-bind9, que foi criado no contexto do dashboard HackInSDN para permitir a criação de nomes de domínio nas topologias dos laboratórios. Para iniciar o serviço e adicionar um domínio, devemos executar os seguintes comandos:
 
 ```
-service-msec-bind9.sh fw101 --start
-service-msec-bind9.sh fw101 --add-zone teste.ufba.br
+service-mnsec-bind9.sh fw101 --start
+service-mnsec-bind9.sh fw101 --add-zone teste.ufba
 ```
 
 Sendo que o primeiro comando inicia o serviço msec-bind9, enquanto o segundo adiciona o nome de domínio teste.ufba.br ao serviço. 
@@ -72,7 +72,7 @@ Sendo que o primeiro comando inicia o serviço msec-bind9, enquanto o segundo ad
 Após isso, iremos adicionar alguns registros DNS ao nome de domínio, para permitir a resolução de nomes. Primeiro, iremos adicionar um registro do tipo A, o qual é resolvido diretamente em um endereço IP, nesse caso, o IP do host _srv201_, permitindo o envio de requisições DNS para ele. Nesse sentido, execute o seguinte comando no host _fw101_:
 
 ```
-service-msec-bind9.sh fw101 --add-entry teste.ufba.br srv201 IN A 203.0.113.2
+service-mnsec-bind9.sh fw101 --add-entry teste.ufba srv201 IN A 203.0.113.2
 ```
 
 Dessa forma, se um host tentar resolver o nome de domínio _teste.ufba.br_, a requisição será enviada para o IP do _srv201_.
@@ -86,7 +86,7 @@ Tendo isso em vista, no túnel DNS, o registro NS será utilizado para estabelec
 Considerando isso, iremos adicionar um registro do tipo NS associado ao registro do tipo A atrelado ao IP do _srv201_, executando o seguinte comando:
 
 ```
-service-msec-bind9.sh fw101 --add-entry teste.ufba.br t1 IN NS srv201.test.ufba.br
+service-mnsec-bind9.sh fw101 --add-entry teste.ufba t1 IN NS srv201.teste.ufba
 ```
 
 Após isso, podemos executar alguns comandos no _h101_ para verificar se a resolução de domínios ocorre corretamente, sendo que:
@@ -96,9 +96,9 @@ Após isso, podemos executar alguns comandos no _h101_ para verificar se a resol
 3. O segundo comando envia uma requisição para o servidor DNS localizado no fw101 para obter informações sobre o nome de domínio do tipo NS _t1.teste.ufba.br_;
 
 ```
-dig @198.51.100.1 teste.ufba.br
-dig @198.51.100.1 srv201.teste.ufba.br A
-dig @198.51.100.1 t1.teste.ufba.br NS
+dig @198.51.100.1 teste.ufba
+dig @198.51.100.1 srv201.teste.ufba A
+dig @198.51.100.1 t1.teste.ufba NS
 ```
 
 Ao analisar as saídas desses comandos, será possível observar informações sobre os domínios registrados.
