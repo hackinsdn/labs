@@ -1,0 +1,44 @@
+    name: Lab OSPF Routing with FRR
+    settings:
+    hosts:
+      h1:
+        ip: 10.1.0.1/24
+        defaultRoute: via 10.1.0.254
+      h2:
+        ip: 10.2.0.1/24
+        defaultRoute: via 10.2.0.254
+      h3:
+        ip: 10.3.0.1/24
+        defaultRoute: via 10.3.0.254
+      router1:
+        ip: 10.1.0.254/24
+        kind: k8spod
+        image: frrouting/frr:v7.5.1
+      router2:
+        ip: 10.2.0.254/24
+        kind: k8spod
+        image: frrouting/frr:v7.5.1
+      router3:
+        ip: 10.3.0.254/24
+        kind: k8spod
+        image: frrouting/frr:v7.5.1
+    links:
+      - node1: h1
+        node2: r1
+      - node1: h2
+        node2: r2
+      - node1: h3
+        node2: r3
+      - node1: r1
+        node2: r2
+        ipv4_node1: 10.255.12.1/24
+        ipv4_node2: 10.255.12.2/24
+      - node1: r2
+        node2: r3
+        ipv4_node1: 10.255.23.2/24
+        ipv4_node2: 10.255.23.3/24
+      - node1: r1
+        node2: r3
+        ipv4_node1: 10.255.13.1/24
+        ipv4_node2: 10.255.13.3/24
+        ipv4_node1: 192.168.3.254/24
