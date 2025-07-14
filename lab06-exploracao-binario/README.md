@@ -102,10 +102,11 @@ recebem parâmetros e como devem retornar os valores. Dessa forma, é possível
 compartilhar código entre projetos diferentes e funcionarão sem problemas.
 
 Existem diversos tipos de **calling conventions** e a forma como cada uma funciona
-pode variar de acordo com a arquitetura que estamos lidando. No caso desse
-laboratório vamos tratar da arquitetura x86_64.
+pode variar de acordo com a ABI ([Application Binary Interface](https://en.wikipedia.org/wiki/Application_binary_interface)) 
+que estamos lidando. No caso desse laboratório vamos tratar da ABI [System V AMD64](https://gitlab.com/x86-psABIs/x86-64-ABI)
+([OSDev](https://wiki.osdev.org/System_V_ABI)), que é a ABI adotada pelo Linux.
 
-Nessa arquitetura, os parâmetros são passados para a função utilizando alguns
+Nessa ABI, os parâmetros são passados para a função utilizando alguns
 registradores, nessa ordem: `RDI`, `RSI`, `RDX`, `RCX`, `R8`, `R9`. Caso sejam
 necessários mais parâmetros, eles são empilhados na stack, começando do último.
 Ou seja, se a função precisa de 8 argumentos, os 6 primeiros são passados pelos
@@ -116,7 +117,7 @@ da função é colocado no registrador `RAX`.
 Além dos parâmetros, que podem ir pela stack, outros valores também são
 empilhados na stack: o endereço de retorno e o valor de `RBP`. Quando
 começa a executar a função, caso ela precise de variáveis para funcionar, também
-será utilizada a stack para isso. Essa região da stack organizada para uma
+será utilizada a stack para isso. Essa região da stack organizada para cada
 função poder executar corretamente chamamos de *stack frame*.
 
 Vamos tratar sobre cada um desses valores no *stack frame*:
