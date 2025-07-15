@@ -1,6 +1,6 @@
 # Roteiro de Laboratório - Introdução à Exploração de Binários
 
-Bem-vindo e bem vinda à esse laboratório de **Introdução à Exploração de
+Bem-vindo e bem vinda a esse laboratório de **Introdução à Exploração de
 Binários**. Essa é uma área bastante extensa, complexa e com bastante detalhes,
 repleta de desafios instigantes para serem trabalhados. Querendo dar um gostinho
 para as pessoas que por acaso não tenham um conhecimento nesse campo, montamos
@@ -87,7 +87,7 @@ propósitos comuns que costumeiramente são necessários em diversos programas.
 Dessa forma, se alguém precisa fazer um programa para ler uma entrada do
 usuário, não precisa criar todo o código que vai ouvir eventos do teclado,
 decodificar as teclas para então saber o que fazer com cada uma; basta chamar a
-função `scanf()` da LIBC. Analogamente acontece para caso deseje imprimir dados
+função `scanf()` da [LIBC](https://man7.org/linux/man-pages/man7/libc.7.html). Analogamente acontece para caso deseje imprimir dados
 na tela: não será necessário entender da interface de comunicação com o monitor,
 a quantidade de pixels e resolução que a tela tem, etc; apenas utiliza a função
 `printf()`, também da LIBC.
@@ -225,8 +225,13 @@ root@mnsec-pwn-d998c673219144:~# pwn checksec binexp_bof_01
     RWX:      Has RWX segments
 ```
 
-Isso indica que não há mitigações modernas habilitadas nesse programa.
-Comentaremos mais sobre isso ao final desse laboratório.
+Nessa saída temos algumas informações úteis sobre o binário que vamos atacar.
+Podemos ver que se trata de um binário para a arquitetura AMD64 (x86_64 bits)
+*little-endian*. Além disso, vemos em seguida a nomenclatura de algumas
+mitigações modernas comumente utilizadas em binários: RELRO, Stack canary, NX,
+e PIE. Todas elas são exibidas como desabilitadas. Fizemos isso para focarmos na
+introdução na exploração de binários e não desviar seu foco. Quem sabe façamos
+mais laboratórios com essa temática :)
 
 ## Vulnerabilidade
 
@@ -317,7 +322,7 @@ quando executado, nos dê acesso à shell da máquina que tem o programa vulner�
 executando como serviço de rede.
 
 Todo o processo de exploração pode ser quebrado em passos menores para irmos
-vendo os progressos que formos fazendo no decorrer do processo todo. Isso começa
+progredindo passo a passo até atingirmos nosso objetivo. Isso tudo começa
 com o primeiro passo que é de fato validar se há a vulnerabilidade que pensamos,
 né? Veremos isso logo na seção abaixo.
 
@@ -899,6 +904,10 @@ p.sendline(payload)
 > bits a partir do parâmetro que enviamos para a função. Isso é relevante aqui
 > para que seja enviado realmente 8 bytes, que é o endereço para ficar no topo
 > da stack.
+>
+> Essa função também envia os dados utilizando a [endianess](https://en.wikipedia.org/wiki/Endianness)
+> correta para o processo. Isso acontece pois o `pwntools` detecta qual é pelo 
+> binário que será executado (pelo contexto do *script*), mas pode também ser configurado manualmente.
 
 Antes de executar o *script* como está, vamos configurar nele para ter um
 *breakpoint* no GDB no endereço `main+104`, que é onde tem a instrução `ret` da
@@ -1104,6 +1113,13 @@ Para resolver isso basta ajustar novamente o *script* para funcionar sem que a
 execução seja pelo GDB. Lembra como fazer isso? Remova a parte do debugging via
 GDB e adicione a criação de um processo a partir do binário alvo:
 
+> [!TIP]
+> Não irei instruir dessa forma aqui no laboratório, mas tem uma maneira bem
+> legal de fazer isso que é utilizando variáveis de linha de comandos
+> ([pwnlib.args](https://docs.pwntools.com/en/stable/args.html)]) do `pwntools`.
+> Então, se tiver afim de fazer ficar mais legal, recomendo que dê uma olhada
+> como funciona e faça dessa maneira. ;)
+
 ```python
 p = process('./binexp_bof_01')
 ```
@@ -1232,7 +1248,7 @@ formas de contornar essas mitigações.
 
 ## Correção
 
-Reflita um pouco e responta a pergunta a seguir antes de prosseguir para a nossa
+Reflita um pouco e responda a pergunta a seguir antes de prosseguir para a nossa
 explicação:
 
 > [!IMPORTANT]
@@ -1248,6 +1264,25 @@ Veja bem, no nosso cenário, o que houve de problema foi que o código permite
 escrita de uma quantidade de bytes maior do que foi reservado para ser escrito.
 A forma de resolver isso é limitando a quantidade de dados escritos no `buffer`
 para o tamanho da memória que foi reservado para essa variável.
+
+> [!TIP]
+> Além disso, uma atitude que pode ser legal é instrumentalizar o código para
+> detectar esse tipo de problema dinamicamente. Uma forma de fazer isso é
+> utilizar o parâmetro `-fsanitize=address` no GCC. Essa funcionalidade foi
+> incorporada ao GCC depois de ser utilizada pelo CLANG, compilador do projeto
+> [LLVM](https://clang.llvm.org/docs/AddressSanitizer.html) (não confundir com
+> LLM rs). Com essa funcionalidade habilitada, podemos ver que é detectada a
+> vulnerabilidade na execução do programa:
+> 
+> ```
+> $ ./binexp_bof_01_sanitizer
+> [*] buffer is on: 0x79e4ceb00020
+> [*] Now send data to buffer:
+> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+> =================================================================
+> ==13056==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x79e4ceb000a0 at pc 0x7de4d126e69d bp 0x7ffc5491a680 sp 0x7ffc54919e08
+> WRITE of size 181 at 0x79e4ceb000a0 thread T0
+> ```
 
 ## Próximos passos
 
