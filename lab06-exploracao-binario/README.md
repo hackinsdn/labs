@@ -1,6 +1,6 @@
 # Roteiro de Laboratório - Introdução à Exploração de Binários
 
-Bem-vindo e bem vinda a esse laboratório de **Introdução à Exploração de
+Bem-vindo e bem-vinda a esse laboratório de **Introdução à Exploração de
 Binários**. Essa é uma área bastante extensa, complexa e com bastante detalhes,
 repleta de desafios instigantes para serem trabalhados. Querendo dar um gostinho
 para as pessoas que por acaso não tenham um conhecimento nesse campo, montamos
@@ -9,17 +9,17 @@ esse laboratório introdutório para você começar os estudos.
 ## Introdução
 
 Nesse laboratório abordaremos um tipo de vulnerabilidade simples e que era
-bastante comum em binários há um tempo atrás. Optamos por essa abordagem por
-acharmos válido uma simplificação para um primeiro contato. Mesmo assim
-trataremos diversos assuntos técnicos e traremos um conteúdo coeso para você
-sair daqui tendo um bom início na área.
+bastante comum em binários há um tempo atrás chamada de *stack buffer overflow*. 
+Optamos por essa abordagem por acharmos válido uma simplificação para um primeiro 
+contato. Mesmo assim trataremos diversos assuntos técnicos e traremos um conteúdo 
+coeso para você sair daqui tendo um bom início na área.
 
 **Happy hacking! \o/**
 
 ### Pré Requisitos
 
 Ao longo desse laboratório você precisará de alguns conhecimentos sobre
-programas compilados, sistemas operacionais, arquitetura de computador,
+programas compilados, sistemas operacionais, arquitetura de computadores,
 organização de memória dentre outros temas interessantes que são bem comuns
 quando se envereda pela área de baixo nível.
 
@@ -44,7 +44,7 @@ cruciais para entender a vulnerabilidade apresentada e o método de exploração
 
 A topologia desse laboratório é bem simples:
 
-![topologia: duas máquinas se comunicando com um switch no meio](./images/topologia.png)
+![topologia: duas máquinas se comunicando com um switch no meio](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/main/lab06-exploracao-binario/images/topologia.png)
 
 O dispositivo da esquerda (`chall`) é uma máquina que contém o programa vulnerável que
 iremos explorar. Esse programa é executado como um serviço disponível para
