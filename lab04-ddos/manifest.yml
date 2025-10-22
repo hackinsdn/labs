@@ -36,7 +36,7 @@ spec:
         - containerPort: 8008
         command: ["/usr/bin/tini", "--", "/bin/sh", "-x", "-c"]
         args:
-          - git clone --branch feat/lab04-ddos http://github.com/hackinsdn/labs /tmp/labs;
+          - git clone --branch feat/lab04-ddos https://github.com/hackinsdn/labs /tmp/labs;
             mv /tmp/labs/lab04-ddos/* /root/labs/lab04-ddos/;
             rm -rf /tmp/labs;
             cd /root/labs/lab04-ddos;
