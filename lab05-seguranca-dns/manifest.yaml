@@ -1,0 +1,192 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-custom-topo-${pod_hash}
+data:
+  customTopology.yaml: |-
+    name: dns lab custom topology
+    defaults:
+      env:
+        DEFENVVAR1: xpto
+    hosts:
+    
+      h101:
+        ip: 198.51.100.2/24
+        defaultRoute: via 198.51.100.1
+        group: "Rede_Corporativa_HackInSDN"
+          
+      zeek:
+        kind: k8spod
+        image: hackinsdn/zeek:latest
+        env:
+          - name: ZEEK_INTERFACE
+            value: br0
+        postStart:
+          - brctl addbr br0
+          - brctl addif br0 zeek-eth0
+          - brctl addif br0 zeek-eth1
+          - ip link set dev br0 up
+        group: "Rede_Corporativa_HackInSDN"
+        
+      r201:
+        ip: 203.0.113.1/24
+        group: "Rede_Tunel_DNS"
+        postStart:
+          - ip route add 198.51.100.0/24 via 10.0.0.1
+          - ip route add 192.2.0.0/24 via 10.0.0.10
+
+      srv201:
+        ip: 203.0.113.2/24
+        defaultRoute: via 203.0.113.1
+        group: "Rede_Tunel_DNS"
+
+      randomSrv:
+        ip: 192.2.0.2/24
+        defaultRoute: via 192.2.0.1
+        group: "Internet"
+
+      r301:
+        ip: 192.2.0.1/24
+        group: "Internet"
+        postStart:
+          - ip route add 203.0.113.0/24 via 10.0.0.9
+          - ip route add 198.51.100.0/24 via 10.0.0.5
+
+      fw101:
+        kind: iptables
+        ip: 198.51.100.1/24
+        group: "Rede_Corporativa_HackInSDN"
+        rules_v4:
+          filter:
+            - :INPUT DROP
+            - :OUTPUT ACCEPT
+            - :FORWARD DROP            
+            - -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+            - -A INPUT -p icmp -j ACCEPT
+            - -A INPUT -p tcp --dport 80 -j ACCEPT
+            - -A INPUT -p tcp --dport 80 -j ACCEPT
+            - -A INPUT -p tcp --dport 443 -j ACCEPT
+            - -A INPUT -p udp --dport 53 -j ACCEPT
+             
+            - -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+            - -A FORWARD -p icmp -j ACCEPT
+            - -A FORWARD -p tcp --sport 80 -j ACCEPT
+            - -A FORWARD -p tcp --sport 80 -j ACCEPT
+            - -A FORWARD -p tcp --sport 443 -j ACCEPT
+            - -A FORWARD -p udp --sport 53 -j ACCEPT
+
+        postStart:
+        #Adding routes
+          - ip route add 203.0.113.0/24 via 10.0.0.2
+          - ip route add 192.2.0.0/24 via 10.0.0.6
+    links:       
+      - node1: randomSrv
+        node2: r301
+      
+      - node1: srv201
+        node2: r201
+      
+      - node1: h101
+        node2: zeek
+        
+      - node1: zeek
+        node2: fw101
+
+      - node1: fw101
+        node2: r201
+        ipv4_node1: 10.0.0.1/30
+        ipv4_node2: 10.0.0.2/30
+      - node1: fw101
+        node2: r301
+        ipv4_node1: 10.0.0.5/30
+        ipv4_node2: 10.0.0.6/30
+      - node1: r201
+        node2: r301
+        ipv4_node1: 10.0.0.9/30
+        ipv4_node2: 10.0.0.10/30
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mininet-sec-${pod_hash}
+  labels:
+    app: mininet-sec-${pod_hash}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mininet-sec-${pod_hash}
+  template:
+    metadata:
+      name: mininet-sec-${pod_hash}
+      labels:
+        app: mininet-sec-${pod_hash}
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/mininet-sec: unconfined
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values: ${allowed_nodes}
+      containers:
+      - name: mininet-sec
+        image: hackinsdn/mininet-sec:testing
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8050
+        args: ["mnsec", "--topofile", "/customTopology.yaml"]
+        env:
+        - name: K8S_POD_HASH
+          value: ${pod_hash}
+        - name: K8S_NODE_AFFINITY
+          value: ${allowed_nodes_str}
+        - name: K8S_PROXY_CERT_FILE
+          value: /usr/local/etc/mnsec-proxy-ca.crt
+        - name: K8S_PROXY_HOST
+          value: mnsec-proxy-service.hackinsdn.svc.cnacv5
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN", "SYS_MODULE", "SYS_ADMIN"]
+        volumeMounts:
+        - name: lib-modules
+          mountPath: /lib/modules
+        - name: config-custom-topo-${pod_hash}-volume
+          readOnly: true
+          mountPath: "/customTopology.yaml"
+          subPath: "customTopology.yaml"
+        - name: mnsec-proxy-ca-volume
+          mountPath: /usr/local/etc/mnsec-proxy-ca.crt
+          readOnly: true
+          subPath: ca.crt
+      volumes:
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+      - name: config-custom-topo-${pod_hash}-volume
+        configMap:
+          name: config-custom-topo-${pod_hash}
+      - name: mnsec-proxy-ca-volume
+        configMap:
+          defaultMode: 0600
+          name: mnsec-proxy-ca-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mininet-sec-${pod_hash}
+  labels:
+    app: mininet-sec-${pod_hash}
+spec:
+  type: NodePort
+  ports:
+  - port: 8050
+    targetPort: 8050
+    name: http-mininet-sec
+  selector:
+    app: mininet-sec-${pod_hash}
