@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-custom-topo-${pod_hash}
+data:
+  customTopology.yaml: |-
+    name: Lab OSPF Routing with FRR
+    settings:
+    hosts:
+      h1:
+        ip: 10.1.0.1/24
+        defaultRoute: via 10.1.0.254
+      h2:
+        ip: 10.2.0.1/24
+        defaultRoute: via 10.2.0.254
+      h3:
+        ip: 10.3.0.1/24
+        defaultRoute: via 10.3.0.254
+      router1:
+        ip: 10.1.0.254/24
+        kind: k8spod
+        image: frrouting/frr:v7.5.1
+      router2:
+        ip: 10.2.0.254/24
+        kind: k8spod
+        image: frrouting/frr:v7.5.1
+      router3:
+        ip: 10.3.0.254/24
+        kind: k8spod
+        image: frrouting/frr:v7.5.1
+    links:
+      - node1: h1
+        node2: r1
+      - node1: h2
+        node2: r2
+      - node1: h3
+        node2: r3
+      - node1: r1
+        node2: r2
+        ipv4_node1: 10.255.12.1/24
+        ipv4_node2: 10.255.12.2/24
+      - node1: r2
+        node2: r3
+        ipv4_node1: 10.255.23.2/24
+        ipv4_node2: 10.255.23.3/24
+      - node1: r1
+        node2: r3
+        ipv4_node1: 10.255.13.1/24
+        ipv4_node2: 10.255.13.3/24
+        ipv4_node1: 192.168.3.254/24
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mininet-sec-${pod_hash}
+  labels:
+    app: mininet-sec-${pod_hash}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mininet-sec-${pod_hash}
+  template:
+    metadata:
+      name: mininet-sec-${pod_hash}
+      labels:
+        app: mininet-sec-${pod_hash}
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/mininet-sec: unconfined
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values: ${allowed_nodes}
+      containers:
+      - name: mininet-sec
+        image: hackinsdn/mininet-sec:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8050
+        - containerPort: 8443
+        args: ["mnsec", "--topofile", "/customTopology.yaml"]
+        env:
+        - name: K8S_POD_HASH
+          value: ${pod_hash}
+        - name: K8S_NODE_AFFINITY
+          value: ${allowed_nodes_str}
+        - name: K8S_PROXY_CERT_FILE
+          value: /usr/local/etc/mnsec-proxy-ca.crt
+        - name: K8S_PROXY_HOST
+          value: mnsec-proxy-service.hackinsdn.svc.cnacv5
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN", "SYS_MODULE", "SYS_ADMIN"]
+        volumeMounts:
+        - name: lib-modules
+          mountPath: /lib/modules
+        - name: config-custom-topo-${pod_hash}-volume
+          readOnly: true
+          mountPath: "/customTopology.yaml"
+          subPath: "customTopology.yaml"
+        - name: mnsec-proxy-ca-volume
+          mountPath: /usr/local/etc/mnsec-proxy-ca.crt
+          readOnly: true
+          subPath: ca.crt
+      volumes:
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+      - name: config-custom-topo-${pod_hash}-volume
+        configMap:
+          name: config-custom-topo-${pod_hash}
+      - name: mnsec-proxy-ca-volume
+        configMap:
+          defaultMode: 0600
+          name: mnsec-proxy-ca-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mininet-sec-${pod_hash}
+  labels:
+    app: mininet-sec-${pod_hash}
+spec:
+  type: NodePort
+  ports:
+  - port: 8050
+    targetPort: 8050
+    name: http-mininet-sec
+  selector:
+    app: mininet-sec-${pod_hash}
