@@ -14,6 +14,10 @@ data:
         defaultRoute: via 192.168.0.1
         kind: k8spod
         image: hackinsdn/binex-pwn:main
+        # this Pod will require special privileges to run PTRACE/GDB
+        # it could also be done with:
+        # privileged: true
+        capabilities: ["NET_ADMIN", "SYS_ADMIN", "SYS_PTRACE"]
       chall:
         ip: 192.168.0.20/24
         defaultRoute: via 192.168.0.1
