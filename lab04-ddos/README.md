@@ -36,16 +36,11 @@ Essa falha ocorre pois precisamos configurar o controlador SDN para fornecer con
 2. Para configurar a conectivdade entre os hosts da organização HackInSDN.com, vamos utilizar uma aplicação simples no Orquestrador SDN Kytos-ng que funciona como [Switch L2](https://github.com/kytos-ng/of_l2ls/). Para isso, abra o terminal do host **c1** na topologia do Mininet-Sec com um duplo clique e execute os seguintes comandos:
 
 ```
-ip netns exec mgmt python3 -m pip install -e git+https://github.com/kytos-ng/of_l2ls#egg=kytos-of-l2ls
+kytos napps enable kytos/of_l2ls
+restart-kytos.sh
 ```
 
-E então entre com os seguintes comandos para reiniciar o Kytos:
-```
-tmux send-keys -t kytos "exit" ENTER
-sleep 5
-pkill -9 kytosd
-tmux new-session -d -s kytosserver "kytosd -f -E"
-```
+Aguarde alguns segundos até que o controlador finalize a inicialização e o switch reconecte.
 
 3. De volta ao terminal do host **h1** execute novamente o teste de PING e observe agora a conectividade está operacional:
 ```
