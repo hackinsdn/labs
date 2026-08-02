@@ -1,6 +1,6 @@
 # Roteiro de Lab: Ataques de Cross-Site Scripting (XSS)
 
-Este documento contém o roteiro de laboratório para Ataques de Cross-Site Scripting (XSS). Este material foi baseado no projeto SEED Labs (https://seedsecuritylabs.org) - [Cross-Site Scripting Attack Lab (Elgg)](https://seedsecuritylabs.org/Labs_20.04/Web/Web_XSS_Elgg/), todos os crétidos aos membros do projeto - especialmente Professor Wenliang Du.
+Este documento contém o roteiro de laboratório para Ataques de Cross-Site Scripting (XSS). Este material foi baseado no projeto SEED Labs (https://seedsecuritylabs.org) - [Cross-Site Scripting Attack Lab (Elgg)](https://seedsecuritylabs.org/Labs_20.04/Web/Web_XSS_Elgg/), todos os créditos aos membros do projeto - especialmente Professor Wenliang Du.
 
 > Copyright © 2006 - 2020 by Wenliang Du.
 > This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
@@ -23,7 +23,7 @@ Este laboratório aborda os seguintes tópicos:
 - Content Security Policy (CSP)
 
 Referência: cobertura detalhada do ataque de Cross-Site Scripting pode ser encontrada no seguinte livro:
-- Chapter 10 of the SEED Book, Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details at https://www.handsonsecurity.net.
+- Capítulo 10 do livro do SEED, *Computer & Internet Security: A Hands-on Approach*, 2ª Edição, por Wenliang Du. Mais detalhes em https://www.handsonsecurity.net.
 
 ## Informações do Lab
 
@@ -119,7 +119,7 @@ window.onload = function () {
 
 O código acima deve ser colocado no campo "Sobre Mim" (`About Me`) da página de perfil de Samy. Este campo oferece dois modos de edição: modo Editor (padrão) e modo Texto. O modo Editor adiciona código HTML extra ao texto digitado no campo, enquanto o modo Texto não adiciona. Como não queremos nenhum código extra adicionado ao nosso código de ataque, o modo Texto deve ser ativado antes de inserir o código JavaScript acima. Isso pode ser feito clicando em "Editar HTML", que pode ser encontrado no canto superior direito do campo de texto "Sobre Mim".
 
-Por favor, responda as seguites perguntas:
+Por favor, responda as seguintes perguntas:
 
 Questão 1: Explique o propósito das Linhas 1 e 2, por que elas são necessárias?
 <textarea name="questao1" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
@@ -167,13 +167,13 @@ window.onload = function(){
 
 Semelhante à Tarefa 4, o código acima deve ser colocado no campo "Sobre Mim" da página de perfil de Samy, e o modo Texto deve ser ativado antes de inserir o código JavaScript acima.
 
-Por favor, responda as seguites perguntas:
+Por favor, responda as seguintes perguntas:
 
 Questão 3: Por que precisamos da Linha 1? Remova esta linha e repita seu ataque. Relate e explique sua observação.
 <textarea name="questao3" rows="6" cols="80" placeholder="Escreva sua resposta aqui...">
 </textarea>
 
-## Tarefa 6: xxx
+## Tarefa 6: Tornando o Worm XSS autopropagante
 
 Para se tornar um worm real, o programa JavaScript malicioso deve ser capaz de se autopropagar. Ou seja, sempre que algumas pessoas visualizarem um perfil infectado, não apenas seus perfis serão modificados, mas o worm também será propagado para seus perfis, afetando ainda mais outras pessoas que visualizarem esses perfis recém-infectados. Dessa forma, quanto mais pessoas visualizarem os perfis infectados, mais rápido o worm pode se propagar. Este é exatamente o mesmo mecanismo usado pelo Worm Samy: dentro de apenas 20 horas após seu lançamento em 4 de outubro de 2005, mais de um milhão de usuários foram afetados, tornando Samy um dos vírus de propagação mais rápida de todos os tempos. O código JavaScript capaz de conseguir isso é chamado de worm de cross-site scripting autopropagante. Nesta tarefa, você precisa implementar tal worm, que não apenas modifica o perfil da vítima e adiciona o usuário "Samy" como amigo, mas também adiciona uma cópia do próprio worm ao perfil da vítima, de modo que a vítima se torna um atacante.
 
@@ -199,7 +199,7 @@ Para alcançar a autopropagação, quando o JavaScript malicioso modifica o perf
 </script>
 ```
 
-Vale ressaltar que o innerHTML (linha 1) nos fornece apenas a parte interna do código, não incluindo as tags de script ao redor. Precisamos apenas adicionar a tag de abertura `<script id="worm">` (linha 2) e a tag de fechamento `</script>` (linha 3) para formar uma cópia idêntica do código malicioso.
+Vale ressaltar que o innerHTML (linha 2) nos fornece apenas a parte interna do código, não incluindo as tags de script ao redor. Precisamos apenas adicionar a tag de abertura `<script id="worm">` (linha 1) e a tag de fechamento `</script>` (linha 3) para formar uma cópia idêntica do código malicioso.
 
 Quando os dados são enviados em requisições HTTP POST com o Content-Type definido como `application/x-www-form-urlencoded`, que é o tipo usado em nosso código, os dados também devem ser codificados. O esquema de codificação é chamado de codificação URL, que substitui caracteres não alfanuméricos nos dados por %HH, um sinal de porcentagem e dois dígitos hexadecimais representando o código ASCII do caractere. A função `encodeURIComponent()` na linha 4 é usada para codificar uma string em formato URL.
 
