@@ -4,14 +4,11 @@ metadata:
   name: labdata-webtop-${pod_hash}
 data:
   update-hosts-from-env.sh: |
-    #!/bin/bash
-    declare -u SRV_NAME
-    SRV_NAME="ELGG_$POD_HASH"
-    SRV_NAME+="_SERVICE_HOST"
+    #!/usr/bin/with-contenv bash
     echo "Waiting for service envvar..."
     for i in {1..600}
     do
-       declare -n SRV_IP="SRV_NAME"
+       SRV_IP=$(getent hosts elgg-$POD_HASH | cut -f1 -d' ')
        if [ -n "$SRV_IP" ]; then
          echo $SRV_IP www.seed-server.com www.example32a.com www.example32b.com www.example32c.com www.example60.com www.example70.com >> /etc/hosts
          break
@@ -61,12 +58,13 @@ spec:
         - containerPort: 3001
         volumeMounts:
         - name: labdata-webtop
-          mountPath: /custom-services.d/update-hosts-from-env.sh
+          mountPath: /custom-cont-init.d/update-hosts-from-env.sh
           subPath: update-hosts-from-env.sh
       volumes:
         - name: labdata-webtop
           configMap:
             name: labdata-webtop-${pod_hash}
+            defaultMode: 0755
 ---
 # created with:
 #   tar -czf labdata-mysql.tgz -C ./labdata-mysql .
@@ -102,7 +100,7 @@ spec:
         command: ["bash", "-c"]
         args:
         - tar -xzf /mnt/labdata-mysql.tgz -C /;
-          exec /usr/local/bin/docker-entrypoint.sh
+          exec /usr/local/bin/docker-entrypoint.sh mysqld
         ports:
           - containerPort: 3306
         env:

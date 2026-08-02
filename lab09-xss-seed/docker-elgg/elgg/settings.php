@@ -73,7 +73,7 @@ $CONFIG->dbname = 'elgg_seed';
  *
  * @global string $CONFIG->dbhost
  */
-$CONFIG->dbhost = '10.9.0.6';
+$CONFIG->dbhost = '127.0.0.1';
 
 /**
  * The database port.
