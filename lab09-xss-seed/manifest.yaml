@@ -8,9 +8,11 @@ data:
     echo "Waiting for service envvar..."
     for i in {1..600}
     do
-       SRV_IP=$(getent hosts elgg-$POD_HASH | cut -f1 -d' ')
-       if [ -n "$SRV_IP" ]; then
-         echo $SRV_IP www.seed-server.com www.example32a.com www.example32b.com www.example32c.com www.example60.com www.example70.com >> /etc/hosts
+       ELGG_IP=$(getent hosts elgg-$POD_HASH | cut -f1 -d' ')
+       WEBTOP_IP=$(getent hosts webtop-local-$POD_HASH | cut -f1 -d' ')
+       if [ -n "$ELGG_IP" -a -n "$WEBTOP_IP" ]; then
+         echo $ELGG_IP www.seed-server.com www.example32a.com www.example32b.com www.example32c.com www.example60.com www.example70.com >> /etc/hosts
+         echo $WEBTOP_IP atacante.lab-xss.com >> /etc/hosts
          break
        fi
        sleep 5
@@ -56,6 +58,7 @@ spec:
         ports:
         - containerPort: 3000
         - containerPort: 3001
+        - containerPort: 5555
         volumeMounts:
         - name: labdata-webtop
           mountPath: /custom-cont-init.d/update-hosts-from-env.sh
@@ -134,6 +137,21 @@ spec:
     name: http-elgg
   selector:
     app: elgg-${pod_hash}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webtop-local-${pod_hash}
+  labels:
+    app: webtop-local-${pod_hash}
+spec:
+  clusterIP: None
+  ports:
+  - port: 5555
+    targetPort: 5555
+    name: http-webtop-local
+  selector:
+    app: webtop-${pod_hash}
 ---
 apiVersion: v1
 kind: Service
