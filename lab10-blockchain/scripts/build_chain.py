@@ -19,11 +19,11 @@ bc = Blockchain(difficulty=2)  # dificuldade baixa aqui só para o exemplo ser r
 print("  Bloco gênesis criado (o primeiro, sem antecessor real):")
 print(f"    hash={bc.last_block.hash[:24]}...")
 
-n_blocos_str = ask("Quantos blocos você quer adicionar à cadeia?", "3")
+n_blocos_str = ask("Quantos blocos você quer adicionar à cadeia?", "4")
 try:
     n_blocos = max(1, min(6, int(n_blocos_str)))
 except ValueError:
-    n_blocos = 3
+    n_blocos = 4
 
 for i in range(1, n_blocos + 1):
     transacao = ask(f"  Transação para o bloco {i}", f"Transação de exemplo #{i}")
@@ -47,4 +47,4 @@ valido, _ = bc.is_chain_valid()
 print(f"\n  is_chain_valid() -> {valido}")
 
 bc.save("cadeia.json")
-print("\n  (Cadeia salva em cadeia.json — o próximo passo, tamper_attack.py, vai carregar esse arquivo.)")
+print("\nCadeia salva em cadeia.json")

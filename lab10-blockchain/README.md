@@ -18,7 +18,7 @@ e **assinaturas digitais / carteiras**.
 Antes de começar, olhe esta figura — ela resume visualmente tudo o que
 você vai construir e observar nos 4 passos:
 
-![Anatomia de uma cadeia de blocos: quatro blocos ligados em sequência, cada um mostrando Hash Anterior, Dados/Transações, Nonce e Hash; o Bloco 0 é o gênesis](img/diagrama_blockchain.svg)
+![Anatomia de uma cadeia de blocos: quatro blocos ligados em sequência, cada um mostrando Hash Anterior, Dados/Transações, Nonce e Hash; o Bloco 0 é o gênesis](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/blockchain/lab10-blockchain/img/diagrama_blockchain.png)
 
 Repare em três coisas nessa figura, que vão ficar mais claras a cada
 passo abaixo: (1) cada bloco guarda **quatro** informações essenciais —
@@ -32,8 +32,7 @@ para nenhum bloco real anterior.
 Pré-requisito (uma vez só):
 
 ```bash
-cd lab_blockchain
-pip install -r requirements.txt
+pip install -r scripts/requirements.txt
 ```
 
 
@@ -244,7 +243,7 @@ o resultado final instantaneamente.
 
 Olhe este gráfico antes de começar:
 
-![Gráfico de barras em escala logarítmica mostrando o crescimento exponencial do número esperado de tentativas de hash por nível de dificuldade, de 16 tentativas na dificuldade 1 até cerca de 4,29 bilhões na dificuldade 8](img/grafico_custo_pow.svg)
+![Gráfico de barras em escala logarítmica mostrando o crescimento exponencial do número esperado de tentativas de hash por nível de dificuldade, de 16 tentativas na dificuldade 1 até cerca de 4,29 bilhões na dificuldade 8](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/blockchain/lab10-blockchain/img/grafico_custo_pow.png)
 
 Repare que o eixo vertical está em **escala logarítmica** — cada linha
 horizontal representa 100x mais tentativas que a anterior. Mesmo assim,
@@ -254,7 +253,7 @@ mesmo, na sua própria máquina.
 
 ### 2.1 - Por que existe a Mineração e Prova de Trabalho?
 
-![Comparação entre uma rede sem custo para propor blocos, onde três nós publicam versões conflitantes do bloco 5 e a cadeia se fragmenta sem consenso, e uma rede com Proof of Work, onde só o vencedor da corrida propõe o bloco, os demais verificam com um único cálculo de hash e a rede converge para uma única cadeia](img/diagrama_por_que_pow.svg)
+![Comparação entre uma rede sem custo para propor blocos, onde três nós publicam versões conflitantes do bloco 5 e a cadeia se fragmenta sem consenso, e uma rede com Proof of Work, onde só o vencedor da corrida propõe o bloco, os demais verificam com um único cálculo de hash e a rede converge para uma única cadeia](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/blockchain/lab10-blockchain/img/diagrama_por_que_pow.png)
 
 O problema é que um blockchain não tem uma autoridade central decidindo
 "qual é o próximo bloco válido". A rede é formada por muitos nós que não
@@ -287,7 +286,7 @@ depender de uma autoridade central: quem encontrou o nonce "pagou o
 pedágio" computacional, e qualquer pessoa pode confirmar isso
 instantaneamente.
 
-![Uma balança inclinada mostra a assimetria do Proof of Work: do lado de minerar, uma pilha de bilhões de tentativas de hash pesa muito e puxa a balança para baixo; do lado de verificar, um único cálculo de hash é leve e mantém aquele lado no alto](img/diagrama_assimetria_pow.svg)
+![Uma balança inclinada mostra a assimetria do Proof of Work: do lado de minerar, uma pilha de bilhões de tentativas de hash pesa muito e puxa a balança para baixo; do lado de verificar, um único cálculo de hash é leve e mantém aquele lado no alto](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/blockchain/lab10-blockchain/img/diagrama_assimetria_pow.png)
 
 ### 2.2 — Por que existe o Nonce?
 
@@ -458,7 +457,7 @@ Bitcoin e pela Ethereum) resolve.
 
 Olhe esta figura antes de começar:
 
-![Diagrama do fluxo de assinatura e verificação digital: a chave privada da Alice assina uma mensagem gerando uma assinatura; a assinatura e a chave pública da Alice são usadas para verificar a transação, dando válida para a mensagem original e inválida para uma mensagem alterada](img/diagrama_assinatura_digital.svg)
+![Diagrama do fluxo de assinatura e verificação digital: a chave privada da Alice assina uma mensagem gerando uma assinatura; a assinatura e a chave pública da Alice são usadas para verificar a transação, dando válida para a mensagem original e inválida para uma mensagem alterada](https://raw.githubusercontent.com/hackinsdn/labs/refs/heads/new-lab/blockchain/lab10-blockchain/img/diagrama_assinatura_digital.png)
 
 Repare na divisão da figura: tudo do lado esquerdo (a chave privada) só
 a Alice tem. Tudo do lado direito (a chave pública/endereço, a
