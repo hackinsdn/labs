@@ -1,0 +1,64 @@
+<svg viewBox="0 0 1240 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Uma balança inclinada mostra a assimetria do Proof of Work: do lado de minerar, uma pilha de milhões a bilhões de tentativas de hash pesa muito e puxa a balança para baixo; do lado de verificar, um único cálculo de hash é leve e mantém aquele lado no alto. É essa diferença de peso que permite a toda a rede confiar no mesmo histórico sem uma autoridade central.">
+  <title>Assimetria do Proof of Work: minerar é caro, verificar é barato</title>
+
+  <defs>
+    <marker id="asym_arrGreen" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1240" height="480" fill="#ffffff"/>
+  <rect x="1" y="1" width="1238" height="478" fill="none" stroke="#e2e8f0" stroke-width="2" rx="12"/>
+
+  <text x="620" y="30" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="20" font-weight="700" fill="#0f172a">Minerar É Caro, Verificar É Barato</text>
+  <text x="620" y="50" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="12.5" fill="#475569">O mesmo nonce que custou bilhões de tentativas para ser encontrado custa 1 único cálculo de hash para ser conferido</text>
+
+  <g font-family="system-ui, Arial, sans-serif">
+    <!-- fulcro -->
+    <polygon points="620,150 600,190 640,190" fill="#334155"/>
+    <rect x="590" y="190" width="60" height="10" fill="#334155" rx="2"/>
+
+    <!-- viga inclinada: esquerda (minerar) mais baixa/pesada, direita (verificar) mais alta/leve -->
+    <line x1="270" y1="196" x2="970" y2="108" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="620" cy="150" r="7" fill="#0f172a"/>
+
+    <!-- lado esquerdo: MINERAR -->
+    <line x1="270" y1="196" x2="270" y2="252" stroke="#94a3b8" stroke-width="2.5"/>
+    <line x1="270" y1="196" x2="150" y2="252" stroke="#94a3b8" stroke-width="2.5"/>
+    <line x1="270" y1="196" x2="390" y2="252" stroke="#94a3b8" stroke-width="2.5"/>
+    <path d="M 130,252 Q 270,300 410,252 L 410,262 Q 270,310 130,262 Z" fill="#fca5a5" stroke="#dc2626" stroke-width="1.5"/>
+
+    <!-- pilha de tentativas dentro do prato -->
+    <g>
+      <rect x="150" y="196" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="190" y="188" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="230" y="196" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="270" y="184" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="310" y="196" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="350" y="188" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="170" y="216" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="210" y="208" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="250" y="216" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="290" y="208" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+      <rect x="330" y="216" width="34" height="18" fill="#fee2e2" stroke="#dc2626" stroke-width="1" rx="2"/>
+    </g>
+
+    <text x="270" y="130" text-anchor="middle" font-size="14" font-weight="700" fill="#991b1b">MINERAR (caro)</text>
+    <text x="270" y="330" text-anchor="middle" font-size="12.5" fill="#7f1d1d">≈ bilhões de tentativas de hash</text>
+
+    <!-- lado direito: VERIFICAR -->
+    <line x1="970" y1="108" x2="970" y2="150" stroke="#94a3b8" stroke-width="2.5"/>
+    <line x1="970" y1="108" x2="910" y2="150" stroke="#94a3b8" stroke-width="2.5"/>
+    <line x1="970" y1="108" x2="1030" y2="150" stroke="#94a3b8" stroke-width="2.5"/>
+    <path d="M 895,150 Q 970,175 1045,150 L 1045,158 Q 970,183 895,158 Z" fill="#bbf7d0" stroke="#059669" stroke-width="1.5"/>
+
+    <rect x="945" y="118" width="50" height="24" fill="#d1fae5" stroke="#059669" stroke-width="1.5" rx="4"/>
+    <text x="970" y="134" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46">hash</text>
+
+    <text x="970" y="88" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">VERIFICAR (barato)</text>
+    <text x="970" y="205" text-anchor="middle" font-size="12.5" fill="#065f46">1 único cálculo de hash</text>
+  </g>
+
+  <text x="620" y="415" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="13" fill="#334155">É essa assimetria — caro para produzir, barato para conferir — que permite a toda a rede</text>
+  <text x="620" y="435" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="13" fill="#334155">confiar no mesmo histórico, sem depender de nenhuma autoridade central.</text>
+</svg>
