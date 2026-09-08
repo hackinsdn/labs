@@ -32,7 +32,7 @@ para nenhum bloco real anterior.
 Pré-requisito (uma vez só):
 
 ```bash
-pip install -r scripts/requirements.txt
+pip install -r requirements.txt
 ```
 
 
@@ -48,7 +48,7 @@ com ela e ver, lado a lado, o conteúdo exato que foi serializado e o
 hash calculado a partir dele.
 
 ```
-python3 scripts/build_block.py
+python3 build_block.py
 ```
 
 Observe o hash que foi calculado no processo anterior. Pense no hash
@@ -110,7 +110,7 @@ Depois de cada bloco minerado, o script confirma explicitamente que o
 `previous_hash` do novo bloco bate com o `hash` do bloco anterior.
 
 ```bash
-python3 scripts/build_chain.py
+python3 build_chain.py
 ```
 
 Note que aparece um texto comum em todos os passos: **Bloco XX minerado (nonce=YY, zz tentativas)**
@@ -144,13 +144,13 @@ para "adulterar" seu contúdo, e forneça um conteúdo diferente (você pode
 apenas pressionar ENTER para usar valores padrões).
 
 ```bash
-python3 scripts/tamper_attack.py
+python3 tamper_attack.py
 ```
 
 Agora vamos verificar a integridade da cadeia:
 
 ```bash
-python3 scripts/check_validity.py
+python3 check_validity.py
 ```
 
 Note que `is_chain_valid()` mostra a fraude sendo detectada!
@@ -167,13 +167,13 @@ Você pode pensar: "o atacante só precisa recalcular o hash certo depois
 de mudar os dados, aí ninguém percebe". Vamos exercitar essa ideia e ver se ela funciona:
 
 ```
-python3 scripts/tamper_fix_attempt.py
+python3 tamper_fix_attempt.py
 ```
 
 Agora vamos checar a validade da blockchain adulterada com hash correto?
 
 ```
-python3 scripts/check_validity.py cadeia_adulterada2.json
+python3 check_validity.py cadeia_adulterada2.json
 ```
 
 Observe que o resultado foi **is_chain_valid() -> False** e a mensagem de erro nós dá uma idéia do que ocorreu: *Bloco 3: previous_hash não corresponde ao hash real do bloco 2 (cadeia quebrada!).*
@@ -187,7 +187,7 @@ sed -e s/HASH-ANTIGO/HASH-NOVO/g cadeia_adulterada2.json > cadeia_adulterada3.js
 Será que agora a validade da blockchain adulterada com `hash` e `previous_hash` vai ser confirmada?
 
 ```
-python3 scripts/check_validity.py cadeia_adulterada3.json
+python3 check_validity.py cadeia_adulterada3.json
 ```
 
 Mais uma vez falhou, né?! O resultado foi novamente **is_chain_valid() -> False**
@@ -207,7 +207,7 @@ transforma qualquer texto em uma sequência fixa de caracteres, e mudar
 forma completamente imprevisível — o chamado **efeito avalanche**. Vamos testar na prática? Execute:
 
 ```
-python3 scripts/hash_avalanche.py
+python3 hash_avalanche.py
 ```
 
 No exemplo anterior, você digita uma frase, vê o hash dela, muda só um detalhe (por
@@ -391,10 +391,10 @@ veja o `nonce` sendo encontrado, junto com quantas tentativas
 e quanto tempo isso levou.
 
 ```
-python3 scripts/prova_de_trabalho.py
+python3 prova_de_trabalho.py
 ```
 
-Repita o passo novamente testando outras dificuldades, por exemplo: `python3 scripts/prova_de_trabalho.py 6`
+Repita o passo novamente testando outras dificuldades, por exemplo: `python3 prova_de_trabalho.py 6`
 
 
 ### 2.4 — Medindo o hash rate da sua máquina e estimando o custo futuro
@@ -405,7 +405,7 @@ consegue calcular (calibrando por meio segundo) e, com esse número,
 mais altas (6, 7, 8...) levariam.
 
 ```bash
-python3 scripts/hash_rate.py
+python3 hash_rate.py
 ```
 
 **O que observar:** a diferença entre dificuldade 6 (segundos) e
@@ -423,7 +423,7 @@ mesmo bloco (com uma pequena diferença: cada um inclui seu próprio
 endereço na recompensa) e mostra quem encontra um nonce válido primeiro.
 
 ```bash
-python3 scripts/mining_race.py
+python3 mining_race.py
 ```
 
 **O que observar:** rode o script mais de uma vez — o vencedor muda,
@@ -473,7 +473,7 @@ Uma "carteira" aqui é só um par de chaves ECDSA: uma chave privada
 carteira para a Alice e uma para o Bob.
 
 ```bash
-python3 scripts/create_wallet.py
+python3 create_wallet.py
 ```
 
 **Importante:** o endereço (chave pública) pode ser compartilhado
@@ -496,7 +496,7 @@ Agora a Alice cria uma transação enviando moedas para o Bob, e assina
 essa transação com a própria chave privada.
 
 ```bash
-python3 scripts/sign_transaction.py
+python3 sign_transaction.py
 ```
 
 **O que observar:** a assinatura é gerada a partir do conteúdo exato da
@@ -510,7 +510,7 @@ Este passo carrega a transação assinada e verifica a assinatura — mas
 usando só a chave PÚBLICA da Alice, nunca a privada.
 
 ```bash
-python3 scripts/verify_signature.py
+python3 verify_signature.py
 ```
 
 **O que observar:** `is_signature_valid()` retorna `True`. Qualquer
@@ -525,7 +525,7 @@ E se alguém interceptar a transação assinada e mudar o valor antes de
 ela ser processada?
 
 ```bash
-python3 scripts/tamper_transaction.py
+python3 tamper_transaction.py
 ```
 
 **O que observar:** a verificação passa a retornar `False`. É o ramo de
@@ -548,7 +548,7 @@ Por último: o que acontece se o Bob tentar assinar uma transação que diz
 não a da Alice)?
 
 ```bash
-python3 scripts/sign_as_someone_else.py
+python3 sign_as_someone_else.py
 ```
 
 **O que observar:** o código recusa a assinatura imediatamente, porque
@@ -559,13 +559,13 @@ errada nunca passaria na verificação do Passo 3. Vamos testar?
 Execute:
 
 ```
-python3 scripts/sign_as_someone_else.py --force
+python3 sign_as_someone_else.py --force
 ```
 
 Agora vamos validar a transação com assinatura adulterada:
 
 ```
-python3 scripts/verify_signature.py transacao_adulterada.json
+python3 verify_signature.py transacao_adulterada.json
 ```
 
 Observe o `is_signature_valid() -> False` justamente por ocasião da
