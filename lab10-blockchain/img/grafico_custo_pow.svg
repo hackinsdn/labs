@@ -1,0 +1,68 @@
+<svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gráfico de barras em escala logarítmica mostrando o número esperado de tentativas de hash necessárias para minerar um bloco, por nível de dificuldade de 1 a 8. O valor cresce de 16 tentativas na dificuldade 1 até cerca de 4,29 bilhões na dificuldade 8, um crescimento exponencial de aproximadamente 16 vezes a cada nível.">
+  <title>Custo esperado de mineração por dificuldade (Proof of Work)</title>
+
+  <style>
+    .viz-root { color-scheme: light; }
+  </style>
+
+  <rect x="0" y="0" width="900" height="480" fill="#fcfcfb"/>
+  <rect x="1" y="1" width="898" height="478" fill="none" stroke="#e5e4e0" stroke-width="2" rx="12"/>
+
+  <text x="450" y="32" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="21" font-weight="700" fill="#0b0b0b">Custo Esperado de Mineração por Dificuldade</text>
+  <text x="450" y="54" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="13" fill="#52514e">Tentativas esperadas = 16 ^ dificuldade — eixo vertical em escala logarítmica</text>
+
+  <!-- gridlines -->
+  <g font-family="system-ui, Arial, sans-serif" font-size="11.5" fill="#82817a">
+    <line x1="90" y1="380" x2="860" y2="380" stroke="#e5e4e0" stroke-width="1.5"/>
+    <text x="82" y="384" text-anchor="end">1</text>
+    <line x1="90" y1="318" x2="860" y2="318" stroke="#e5e4e0" stroke-width="1.5"/>
+    <text x="82" y="322" text-anchor="end">100</text>
+    <line x1="90" y1="256" x2="860" y2="256" stroke="#e5e4e0" stroke-width="1.5"/>
+    <text x="82" y="260" text-anchor="end">10 mil</text>
+    <line x1="90" y1="194" x2="860" y2="194" stroke="#e5e4e0" stroke-width="1.5"/>
+    <text x="82" y="198" text-anchor="end">1 milhão</text>
+    <line x1="90" y1="132" x2="860" y2="132" stroke="#e5e4e0" stroke-width="1.5"/>
+    <text x="82" y="136" text-anchor="end">100 milhões</text>
+    <line x1="90" y1="70" x2="860" y2="70" stroke="#e5e4e0" stroke-width="1.5"/>
+    <text x="82" y="74" text-anchor="end">10 bilhões</text>
+  </g>
+
+  <!-- barras -->
+  <g fill="#2a78d6">
+    <rect x="112.1" y="342.7" width="52" height="37.3" rx="4"/>
+    <rect x="208.4" y="305.3" width="52" height="74.7" rx="4"/>
+    <rect x="304.6" y="268.0" width="52" height="112.0" rx="4"/>
+    <rect x="400.9" y="230.7" width="52" height="149.3" rx="4"/>
+    <rect x="497.1" y="193.3" width="52" height="186.7" rx="4"/>
+    <rect x="593.4" y="156.0" width="52" height="224.0" rx="4"/>
+    <rect x="689.6" y="118.7" width="52" height="261.3" rx="4"/>
+    <rect x="785.9" y="81.4" width="52" height="298.6" rx="4"/>
+  </g>
+
+  <!-- rotulos diretos (valores) -->
+  <g font-family="Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#0b0b0b" text-anchor="middle">
+    <text x="138.1" y="333">16</text>
+    <text x="234.4" y="295">256</text>
+    <text x="330.6" y="258">4,1 mil</text>
+    <text x="426.9" y="221">65,5 mil</text>
+    <text x="523.1" y="183">1,05 milhão</text>
+    <text x="619.4" y="146">16,8 milhões</text>
+    <text x="715.6" y="109">268 milhões</text>
+    <text x="811.9" y="71">4,29 bilhões</text>
+  </g>
+
+  <!-- rotulos do eixo x -->
+  <g font-family="system-ui, Arial, sans-serif" font-size="13" font-weight="700" fill="#0b0b0b" text-anchor="middle">
+    <text x="138.1" y="402">1</text>
+    <text x="234.4" y="402">2</text>
+    <text x="330.6" y="402">3</text>
+    <text x="426.9" y="402">4</text>
+    <text x="523.1" y="402">5</text>
+    <text x="619.4" y="402">6</text>
+    <text x="715.6" y="402">7</text>
+    <text x="811.9" y="402">8</text>
+  </g>
+  <text x="475" y="426" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="13" fill="#52514e">Dificuldade (número de zeros exigidos no início do hash)</text>
+
+  <text x="475" y="456" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="13" fill="#52514e">Cada nível de dificuldade multiplica o esforço esperado por ~16x — um crescimento exponencial, não linear.</text>
+</svg>

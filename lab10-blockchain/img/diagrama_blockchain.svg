@@ -1,0 +1,151 @@
+<svg viewBox="0 0 1280 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama de uma cadeia de blocos: quatro blocos ligados em sequência, cada um guardando dados, um nonce, o hash do bloco anterior e o próprio hash; o Bloco 0 é o bloco gênesis e não aponta para nenhum bloco real anterior.">
+  <title>Anatomia de uma cadeia de blocos (blockchain)</title>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <!-- fundo -->
+  <rect x="0" y="0" width="1280" height="460" fill="#ffffff"/>
+  <rect x="1" y="1" width="1278" height="458" fill="none" stroke="#e2e8f0" stroke-width="2" rx="12"/>
+
+  <!-- titulo -->
+  <text x="640" y="40" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">Anatomia de uma Cadeia de Blocos (Blockchain)</text>
+  <text x="640" y="66" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="14" fill="#475569">Cada bloco guarda o hash do bloco anterior — é esse encadeamento que forma a "corrente" e garante a integridade do histórico.</text>
+
+  <!-- ==================== BLOCO 0 (GENESIS) ==================== -->
+  <g font-family="system-ui, Arial, sans-serif">
+    <rect x="40" y="90" width="220" height="225" fill="#ffffff" stroke="#334155" stroke-width="2" rx="8"/>
+    <rect x="40" y="90" width="220" height="40" fill="#b45309" rx="8"/>
+    <rect x="40" y="118" width="220" height="12" fill="#b45309"/>
+    <text x="52" y="115" font-size="15" font-weight="700" fill="#ffffff">BLOCO 0 · GÊNESIS</text>
+
+    <!-- hash anterior (nao existe) -->
+    <rect x="46" y="135" width="208" height="41" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" rx="5"/>
+    <text x="58" y="149" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#475569">HASH ANTERIOR</text>
+    <text x="58" y="167" font-size="12.5" font-family="Menlo, Consolas, monospace" fill="#475569">0000…0000 (não existe)</text>
+
+    <!-- dados -->
+    <rect x="46" y="181" width="208" height="41" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" rx="5"/>
+    <text x="58" y="195" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#475569">DADOS / TRANSAÇÕES</text>
+    <text x="58" y="213" font-size="12.5" fill="#334155">"Bloco Gênesis" (marco inicial)</text>
+
+    <!-- nonce -->
+    <rect x="46" y="227" width="208" height="41" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" rx="5"/>
+    <text x="58" y="241" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#5b21b6">NONCE</text>
+    <text x="58" y="259" font-size="13" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#4c1d95">0</text>
+
+    <!-- hash -->
+    <rect x="46" y="273" width="208" height="37" fill="#d1fae5" stroke="#059669" stroke-width="1.5" rx="5"/>
+    <text x="58" y="287" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#065f46">HASH (impressão digital)</text>
+    <text x="58" y="303" font-size="12.5" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#065f46">3f9a2b6e…1c07</text>
+  </g>
+
+  <!-- ==================== BLOCO 1 ==================== -->
+  <g font-family="system-ui, Arial, sans-serif">
+    <rect x="350" y="90" width="220" height="225" fill="#ffffff" stroke="#334155" stroke-width="2" rx="8"/>
+    <rect x="350" y="90" width="220" height="40" fill="#1d4ed8" rx="8"/>
+    <rect x="350" y="118" width="220" height="12" fill="#1d4ed8"/>
+    <text x="362" y="115" font-size="15" font-weight="700" fill="#ffffff">BLOCO 1</text>
+
+    <rect x="356" y="135" width="208" height="41" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="5"/>
+    <text x="368" y="149" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#1e3a8a">HASH ANTERIOR</text>
+    <text x="368" y="167" font-size="12.5" font-family="Menlo, Consolas, monospace" fill="#1e3a8a">3f9a2b6e…1c07</text>
+
+    <rect x="356" y="181" width="208" height="41" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" rx="5"/>
+    <text x="368" y="195" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#475569">DADOS / TRANSAÇÕES</text>
+    <text x="368" y="213" font-size="12.5" fill="#334155">Alice → Bob: 5</text>
+
+    <rect x="356" y="227" width="208" height="41" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" rx="5"/>
+    <text x="368" y="241" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#5b21b6">NONCE</text>
+    <text x="368" y="259" font-size="13" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#4c1d95">4821</text>
+
+    <rect x="356" y="273" width="208" height="37" fill="#d1fae5" stroke="#059669" stroke-width="1.5" rx="5"/>
+    <text x="368" y="287" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#065f46">HASH (impressão digital)</text>
+    <text x="368" y="303" font-size="12.5" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#065f46">7bd41af0…9e3c</text>
+  </g>
+
+  <!-- ==================== BLOCO 2 ==================== -->
+  <g font-family="system-ui, Arial, sans-serif">
+    <rect x="660" y="90" width="220" height="225" fill="#ffffff" stroke="#334155" stroke-width="2" rx="8"/>
+    <rect x="660" y="90" width="220" height="40" fill="#1d4ed8" rx="8"/>
+    <rect x="660" y="118" width="220" height="12" fill="#1d4ed8"/>
+    <text x="672" y="115" font-size="15" font-weight="700" fill="#ffffff">BLOCO 2</text>
+
+    <rect x="666" y="135" width="208" height="41" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="5"/>
+    <text x="678" y="149" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#1e3a8a">HASH ANTERIOR</text>
+    <text x="678" y="167" font-size="12.5" font-family="Menlo, Consolas, monospace" fill="#1e3a8a">7bd41af0…9e3c</text>
+
+    <rect x="666" y="181" width="208" height="41" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" rx="5"/>
+    <text x="678" y="195" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#475569">DADOS / TRANSAÇÕES</text>
+    <text x="678" y="213" font-size="12.5" fill="#334155">Bob → Carol: 2</text>
+
+    <rect x="666" y="227" width="208" height="41" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" rx="5"/>
+    <text x="678" y="241" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#5b21b6">NONCE</text>
+    <text x="678" y="259" font-size="13" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#4c1d95">1096</text>
+
+    <rect x="666" y="273" width="208" height="37" fill="#d1fae5" stroke="#059669" stroke-width="1.5" rx="5"/>
+    <text x="678" y="287" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#065f46">HASH (impressão digital)</text>
+    <text x="678" y="303" font-size="12.5" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#065f46">c02ee6a1…5f8d</text>
+  </g>
+
+  <!-- ==================== BLOCO 3 ==================== -->
+  <g font-family="system-ui, Arial, sans-serif">
+    <rect x="970" y="90" width="220" height="225" fill="#ffffff" stroke="#334155" stroke-width="2" rx="8"/>
+    <rect x="970" y="90" width="220" height="40" fill="#1d4ed8" rx="8"/>
+    <rect x="970" y="118" width="220" height="12" fill="#1d4ed8"/>
+    <text x="982" y="115" font-size="15" font-weight="700" fill="#ffffff">BLOCO 3</text>
+
+    <rect x="976" y="135" width="208" height="41" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="5"/>
+    <text x="988" y="149" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#1e3a8a">HASH ANTERIOR</text>
+    <text x="988" y="167" font-size="12.5" font-family="Menlo, Consolas, monospace" fill="#1e3a8a">c02ee6a1…5f8d</text>
+
+    <rect x="976" y="181" width="208" height="41" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" rx="5"/>
+    <text x="988" y="195" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#475569">DADOS / TRANSAÇÕES</text>
+    <text x="988" y="213" font-size="12.5" fill="#334155">Carol → Alice: 1</text>
+
+    <rect x="976" y="227" width="208" height="41" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" rx="5"/>
+    <text x="988" y="241" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#5b21b6">NONCE</text>
+    <text x="988" y="259" font-size="13" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#4c1d95">27350</text>
+
+    <rect x="976" y="273" width="208" height="37" fill="#d1fae5" stroke="#059669" stroke-width="1.5" rx="5"/>
+    <text x="988" y="287" font-size="9.5" font-weight="700" letter-spacing="0.5" fill="#065f46">HASH (impressão digital)</text>
+    <text x="988" y="303" font-size="12.5" font-family="Menlo, Consolas, monospace" font-weight="700" fill="#065f46">5d4fbb27…a6c1</text>
+  </g>
+
+  <!-- ==================== SETAS: hash de um bloco -> hash anterior do proximo ==================== -->
+  <g fill="none" stroke="#059669" stroke-width="3">
+    <path d="M 260,292 C 305,292 305,153 350,153" marker-end="url(#arrow)"/>
+    <path d="M 570,292 C 615,292 615,153 660,153" marker-end="url(#arrow)"/>
+    <path d="M 880,292 C 925,292 925,153 970,153" marker-end="url(#arrow)"/>
+  </g>
+  <g font-family="system-ui, Arial, sans-serif">
+    <circle cx="305" cy="222" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+    <text x="305" y="226" text-anchor="middle" font-size="13" font-weight="700" fill="#2563eb">=</text>
+    <circle cx="615" cy="222" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+    <text x="615" y="226" text-anchor="middle" font-size="13" font-weight="700" fill="#2563eb">=</text>
+    <circle cx="925" cy="222" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+    <text x="925" y="226" text-anchor="middle" font-size="13" font-weight="700" fill="#2563eb">=</text>
+  </g>
+
+  <!-- ==================== LEGENDA ==================== -->
+  <g font-family="system-ui, Arial, sans-serif" font-size="13" fill="#334155">
+    <rect x="100" y="345" width="16" height="16" fill="#dbeafe" stroke="#2563eb" rx="3"/>
+    <text x="124" y="358">Hash Anterior — aponta para o hash do bloco anterior</text>
+
+    <rect x="490" y="345" width="16" height="16" fill="#f1f5f9" stroke="#94a3b8" rx="3"/>
+    <text x="514" y="358">Dados / Transações — conteúdo armazenado</text>
+
+    <rect x="820" y="345" width="16" height="16" fill="#ede9fe" stroke="#7c3aed" rx="3"/>
+    <text x="844" y="358">Nonce — ajustado na mineração (Proof of Work)</text>
+
+    <rect x="100" y="372" width="16" height="16" fill="#d1fae5" stroke="#059669" rx="3"/>
+    <text x="124" y="385">Hash — a "impressão digital" única deste bloco, calculada sobre todo o conteúdo acima</text>
+  </g>
+
+  <!-- ==================== LEGENDA (texto explicativo final) ==================== -->
+  <text x="640" y="420" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="13.5" fill="#475569">Se o "Hash Anterior" de um bloco não bater com o "Hash" real do bloco anterior, a cadeia é considerada inválida.</text>
+  <text x="640" y="440" text-anchor="middle" font-family="system-ui, Arial, sans-serif" font-size="13.5" fill="#475569">O Bloco 0 (Gênesis) é o único que não referencia nenhum bloco real anterior.</text>
+</svg>
